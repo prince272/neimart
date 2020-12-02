@@ -1,0 +1,31 @@
+﻿@{
+    Html.AddTitle("Plan Ended");
+
+    var member = await Context.GetMemberAsync();
+}
+
+<div class="card mb-4">
+    <div class="card-body pb-2">
+        <div class="card-title d-flex align-items-center justify-content-between mb-4">
+            <h1 class="h4 mb-0">Your @(member.StorePlanType.GetEnumText()) Plan Ended</h1>
+        </div>
+        <div class="mb-3">
+            <div>Your @(member.StorePlanType.GetEnumText().ToLowerInvariant()) plan for @(member.StorePlanPeriod.GetEnumText().ToLowerInvariant()) ended on @(AppSettings.Value.FormatDateTime(member.StorePlanEndedOn)). To continue using Neimart, you need to select a plan.</div>
+        </div>
+        <div class="form-group">
+            <a  asp-action="PlanPricing" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Url.Action("Index", "Home", new { area = "Portal" }))" class="btn btn-default btn-block text-left py-3">
+               <div class="media align-items-center">
+                   <div class="media-body">
+                       <h5 class="mb-1">Select a plan</h5>
+                       <p class="mb-0">To start selling, you need to pick a plan.</p>
+                   </div>
+                   <div><i class="fal fa-angle-right align-middle fa-1-3x w-20px ml-2"></i></div>
+               </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center text-center">
+    <span>Need help with this store? <a asp-action="Contact" asp-controller="Company" asp-area="" target="_blank"> Contact Us <i class="fal fa-angle-right fa-1-3x align-middle"></i></a></span>
+</div>

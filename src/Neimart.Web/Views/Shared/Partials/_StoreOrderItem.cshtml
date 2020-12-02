@@ -1,0 +1,56 @@
+﻿@model OrderModel
+@{
+    var seller = await Context.GetSellerAsync();
+    var customer = await Context.GetMemberAsync();
+}
+
+<div class="media">
+    <div class="d-flex justify-content-center align-items-center w-50px h-50px p-1 border rounded">
+        <i class="fad fa-clipboard-list-check fa-2x text-primary"></i>
+    </div>
+    <div class="media-body ml-3 d-flex justify-content-between align-self-stretch">
+        <div class="d-flex flex-column flex-md-row flex-fill justify-content-between cursor-pointer"
+                            data-submit="click"
+                            data-action="@(Url.Action("OrderDetails", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, orderCode = Model.Order.OrderCode }))"
+                            data-method="get"
+                            data-dialog="modal">
+            <div class="mb-1">
+                <span><strong>@(Model.Order.OrderCode)</strong></span><br />
+                <span><span>@(AppSettings.Value.FormatDateTime(Model.Order.CreatedOn))</span></span><br />
+                <div class="d-flex flex-wrap align-items-center">
+                    <div class="line-height-1"><strong class="h5 mb-0 text-primary">@(AppSettings.Value.FormatCurrency(Model.Order.TotalAmount))</strong></div>
+                    <div class="text-muted mx-2">|</div>
+                    <div><span class="badge badge-@(Model.Order.Status == OrderStatus.Pending ? "default" : Model.Order.Status == OrderStatus.Complete ? "sucess" : Model.Order.Status == OrderStatus.Cancelled ? "danger" : "warning")">@(Model.Order.Status.GetEnumText())</span></div>
+                    <div class="mx-1"></div>
+                    <div><span class="badge badge-@(Model.Order.Paid ? "primary" : "default")">@(Model.Order.Paid ? "Paid" : "Unpaid")</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex align-self-center pl-2 py-2">
+            <div class="dropdown">
+                <button type="button" class="btn btn-default rounded-pill icon-btn" data-toggle="dropdown"><i class="far fa-ellipsis-h"></i></button>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <button type="button" class="dropdown-item"
+                            data-submit="click"
+                            data-action="@(Url.Action("OrderDetails", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, orderCode = Model.Order.OrderCode }))"
+                            data-method="get"
+                            data-dialog="modal">
+                        Order Details
+                    </button>
+                    <button type="button" class="dropdown-item" visible="@(!Model.Order.Paid && Model.Order.Status != OrderStatus.Cancelled)"
+                            data-submit="click"
+                            data-action="@(Url.Action("CashIn", "Account", new
+                                     {
+                                         reference = Model.Order.OrderCode,
+                                         type = TransactionType.Order,
+                                         returnUrl = Context.Request.RelativeUrl()
+                                     }))"
+                            data-method="get"
+                            data-dialog="modal">
+                        Pay Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

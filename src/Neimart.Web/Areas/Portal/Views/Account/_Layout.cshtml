@@ -1,0 +1,32 @@
+﻿@{
+    Layout = "../Shared/_Layout.cshtml";
+
+    Html.AddTitle("Accout");
+}
+@section Styles {
+    @(await RenderSectionAsync("Styles", required: false))
+}
+@section Scripts {
+    @(await RenderSectionAsync("Scripts", required: false))
+}
+ 
+<div class="row justify-content-center">
+    <div class="col-lg-3 pt-0 d-none d-lg-block">
+        <div class="card card-condenced position-sticky mb-3" style="top: 90px !important;">
+            <div class="list-group list-group-flush text-nowrap overflow-auto flex-row flex-lg-column account-list-group">
+                <a class="list-group-item list-group-item-action" asp-action="EditProfile" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Url.Action("Index", "Home", new { area = "Portal" }))" asp-append-active="true">
+                    <i class="fad fa-user-edit align-middle w-20px mr-3"></i><span>Profile</span>
+                </a>
+                <a class="list-group-item list-group-item-action" asp-action="ManageWallet" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Url.Action("Index", "Home", new { area = "Portal" }))" asp-append-active="true">
+                    <i class="fad fa-wallet align-middle w-20px mr-3"></i><span>Wallet</span>
+                </a>
+                <a class="list-group-item list-group-item-action" asp-action="EditStore" asp-controller="Account" asp-area="Portal" asp-append-active="true">
+                    <i class="fad fa-store align-middle w-20px mr-3"></i><span>Store</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-9">
+        @RenderBody()
+    </div>
+</div>

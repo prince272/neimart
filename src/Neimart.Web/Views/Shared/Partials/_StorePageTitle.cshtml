@@ -1,0 +1,15 @@
+﻿@model string
+@{ 
+    var seller = await Context.GetSellerAsync();
+}
+<div class="d-flex justify-content-center align-items-center text-center pb-4">
+    <div>
+        <h1 class="text-primary">@(Model)</h1>
+        <ol class="breadcrumb d-inline-flex mb-0">
+            <li class="breadcrumb-item">
+                <a asp-action="Index" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Home</a>
+            </li>
+            <li class="breadcrumb-item active">@(Model)</li>
+        </ol>
+    </div>
+</div>

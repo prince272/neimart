@@ -1,0 +1,56 @@
+﻿@model TransactionModel
+
+<div class="modal modal-fullscreen">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title d-flex flex-wrap align-items-center">
+                    <h5 class="h5 mb-2 mr-2">Transaction Details</h5>
+                </div>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="card card-condenced border-0" id="transaction-card">
+                    <a class="card-header border-0 theme-text-dark text-decoration-none" href="javascript:void(0)" data-toggle="collapse" data-target="#transaction-info-collapse" aria-expanded="true">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-0">Transaction Information</h6><div class="collapse-icon"></div>
+                        </div>
+                    </a>
+                    <div class="collapse" id="transaction-info-collapse" data-parent="#transaction-card" data-preserve="collapse">
+                        <div class="card-body py-1">
+                            <div class="d-flex flex-wrap mb-2">
+                                <div class="mx-2">
+                                    <div class="mb-2"><div class="font-weight-semibold">Account Name</div> <div>@(Model.Transaction.AccountName)</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Account Email</div> <div>@(Model.Transaction.AccountEmail)</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Account Number</div> <div>@(!string.IsNullOrWhiteSpace(Model.Transaction.AccountNumber) ? AppSettings.Value.FormatPhoneNumber(Model.Transaction.AccountNumber) : "N/A")</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Account Balance</div> <div>@(AppSettings.Value.FormatCurrency(Model.Transaction.AccountBalance))</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">@(Model.Transaction.Type.GetEnumText()) Amount</div> <div>@(AppSettings.Value.FormatCurrency(Model.Transaction.Amount))</div></div>
+                                </div>
+                                <div class="mx-2">
+                                    <div class="mb-2"><div class="font-weight-semibold">Transaction Code</div> <div>@(Model.Transaction.TransactionCode)</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Mode</div> <div>@(Model.Transaction.Mode?.GetEnumText() ?? "N/A")</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Issuer</div> <div>@(!string.IsNullOrWhiteSpace(Model.Transaction.Issuer) ? Model.Transaction.Issuer : "N/A")</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Processor</div> <div>@(Model.Transaction.Processor.GetEnumText())</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Status</div> <div>@(Model.Transaction.Status.GetEnumText())</div></div>
+                                </div>
+                                <div class="mx-2">
+                                    <div class="mb-2"><div class="font-weight-semibold">Type</div> <div>@(Model.Transaction.Type.GetEnumText())</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Ip Address</div> <div>@(Model.Transaction.IpAddress)</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Operating System</div> <div>@(Model.Transaction.ClientInfo.OS.ToString())</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">User Agent</div> <div>@(Model.Transaction.ClientInfo.UA.ToString())</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Device</div> <div>@(Model.Transaction.ClientInfo.Device.ToString())</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

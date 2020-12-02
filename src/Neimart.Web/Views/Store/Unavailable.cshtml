@@ -1,0 +1,18 @@
+﻿@{
+    var seller = await Context.GetSellerAsync();
+    var customer = await Context.GetMemberAsync();
+
+    Html.AddTitle($"Store Unavailable");
+}
+
+<div class="text-center pt-3 my-5">
+    <div class="my-5 pb-5">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <div class="line-height-1 mb-3"><i class="fad fa-store-slash text-primary fa-5x"></i></div>
+                <h1 class="h3">Store Is Currently Unavailable</h1>
+                <p>Please try again later. We sincerely apologize for any inconvenience this may cause. Thank you!</p>
+            </div>
+        </div>
+    </div>
+</div>

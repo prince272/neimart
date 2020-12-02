@@ -1,0 +1,270 @@
+﻿@{
+    Layout = "_App";
+
+    var theme = await Context.GetThemeAsync();
+    var seller = await Context.GetMemberAsync();
+
+    var showLayoutHeader = TypeHelper.ConvertToObject<bool>(ViewData["ShowLayoutHeader"] ?? true);
+    var showLayoutFooter = TypeHelper.ConvertToObject<bool>(ViewData["ShowLayoutFooter"] ?? true);
+    var showLayoutSidebar = TypeHelper.ConvertToObject<bool>(ViewData["ShowLayoutSidebar"] ?? true);
+
+    Html.AddTitle("Portal").AddTitle(AppSettings.Value.Company.Name);
+    Html.AddDescription(AppSettings.Value.Company.Description);
+}
+
+@section Styles {
+    @(await RenderSectionAsync("Styles", required: false))
+}
+@section Scripts {
+    @(await RenderSectionAsync("Scripts", required: false))
+
+    <script>
+        // Auto update layout
+        (function () {
+            window.layoutHelpers.setPosition(true, false);
+            window.layoutHelpers.setAutoUpdate(true);
+        })();
+
+        // Collapse menu
+        (function () {
+            if ($('#layout-sidenav').hasClass('sidenav-horizontal') || window.layoutHelpers.isSmallScreen()) {
+                return;
+            }
+
+            try {
+                window.layoutHelpers.setCollapsed(
+                    localStorage.getItem('layoutCollapsed') === 'true',
+                    false
+                );
+            } catch (e) { }
+        })();
+
+        $(function () {
+            // Initialize sidenav
+            $('#layout-sidenav').each(function () {
+                new SideNav(this, {
+                    orientation: $(this).hasClass('sidenav-horizontal') ? 'horizontal' : 'vertical'
+                });
+            });
+
+            // Initialize sidenav togglers
+            $('body').on('click', '.layout-sidenav-toggle', function (e) {
+                e.preventDefault();
+                window.layoutHelpers.toggleCollapsed();
+                if (!window.layoutHelpers.isSmallScreen()) {
+                    try { localStorage.setItem('layoutCollapsed', String(window.layoutHelpers.isCollapsed())); } catch (e) { }
+                }
+            });
+
+            if ($('html').attr('dir') === 'rtl') {
+                $('#layout-navbar .dropdown-menu').toggleClass('dropdown-menu-right');
+            }
+        });
+    </script>
+}
+
+<div class="layout-wrapper layout-2">
+    <div class="layout-inner">
+
+        <div id="layout-sidenav" class="layout-sidenav sidenav sidenav-vertical @(theme.Mode == ThemeMode.Dark ? "bg-light" : "bg-dark")">
+
+            <div class="app-brand py-3">
+                <span class="app-brand-logo">
+                    <svg class="w-30px h-30px fill-primary"><use href="#neimart-logo" /></svg>
+                </span>
+                <a class="sidenav-text app-brand-text ml-2 h4 mb-0 font-weight-semibold font-italic" asp-action="Index" asp-controller="Home" asp-area="Portal">Neimart</a>
+
+                <a href="javascript:void(0)" class="layout-sidenav-toggle sidenav-link text-big ml-auto"><i class="fal fa-bars align-middle"></i></a>
+            </div>
+            <div class="sidenav-divider mt-0"></div>
+
+            <ul class="sidenav-inner py-1">
+                <li class="sidenav-item" asp-controller="Home" asp-append-active="true" asp-authorize="true" asp-roles="@(RoleNames.Admin + "," + RoleNames.Seller)">
+                    <a asp-action="Index" asp-controller="Home" asp-area="Portal" class="sidenav-link">
+                        <i class="sidenav-icon fad fa-tachometer text-primary"></i><div>Dashboard</div>
+                    </a>
+                </li>
+                <li class="sidenav-item" asp-controller="Products" asp-append-active="true" asp-authorize="true" asp-roles="@(RoleNames.Admin + "," + RoleNames.Seller)">
+                    <a asp-action="Index" asp-controller="Products" asp-area="Portal" class="sidenav-link">
+                        <i class="sidenav-icon fad fa-box text-primary"></i><div>Products</div>
+                    </a>
+                </li>
+                <li class="sidenav-item" asp-controller="Categories" asp-append-active="true" asp-authorize="true" asp-roles="@(RoleNames.Admin + "," + RoleNames.Seller)">
+                    <a class="sidenav-link" asp-action="Index" asp-controller="Categories" asp-area="Portal">
+                        <i class="sidenav-icon fad fa-th text-primary"></i><div>Categories</div>
+                    </a>
+                </li>
+                <li class="sidenav-item" asp-controller="Banners" asp-append-active="true" asp-authorize="true" asp-roles="@(RoleNames.Admin + "," + RoleNames.Seller)">
+                    <a class="sidenav-link" asp-action="Index" asp-controller="Banners" asp-area="Portal">
+                        <i class="sidenav-icon fad fa-sign text-primary"></i><div>Banners</div>
+                    </a>
+                </li>
+                <li class="sidenav-item" asp-controller="Orders" asp-append-active="true" asp-authorize="true" asp-roles="@(RoleNames.Admin + "," + RoleNames.Seller)">
+                    <a class="sidenav-link" asp-action="Index" asp-controller="Orders" asp-area="Portal">
+                        <i class="sidenav-icon fad fa-clipboard-list-check text-primary"></i><div>Orders</div>
+                    </a>
+                </li>
+                <li class="sidenav-item" asp-controller="Reviews" asp-append-active="true" asp-authorize="true" asp-roles="@(RoleNames.Admin + "," + RoleNames.Seller)">
+                    <a class="sidenav-link" asp-action="Index" asp-controller="Reviews" asp-area="Portal">
+                        <i class="sidenav-icon fad fa-star text-primary"></i><div>Reviews</div>
+                    </a>
+                </li>
+                <li class="sidenav-item" asp-controller="Transactions" asp-append-active="true" asp-authorize="true" asp-roles="@(RoleNames.Admin + "," + RoleNames.Seller)">
+                    <a class="sidenav-link" asp-action="Index" asp-controller="Transactions" asp-area="Portal">
+                        <i class="sidenav-icon fad fa-retweet text-primary"></i><div>Transactions</div>
+                    </a>
+                </li>
+                <li class="sidenav-item" asp-action="ManageWallet" asp-controller="Account" asp-append-active="true" asp-authorize="true" asp-roles="@(RoleNames.Admin + "," + RoleNames.Seller)">
+                    <a class="sidenav-link" asp-action="ManageWallet" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Url.Action("Index", "Home", new { area = "Portal" }))">
+                        <i class="sidenav-icon fad fa-wallet text-primary"></i><div>Wallet</div>
+                    </a>
+                </li>
+                <li class="sidenav-item" asp-controller="Stores" asp-append-active="true" asp-authorize="true" asp-roles="@(RoleNames.Admin)">
+                    <a class="sidenav-link" asp-action="Index" asp-controller="Stores" asp-area="Portal">
+                        <i class="sidenav-icon fad fa-store text-primary"></i><div>Stores</div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="layout-container">
+
+            <nav class="layout-navbar navbar navbar-expand-lg align-items-lg-center bg-lighter shadow-sm container-p-x position-sticky" style="top: 0;" id="layout-navbar" visible="@(showLayoutHeader)">
+
+                <a class="navbar-brand app-brand neimart d-lg-none py-0 mr-3" asp-action="Index" asp-controller="Home" asp-area="Portal">
+                    <span class="app-brand-logo">
+                        <svg class="w-30px h-30px fill-primary"><use href="#neimart-logo" /></svg>
+                    </span>
+                    <span class="app-brand-text ml-2 h4 mb-0 font-weight-semibold font-italic">Neimart</span>
+                </a>
+                <div class="layout-sidenav-toggle navbar-nav d-lg-none align-items-lg-center">
+                    <a class="nav-item nav-link px-0 mr-lg-4" href="javascript:void(0)">
+                        <i class="fal fa-bars text-big align-middle"></i>
+                    </a>
+                </div>
+
+                <div class="ml-auto mr-3">
+                    <div class="d-none d-md-flex" visible="@(seller.StoreSetup)">
+                        <div class="btn-group">
+                            <a asp-action="Index" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)" class="btn btn-default">Visit Store</a>
+                            <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"></button>
+                            <div class="dropdown-menu">
+                                <button type="button" class="dropdown-item" data-toggle="clipboard" data-clipboard-action="copy" data-clipboard-text="@(Url.ContentLink(Url.Action("Index", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug })))">Copy Store Link</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-none d-md-flex" visible="@(!seller.StoreSetup)">
+                        <a class="btn btn-default" asp-action="EditStore" asp-controller="Account" asp-area="Portal">Setup Store</a>
+                    </div>
+                </div>
+
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#layout-navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="navbar-collapse collapse flex-grow-0" id="layout-navbar-collapse">
+                    <hr class="d-lg-none w-100 my-2">
+
+                    <div class="navbar-nav align-items-lg-center">
+
+                        <div class="nav-item d-none d-lg-block text-big font-weight-light line-height-1 opacity-25 mr-3 ml-1">|</div>
+
+                        <div class="neimart-navbar-user nav-item dropdown dropdown-scrollable">
+                            <a class="btn btn-default borderless px-2 dropdown-toggle" href="javascript:void(0)" data-toggle="dropdown">
+                                <div class="d-inline-flex flex-lg-row-reverse align-items-center align-middle">
+                                    <div class="d-flex justify-content-center align-items-center w-30px h-30px border rounded-pill">
+                                        <div visible="@(seller.UserImage != null)"><img class="img-fluid rounded-pill" alt="@(seller.FullName)" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-toggle="lozad" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(seller.UserImage.DirectoryName, seller.UserImage.FileName), width: 40, height: 40))" /></div>
+                                        <i visible="@(seller.UserImage == null)" class="fad fa-user"></i>
+                                    </div>
+                                    <div class="px-1 mr-lg-2 ml-2 ml-lg-0 line-height-1 text-left">
+                                        <div class="mb-1">@(seller.FullName)</div>
+                                        <div class="text-small text-muted">Cash: <span class="text-primary">@(AppSettings.Value.FormatCurrency(seller.Balance))</span></div>
+                                    </div>
+                                </div>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="dropdown-header h6 mb-0">Settings</div>
+                                <a class="dropdown-item" asp-action="EditProfile" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Url.Action("Index", "Home", new { area = "Portal" }))"><i class="fad fa-user-edit align-middle w-20px mr-2"></i>Profile</a>
+                                <a class="dropdown-item" asp-action="ManageWallet" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Url.Action("Index", "Home", new { area = "Portal" }))"><i class="fad fa-wallet align-middle w-20px mr-2"></i>Wallet</a>
+                                <a class="dropdown-item" asp-action="EditStore" asp-controller="Account" asp-area="Portal"><i class="fad fa-store align-middle w-20px mr-2"></i>Store</a>
+                                <a class="dropdown-item" asp-action="PlanPricing" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Url.Action("Index", "Home", new { area = "Portal" }))"><i class="fad fa-tags align-middle w-20px mr-2"></i>Upgrade</a>
+                                <div class="dropdown-header h6 mb-0">Help</div>
+                                <a class="dropdown-item" asp-action="Contact" asp-controller="Company" asp-area="" target="_blank"><i class="fad fa-user-headset align-middle w-20px mr-2"></i>Contact</a>
+                                <a class="dropdown-item" asp-action="About" asp-controller="Company" asp-area="" target="_blank"><i class="fad fa-exclamation-circle align-middle w-20px mr-2"></i>About</a>
+                                <div class="dropdown-divider"></div>
+                                <button class="dropdown-item" data-submit="click" data-action="@(Url.Action("Signout", "Account", new { area = "" }))" data-method="post"><i class="fad fa-sign-out align-middle w-20px mr-2"></i>Sign out</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="layout-content">
+                <div class="container flex-grow-1 container-p-y">
+                    <div>
+                        <div id="store-pending-alert" class="alert callout-warning mb-3" data-preserve="alert" visible="@(seller.StoreAccess == StoreAccess.Pending)">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <div class="media">
+                                <i class="fad fa-exclamation-circle fa-2x text-warning"></i>
+                                <div class="media-body ml-3">
+                                    <h5 class="mb-2">Your Store Is Pending</h5>
+                                    <p class="mb-0">
+                                        You need to setup your store for verification purpose. Please note that the verification process can take up to 24 hours or more. <a asp-action="EditStore" asp-controller="Account" asp-area="Portal">Setup Store</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="store-rejected-alert" class="alert callout-danger mb-3" data-preserve="alert" visible="@(seller.StoreAccess == StoreAccess.Rejected)">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <div class="media">
+                                <i class="fad fa-times-circle fa-2x text-danger"></i>
+                                <div class="media-body ml-3">
+                                    <h5 class="mb-2">Your Store Has Been Rejected</h5>
+                                    <p class="mb-0">Unfortunately your store was not able to pass our verification process. You can contact us for further details and assistance.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="store-plan-alert" class="alert callout-warning mb-3" data-preserve="alert" visible="@(seller.StorePlanEnded)">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <div class="media">
+                                <i class="fad fa-exclamation-circle fa-2x text-warning"></i>
+                                <div class="media-body ml-3">
+                                    <h5 class="mb-2">Your @(seller.StorePlanType.GetEnumText()) Plan Has Ended</h5>
+                                    <p class="mb-0">
+                                        Your @(seller.StorePlanType.GetEnumText().ToLowerInvariant()) plan for @(seller.StorePlanPeriod.GetEnumText().ToLowerInvariant()) ended on @(AppSettings.Value.FormatDateTime(seller.StorePlanEndedOn)). To continue using Neimart, <a asp-action="PlanPricing" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Url.Action("Index", "Home", new { area = "Portal" }))">Select a plan</a>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @RenderBody()
+                </div>
+                <div class="container">
+                    <div class="d-flex justify-content-center">
+                        <div id="store-plan-status-alert" class="alert callout-primary" visible="@(seller.StorePlanLeftSpan.TotalDays <= AppSettings.Value.PlanTrialDays)" data-preserve="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <div class="media pr-3">
+                                <i class="fad fa-info-circle fa-1-3x text-primary"></i>
+                                <div class="media-body ml-3">
+                                    <div>You have @(seller.StorePlanLeftSpan.Humanize(minUnit: TimeUnit.Day, maxUnit: TimeUnit.Day)) left in your @(seller.StorePlanType.GetEnumText().ToLowerInvariant()) plan. To continue using Neimart, <a asp-action="PlanPricing" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Url.Action("Index", "Home", new { area = "Portal" }))">Select a plan</a></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layout-overlay layout-sidenav-toggle"></div>
+</div>

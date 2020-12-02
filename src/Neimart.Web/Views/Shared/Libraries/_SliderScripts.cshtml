@@ -1,0 +1,57 @@
+﻿<script src="~/vendor/libs/swiper/swiper.js" asp-append-version="true"></script>
+<script src="~/vendor/libs/photoswipe/photoswipe.js" asp-append-version="true"></script>
+<script>
+    function initSwiper(owner) {
+        $('[data-toggle="swiper"]', owner).each(function (i, el) {
+
+            var element = $(el);
+            var parentElement = $(`${element.attr('data-parent')}`);
+
+            var swiper = new Swiper(element.find('.swiper-container'), {
+                direction: element.attr('data-direction') || 'horizontal',
+                effect: element.attr('data-effect') || 'slide',
+                lazy: parseObject(element.attr('data-lazy')) || false,
+                autoplay: parseObject(element.attr('data-autoplay')) ? {
+                    delay: parseObject(element.attr('data-delay')) || 3500,
+                    disableOnInteraction: false
+                } : false,
+                slidesPerView: parseObject(element.attr('data-slides-per-view')) || 1,
+                spaceBetween: parseObject(element.attr('data-space-between')) || 0,
+                threshold: parseObject(element.attr('data-threshold')) || 0,
+                loop: parseObject(element.attr('data-loop')) || true,
+                watchOverflow: parseObject(element.attr('data-watch-overflow')) || true,
+                breakpoints: parseObject(element.attr('data-breakpoints')) || null,
+                pagination: {
+                    el: element.find('.swiper-pagination'),
+                    clickable: true
+                },
+                navigation: {
+                    nextEl: element.find('.swiper-button-next')[0],
+                    prevEl: element.find('.swiper-button-prev')[0]
+                },
+
+            });
+
+            element.on('click', '.swiper-slide', function (e) {
+                if (parentElement.length) {
+                    var parentSwiper = parentElement.find('.swiper-container')[0].swiper;
+                    parentSwiper.slideTo(swiper.clickedIndex);
+                }
+            });
+        });
+    }
+
+    function initPhotoSwipe(owner) {
+        $('[data-toggle="photoswipe"]', owner).each(function (index, el) {
+            var element = $(el);
+
+            initPhotoSwipeFromDOM(element[0]);
+        });
+    }
+
+    $(function () {
+        initSwiper(document);
+        initPhotoSwipe(document);
+    });
+
+</script>

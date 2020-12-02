@@ -1,0 +1,62 @@
+﻿@model AddressListModel
+@{
+    var seller = await Context.GetSellerAsync();
+}
+
+<div class="modal modal-fullscreen">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h5 class="h5 mb-0">Address Book (@(Model.TotalItems))</h5>
+                </div>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body py-3">
+                @if (Model.Items.Any())
+                {
+                    @foreach (var addressModel in Model.Items)
+                    {
+                        <div class="mb-3">
+                            @(await Html.PartialAsync("Partials/_StoreAddressItem", addressModel))
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="d-flex align-items-center justify-content-center">
+                        <div class="py-5 my-2 text-center">
+                            <div class="d-inline-block mb-4"><i class="fad fa-address-book fa-5x text-primary"></i></div>
+                            <h4 class="h4">No addresses</h4>
+                            <p class="text-muted">Once you start adding your addresses, you'll see them here.</p>
+                            <div class="d-inline-block">
+                                <button class="btn btn-primary" type="button"
+                                        data-submit="click"
+                                        data-action="@(Url.Action("AddAddress", "Store", new { area = string.Empty, addressType = Model.AddressType, storeSlug = seller.StoreSlug, ReturnUrl = Context.Request.Query["returnUrl"] }))"
+                                        data-method="get"
+                                        data-dialog="modal">
+                                    Add Address
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex flex-wrap justify-content-between w-100">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" type="button"
+                            data-submit="click"
+                            data-action="@(Url.Action("AddAddress", "Store", new { area = string.Empty, addressType = Model.AddressType, storeSlug = seller.StoreSlug, ReturnUrl = Context.Request.Query["returnUrl"] }))"
+                            data-method="get"
+                            data-dialog="modal">
+                        Add Address
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

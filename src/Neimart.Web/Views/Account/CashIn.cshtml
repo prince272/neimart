@@ -1,0 +1,97 @@
+﻿@model CashInModel
+@{
+    var contentId = Guid.NewGuid().ToString();
+}
+
+<form asp-antiforgery="true" class="modal modal-fullscreen">
+    <div class="modal-dialog modal-dialog-scrollable modal-sm">
+        <div id="@(contentId)" class="modal-content" data-valid="@(ViewData.ModelState.IsValid.ToString().ToLowerInvariant())" data-redirect="@(ViewData["Redirect"])">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h5 class="h5 mb-0">Payment for @(Model.Type.GetEnumText())</h5>
+                </div>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div asp-validation-summary="All" class="alert callout-danger mb-4" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="form-group @(Model.ProcessorHide ? "d-none" : "")">
+                    <label class="form-label" asp-for="Processor"></label>
+                    <select style="opacity: 0;" data-toggle="select2" asp-for="Processor" asp-items="@(Model.ProcessorOptions)"></select>
+                    <span asp-validation-for="Processor"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" asp-for="Fee"></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text bg-transparent">@(AppSettings.Value.CurrencySymbol)</div>
+                        </div>
+                        <input class="form-control exclude-asterisks" disabled asp-for="Fee" data-toggle="cleave" data-numeral="true" type="number" step=".01" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" asp-for="Amount">@(Model.Type.GetEnumText()) amount</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">@(AppSettings.Value.CurrencySymbol)</div>
+                        </div>
+                        <input class="form-control" name="@(Html.NameFor(x => x.Amount))" value="@(Html.ValueFor(x => x.Amount))" @(Model.Type != TransactionType.Deposit ? "disabled" : "") data-toggle="cleave" data-numeral="true" type="number" step=".01" />
+                    </div>
+                    <span asp-validation-for="Amount"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" asp-for="TotalAmount"></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text bg-transparent">@(AppSettings.Value.CurrencySymbol)</div>
+                        </div>
+                        <input class="form-control exclude-asterisks" asp-for="TotalAmount" disabled data-toggle="cleave" data-numeral="true" type="number" step=".01" />
+                    </div>
+                    <span asp-validation-for="TotalAmount"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" visible="@(Model.Type != TransactionType.Order)">Cancel</button>
+                <button type="button" class="btn btn-primary" data-submit="modal">Proceed</button>
+            </div>
+            <input asp-for="Reference" type="hidden" />
+            <script>
+                (function () {
+                    var contentElement = $('#@(contentId)');
+
+                    var feeInput = $('input[name="@(Html.NameFor(x => x.Fee))"]', contentElement);
+                    var amountInput = $('input[name="@(Html.NameFor(x => x.Amount))"]', contentElement);
+                    var totalAmountInput = $('input[name="@(Html.NameFor(x => x.TotalAmount))"]', contentElement);
+                    var processorSelect = $('select[name="@(Html.NameFor(x => x.Processor))"]', contentElement);
+
+                    function updateView() {
+                        var paymentRate = @(AppSettings.Value.PaymentRate);
+                        var paymentAmount = amountInput.val() * 1;
+
+                        // Round to at most 2 decimal places (only if necessary)
+                        // source: https://stackoverflow.com/questions/11832914/round-to-at-most-2-decimal-places-only-if-necessary
+                        var paymentFee = Math.round(((((paymentRate * 100) * paymentAmount) / 100) + Number.EPSILON) * 100) / 100;
+
+                        // If no thirty party gateway is specified then payment fee must be 0.
+                        paymentFee = processorSelect.val() == 'external' ? paymentFee : 0;
+
+                        feeInput.val(paymentFee);
+                        totalAmountInput.val(paymentFee + paymentAmount);
+                    }
+
+                    updateView();
+                    amountInput.on('input', function () {updateView(); });
+                    processorSelect.on('change', function () { updateView(); });
+
+                })();
+                // # sourceURL=cash-in.js
+            </script>
+        </div>
+    </div>
+</form>

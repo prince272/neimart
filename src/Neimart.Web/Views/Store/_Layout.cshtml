@@ -1,0 +1,135 @@
+﻿@{
+    Layout = "_App";
+
+    var seller = await Context.GetSellerAsync();
+    var customer = await Context.GetMemberAsync();
+
+    Html.AddTitle(seller.StoreName);
+    Html.AddDescription(seller.StoreDescription);
+
+    Html.AddGraph(OpenGraph.MakeGraph(
+        title: Html.GetTitle(),
+        type: "website",
+        image: seller.StoreLogo != null ? FileClient.GetSourceUrl(seller.StoreLogo.DirectoryName, seller.StoreLogo.FileName) : Url.ContentLink("~/img/logo.png"),
+        url: Context.Request.AbsoluteUrl(),
+        description: Html.GetDescription(),
+        siteName: seller.StoreName));
+}
+@section Styles {
+    @(await RenderSectionAsync("Styles", required: false))
+}
+@section Scripts {
+    @(await RenderSectionAsync("Scripts", required: false))
+
+    <script>
+        $(function () {
+
+            var remoteUrlFormat = decodeURI('@(Url.Action("Suggestions", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, query = "{query}" }))')
+            var source = new Bloodhound({
+                identify: function (o) { return o.id_str; },
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                remote: {
+                    url: formatString(remoteUrlFormat, { query: '%QUERY' }),
+                    wildcard: '%QUERY'
+                }
+            });
+
+            $('#store-search-input').typeahead({
+                highlight: true,
+                minLength: 1,
+                limit: 8
+            },
+                {
+                    source: source,
+                }).on('typeahead:selected', function (e) {
+                    e.target.form.submit();
+                });
+        });
+    </script>
+}
+
+@(await Component.InvokeAsync("StoreHeader"))
+
+<div class="container">
+    @if (seller.Id == customer?.Id)
+    {
+        <div id="store-pending-alert" class="alert callout-warning my-3" data-preserve="alert" visible="@(seller.StoreAccess == StoreAccess.Pending)">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="media">
+                <i class="fad fa-exclamation-circle fa-2x text-warning"></i>
+                <div class="media-body ml-3">
+                    <h5 class="mb-2">Your Store Is Pending</h5>
+                    <p class="mb-0">
+                        You need to setup your store for verification purpose. Please note that the verification process can take up to 24 hours or more. <a asp-action="EditStore" asp-controller="Account" asp-area="Portal">Setup Store</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="store-rejected-alert" class="alert callout-danger my-3" data-preserve="alert" visible="@(seller.StoreAccess == StoreAccess.Rejected)">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="media">
+                <i class="fad fa-times-circle fa-2x text-danger"></i>
+                <div class="media-body ml-3">
+                    <h5 class="mb-1">Your Store Has Been Rejected</h5>
+                    <p class="mb-0">Unfortunately your store was not able to pass our verification process. You can contact us for further details and assistance.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="store-closed-alert" class="alert callout-warning my-3" data-preserve="alert" visible="@(seller.StoreStatus == StoreStatus.Closed)">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="media">
+                <i class="fad fa-exclamation-circle fa-2x text-warning"></i>
+                <div class="media-body ml-3">
+                    <h5 class="mb-2">Your Store Was Closed Possibly by You</h5>
+                    <p class="mb-0">
+                        If you want to open your store, you can go your <a asp-action="EditStore" asp-controller="Account" asp-area="Portal">Store Settings</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="store-plan-alert" class="alert callout-warning my-3" visible="@(seller.StorePlanEnded)" data-preserve="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="media">
+                <i class="fad fa-exclamation-circle fa-2x text-warning"></i>
+                <div class="media-body ml-3">
+                    <h5 class="mb-2">Your @(seller.StorePlanType.GetEnumText()) Plan Has Ended</h5>
+                    <p class="mb-0">
+                        Your @(seller.StorePlanType.GetEnumText().ToLowerInvariant()) plan for @(seller.StorePlanPeriod.GetEnumText().ToLowerInvariant()) ended on @(AppSettings.Value.FormatDateTime(seller.StorePlanEndedOn)). To continue using Neimart, <a asp-action="PlanPricing" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Url.Action("Index", "Home", new { area = "Portal" }))">Select a plan</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="container container-p-y">
+    @RenderBody()
+</div>
+
+@(await Component.InvokeAsync("StoreFooter"))
+
+<div id="float-buttons" style="position: fixed; bottom: 30px; right: 10px; z-index: 10;">
+    <div id="scroll-to-top" class="m-2">
+        <a href="#0" class="btn btn-dark btn-lg icon-btn rounded-pill anchor-link" data-toggle="tooltip" title="Scroll to top">
+            <i class="fal fa-angle-up fa-1-3x align-middle"></i>
+        </a>
+    </div>
+    <div id="back-to-home" class="m-2">
+        <a asp-action="Index" asp-controller="Company" asp-area="" class="btn btn-dark btn-lg icon-btn rounded-pill anchor-link" data-toggle="tooltip" title="Back to Neimart">
+            <i class="fal fa-home fa-1-3x align-middle"></i>
+        </a>
+    </div>
+</div>
+

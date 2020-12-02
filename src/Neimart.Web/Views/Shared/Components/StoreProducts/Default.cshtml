@@ -1,0 +1,59 @@
+﻿@model ProductListModel
+@{
+    var seller = await Context.GetSellerAsync();
+}
+
+<div class="row no-gutters">
+    @if (Model.Items.Any())
+    {
+        @foreach (var productModel in Model.Items)
+        {
+            <div class="@(Model.ViewType == ViewType.SignleStatic ? "col-12" : $"col-6 col-md-4 {(Model.SuggestItems ? "col-lg-2" : "")}") mb-4 position-relative">
+                <div class="img-thumbnail img-thumbnail-shadow p-1 h-100">
+                    <div class="img-thumbnail img-thumbnail-zoom-in">
+                        <div style="--aspect-ratio: 1">
+                            <div class="d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none">
+                                <div visible="@(productModel.Product.Image != null)" class="w-100 h-100"><img class="d-block img-fluid rounded" alt="@(productModel.Product.Name)" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-toggle="lozad" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(productModel.Product.Image.DirectoryName, productModel.Product.Image.FileName)))" /></div>
+                                <i visible="@(productModel.Product.Image == null)" class="fad fa-image fa-3x text-light"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-2">
+                        <div class="mb-2"><a class="text-body text-truncate-2 stretched-link" asp-action="Products" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)" asp-route-slug="@(productModel.Product.Slug)">@(productModel.Product.Name)</a></div>
+                        <div class="mb-2">
+                            <span class="h5 font-weight-semibold text-primary">@(productModel.Product.Price > 0 ? AppSettings.Value.FormatCurrency(productModel.Product.Price) : "Free")</span>
+                            <span>
+                                <s class="font-weight-normal text-muted text-small" visible="@(productModel.Product.DiscountAvailable)">@(AppSettings.Value.FormatCurrency(productModel.Product.OldPrice))</s>
+                                <span class="badge badge-primary" data-toggle="tooltip" title="Discount" visible="@(productModel.Product.DiscountAvailable)">-@(AppSettings.Value.FormatPercent(productModel.Product.DiscountPercent))</span>
+                            </span>
+                        </div>
+                        <div class="d-inline-flex flex-wrap align-items-center text-small">
+                            <div data-toggle="rateyo" data-rating="@(productModel.ReviewEvaluation.AverageRating)" data-readonly="true"></div>
+                            <div class="ml-1 text-muted">(@(productModel.ReviewEvaluation.TotalCount.ToMetric()))</div>
+                        </div>
+                        @*<div>
+                                <button type="button" class="btn btn-outline-primary btn-block"
+                                        data-preserve="scrollbar"
+                                        data-submit="click"
+                                        data-action="@(Url.Action("ProcessCart", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, productId = productModel.Product.Id, cartType = CartType.Cart, quantity = 1, returnUrl = Context.Request.RelativeUrl() }))"
+                                        data-method="post">
+                                    <i class="fal fa-cart-plus fa-1-3x"></i>&nbsp; <span>Add to cart</span>
+                                </button>
+                            </div>*@
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-center" style="min-height: 350px;">
+                <div class="text-center p-2">
+                    <div class="d-inline-block mb-3"><i class="fad fa-box fa-4x theme-text-dark"></i></div>
+                    <h4 class="h5">No products</h4>
+                </div>
+            </div>
+        </div>
+    }
+</div>

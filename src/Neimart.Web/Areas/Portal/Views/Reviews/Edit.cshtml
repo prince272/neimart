@@ -1,0 +1,100 @@
+﻿@model ReviewEditModel
+@{
+    Html.AddTitle($"{Model.Title}").AddTitle("Reviews");
+
+    var seller = await Context.GetMemberAsync();
+}
+
+<form asp-action="@(Model.IsEdit ? "Edit" : "Add")" asp-controller="Reviews" asp-area="Portal">
+    <div class="row">
+        <div class="col-12">
+            <div class="mb-2"><a asp-action="Index" asp-controller="Products" asp-area="Portal"><i class="fal fa-angle-left fa-1-3x align-middle"></i><span class="pl-1">Products</span></a></div>
+            <div class="d-flex flex-wrap align-items-center justify-content-between">
+                <div class="pb-3">
+                    <h1 class="h3 mb-0 pr-3">@(Model.IsEdit ? "Edit Review" : "Add Review")</h1>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div asp-validation-summary="All" class="alert callout-danger mb-3" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card card-condenced mb-4">
+                <div class="card-body pb-2">
+                    <div class="form-group">
+                        <label class="form-label" asp-for="Title"></label>
+                        <input class="form-control" readonly asp-for="Title" />
+                        <span asp-validation-for="Title"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" asp-for="Comment"></label>
+                        <textarea class="form-control" readonly rows="8" asp-for="Comment"></textarea>
+                        <span asp-validation-for="Comment"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Rating" class="form-label"></label>
+                        <input asp-for="Rating" id="review-rating-input" readonly style="opacity: 0;" data-toggle="rateyo" data-readonly="true" data-star-width="30px" data-full-star="true" />
+                        <span asp-validation-for="Rating"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-condenced mb-4">
+                <div class="card-body pb-2">
+                    <div class="form-group">
+                        <label class="form-label" asp-for="Reply"></label>
+                        <textarea class="form-control" rows="8" asp-for="Reply"></textarea>
+                        <span asp-validation-for="Reply"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-condenced mb-4">
+                <div class="card-body pb-2">
+                    <div class="form-group">
+                        <label class="d-flex media align-items-middle mb-0 py-2">
+                            <span class="switcher switcher-square d-block m-0">
+                                <input class="switcher-input" type="checkbox" asp-for="Approved" />
+                                <span class="switcher-indicator"> <span class="switcher-yes"></span> <span class="switcher-no"></span></span>
+                            </span>
+                            <span class="media-body pl-3"><span>@(Model.GetDisplayByMember(x => x.Approved).Description)</span></span>
+                        </label>
+                        <span asp-validation-for="Approved"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 py-2 position-sticky bg-body" style="bottom: 0px; z-index: 20;">
+            <div class="d-flex flex-wrap justify-content-between">
+                <div class="py-2">
+                    <button class="btn btn-danger"
+                            type="button"
+                            data-submit="click"
+                            data-action="@(Url.Action("Delete", "Reviews", new { area = "Portal" }))"
+                            data-method="post"
+                            data-name="id"
+                            data-value="@(Model.Id)"
+                            data-title="Delete Review"
+                            data-message="Are you sure you want to delete @(Model.Title) review?"
+                            data-dialog="confirm"
+                            data-confirm-label="Delete"
+                            data-confirm-class-name="btn-danger"
+                            visible="@(Model.IsEdit)">
+                        <span>Delete</span>
+                    </button>
+                </div>
+                <div class="py-2">
+                    <div class="d-flex flex-wrap">
+                        <a class="btn btn-default mr-2" asp-action="Index" asp-controller="Reviews" asp-area="Portal">Cancel</a>
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input asp-for="Id" type="hidden" />
+</form>

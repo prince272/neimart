@@ -1,0 +1,74 @@
+﻿@model DashboardModel
+@{
+    Html.AddTitle("Dashboard");
+
+    var seller = await Context.GetMemberAsync();
+}
+
+<div class="media align-items-center mb-4">
+    <div class="d-flex justify-content-center align-items-center w-50px h-50px border rounded-pill">
+        <div visible="@(seller.UserImage != null)"><img class="img-fluid rounded-pill" alt="@(seller.FullName)" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-toggle="lozad" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(seller.UserImage.DirectoryName, seller.UserImage.FileName), width: 80, height: 80))" /></div>
+        <i visible="@(seller.UserImage == null)" class="fad fa-user fa-1-3x"></i>
+    </div>
+    <div class="media-body ml-2">
+        <h5 class="mb-0">@(AppSettings.Value.ParseGreeting(DateTimeOffset.UtcNow)), @(seller.FirstName)!</h5>
+        <p class="mb-0 text-muted text-small">Today is @(AppSettings.Value.FormatDate(DateTimeOffset.UtcNow))</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-condenced mb-4">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center">
+                    <i class="fad fa-box text-primary fa-2x w-40px"></i>
+                    <div class="ml-3 mb-3">
+                        <div class="text-muted text-small mb-1">Products</div>
+                        <div class="text-large line-height-1">@(Model.ProductListEvaluation.TotalCount.ToMetric())</div>
+                    </div>
+                    <div class="ml-auto mt-auto text-small text-small"><span class="text-muted">Total:</span> <span class="mb-0 font-weight-semibold">@(AppSettings.Value.FormatCurrency(Model.ProductListEvaluation.TotalAmount))</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-condenced mb-4">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center">
+                    <i class="fad fa-th text-primary fa-2x w-40px"></i>
+                    <div class="ml-3 mb-3">
+                        <div class="text-muted text-small mb-1">Categories</div>
+                        <div class="text-large line-height-1">@(Model.CategoryListEvaluation.TotalCount.ToMetric())</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-condenced mb-4">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center">
+                    <i class="fad fa-sign text-primary fa-2x w-40px"></i>
+                    <div class="ml-3 mb-3">
+                        <div class="text-muted text-small mb-1">Banners</div>
+                        <div class="text-large line-height-1">@(Model.BannerListEvaluation.TotalCount.ToMetric())</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-condenced mb-4">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center">
+                    <i class="fad fa-box text-primary fa-2x w-40px"></i>
+                    <div class="ml-3 mb-3">
+                        <div class="text-muted text-small mb-1">Reviews</div>
+                        <div class="text-large line-height-1">@(Model.ReviewListEvaluation.TotalCount.ToMetric())</div>
+                    </div>
+                    <div class="ml-auto mt-auto text-small text-small"><span class="text-muted">Rating:</span> <span class="mb-0 font-weight-semibold">@(Model.ReviewListEvaluation.AverageRating)</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

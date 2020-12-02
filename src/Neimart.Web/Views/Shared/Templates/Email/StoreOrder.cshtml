@@ -1,0 +1,369 @@
+﻿@model (string Subject, OrderModel OrderModel)
+@{
+    Layout = "Templates/Email/_StoreLayout";
+
+    ViewData["Title"] = Model.Subject;
+    ViewData["Seller"] = Model.OrderModel.Order.Seller;
+}
+
+<!-- hero-icon-lines -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-primary o_px-md o_py-xl o_xs-py-md o_sans o_text-md o_text-white" align="center">
+                                <table cellspacing="0" cellpadding="0" border="0" role="presentation">
+                                    <tbody>
+                                        <tr>
+                                            <td class="o_sans o_text o_text-white o_b-white o_px o_py o_br-max" align="center">
+                                                <img src="@(Url.ContentLink("~/img/email/shopping_cart-48-white.png"))" width="48" height="48" alt="" style="max-width: 48px;">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size: 24px; line-height: 24px; height: 24px;">&nbsp; </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <h2 class="o_heading o_text-white o_mb-xxs">
+                                    <span>@(Model.Subject)</span>
+                                </h2>
+                                <p class="o_text-white o_mb-md">
+                                    <span visible="@(Model.OrderModel.Order.Status == OrderStatus.Pending)">An order has been placed on @(Model.OrderModel.Order.Seller.StoreName).</span>
+                                </p>
+                                <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                                    <tbody>
+                                        <tr>
+                                            <td width="300" class="o_btn o_bg-white o_br o_heading o_text" align="center">
+                                                <a class="o_text-primary" href="@(Url.ContentLink(Url.Action("Index", "Orders", new { area = "Portal", modalUrl = Url.Action("Details", "Orders", new { area = "Portal", id = Model.OrderModel.Order.Id }) })))">View Order</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!-- spacer -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-white" style="font-size: 24px; line-height: 24px; height: 24px;">&nbsp; </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!-- content -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-white o_px-md o_py o_sans o_text o_text-secondary" align="center">
+                                <h4 class="o_heading o_text-dark o_mb-xs">Hi @(Model.OrderModel.Order.Seller.FirstName),</h4>
+                                <p visible="@(Model.OrderModel.Order.Status == OrderStatus.Pending)">
+                                    <b>@(Model.OrderModel.Order.Customer.FullName)</b> placed @("order".ToQuantity(Model.OrderModel.OrderItemModels.Count)) for <b>@(AppSettings.Value.FormatCurrency(Model.OrderModel.Order.TotalAmount))</b>.
+                                </p>
+                                <p>Below are the order details.</p>
+                                <div style="font-size: 28px; line-height: 28px; height: 28px;">&nbsp; </div>
+                                <h4 class="o_heading o_text-dark o_mb-xxs">Order code: <span class="o_text-primary">@(Model.OrderModel.Order.OrderCode)</span></h4>
+                                <h4 class="o_heading o_text-dark o_mb-xxs" visible="@(Model.OrderModel.Order.Status == OrderStatus.Delivering || Model.OrderModel.Order.Status == OrderStatus.Complete)">Tracking code: <span class="o_text-primary">@(Model.OrderModel.Order.TrackingCode)</span></h4>
+                                <p class="o_text-xs o_text-light">Placed on @(AppSettings.Value.FormatDateTime(Model.OrderModel.Order.CreatedOn))</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!-- order-details -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_re o_bg-white o_px o_pb-md" align="center">
+                                @foreach (var addressWithType in Model.OrderModel.AddressesWithTypes)
+                                {
+                                    <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="300" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                                    <div class="o_col o_col-3 o_col-full">
+                                        <div style="font-size: 24px; line-height: 24px; height: 24px;">&nbsp; </div>
+                                        <div class="o_px-xs">
+                                            <table width="100%" role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="o_b-light o_br o_px o_py o_sans o_text-xs o_text-secondary" align="left">
+                                                            <p class="o_mb-xs"><strong>@(addressWithType.AddressType.GetEnumText()) Address</strong></p>
+                                                            @if (addressWithType.Address != null)
+                                                            {
+                                                                <div>
+                                                                    <div visible="(!string.IsNullOrWhiteSpace(addressWithType.Address.FullName))"><span>@(addressWithType.Address.FullName)</span></div>
+                                                                    <div visible="(!string.IsNullOrWhiteSpace(addressWithType.Address.Email))">@(addressWithType.Address.Email)</div>
+                                                                    <div visible="(!string.IsNullOrWhiteSpace(addressWithType.Address.PhoneNumber))">@(AppSettings.Value.FormatPhoneNumber(addressWithType.Address.PhoneNumber))</div>
+                                                                    <div visible="(!string.IsNullOrWhiteSpace(addressWithType.Address.Organization))"><span>@(addressWithType.Address.Organization)</span></div>
+                                                                    <div visible="(!string.IsNullOrWhiteSpace(addressWithType.Address.FullAddress))"><span>@(addressWithType.Address.FullAddress)</span></div>
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <h4 class="o_heading">No @(addressWithType.AddressType.GetEnumText().ToLowerInvariant()) address was provided</h4>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <!--[if mso]></td><td width="300" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!-- order-summary -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-white o_sans o_text-xs o_text-light o_px-md o_pt-xs" align="center">
+                                <p>Order Summary</p>
+                                <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                                    <tbody>
+                                        <tr>
+                                            <td class="o_bb-light" style="font-size: 8px; line-height: 8px; height: 8px;">&nbsp; </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!-- order-header  -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_re o_bg-white o_px o_pt-xs o_hide-xs" align="center">
+                                <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="400" align="left" valign="top" style="padding: 0px 8px;"><![endif]-->
+                                <div class="o_col o_col-4">
+                                    <div class="o_px-xs o_sans o_text-xs o_left">
+                                        <p class="o_text-light">Item</p>
+                                    </div>
+                                </div>
+                                <!--[if mso]></td><td width="100" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                                <div class="o_col o_col-1">
+                                    <div class="o_px-xs o_sans o_text-xs o_center">
+                                        <p class="o_text-light">Qty</p>
+                                    </div>
+                                </div>
+                                <!--[if mso]></td><td width="100" align="right" valign="top" style="padding: 0px 8px;"><![endif]-->
+                                <div class="o_col o_col-1">
+                                    <div class="o_px-xs o_sans o_text-xs o_right">
+                                        <p class="o_text-light">Price</p>
+                                    </div>
+                                </div>
+                                <!--[if mso]></td></tr><tr><td colspan="3" style="padding: 0px 8px;"><![endif]-->
+                                <div class="o_px-xs">
+                                    <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                                        <tbody>
+                                            <tr>
+                                                <td class="o_re o_bb-light" style="font-size: 9px; line-height: 9px; height: 9px;">&nbsp; </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!--[if mso]></td></tr></table><![endif]-->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+@foreach (var orderItemModel in Model.OrderModel.OrderItemModels)
+{
+    <!-- order-product -->
+    <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+        <tbody>
+            <tr>
+                <td class="o_bg-light o_px-xs" align="center">
+                    <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                    <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                        <tbody>
+                            <tr>
+                                <td class="o_re o_bg-white o_px o_pt" align="center">
+                                    <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="100" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                                    <div class="o_col o_col-1 o_col-full">
+                                        <div class="o_px-xs o_sans o_text o_center">
+                                            <p>
+                                                <a class="o_text-primary" href="@(Url.ContentLink(Url.Action("Products", "Store", new { area = string.Empty, storeSlug = Model.OrderModel.Order.Seller.StoreSlug, slug = orderItemModel.OrderItem.Slug })))">
+                                                    <div visible="@(orderItemModel.OrderItem.Image != null)"><img src="@(Url.ProcessImage(FileClient.GetSourceUrl(orderItemModel.OrderItem.Image.DirectoryName, orderItemModel.OrderItem.Image.FileName), width: 84, height: 84))" width="84" height="84" alt="" style="max-width: 84px;"></div>
+                                                    <div visible="@(orderItemModel.OrderItem.Image == null)" style="width: 84px; height: 84px"></div>
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <!--[if mso]></td><td width="300" align="left" valign="top" style="padding: 0px 8px;"><![endif]-->
+                                    <div class="o_col o_col-3 o_col-full">
+                                        <div style="font-size: 16px; line-height: 16px; height: 16px;">&nbsp; </div>
+                                        <div class="o_px-xs o_sans o_text o_text-light o_left o_xs-center">
+                                            <h4 class="o_heading o_text-dark o_mb-xxs">@(orderItemModel.OrderItem.Name)</h4>
+                                        </div>
+                                    </div>
+                                    <!--[if mso]></td><td width="100" align="right" valign="top" style="padding: 0px 8px;"><![endif]-->
+                                    <div class="o_col o_col-1 o_col-full">
+                                        <div class="o_hide-xs" style="font-size: 16px; line-height: 16px; height: 16px;">&nbsp; </div>
+                                        <div class="o_px-xs o_sans o_text o_text-secondary o_center">
+                                            <p class="o_mb-xxs"><span class="o_hide-lg">Quantity:&nbsp; </span>@(orderItemModel.OrderItem.Quantity)</p>
+                                        </div>
+                                    </div>
+                                    <!--[if mso]></td><td width="100" align="right" valign="top" style="padding: 0px 8px;"><![endif]-->
+                                    <div class="o_col o_col-1 o_col-full">
+                                        <div class="o_hide-xs" style="font-size: 16px; line-height: 16px; height: 16px;">&nbsp; </div>
+                                        <div class="o_px-xs o_sans o_text o_text-secondary o_right o_xs-center">
+                                            <p class="o_mb-xxs"><span class="o_hide-lg">Amount:&nbsp; </span>@(AppSettings.Value.FormatCurrency(orderItemModel.OrderItem.Amount))</p>
+                                        </div>
+                                    </div>
+                                    <!--[if mso]></td></tr><tr><td colspan="4" style="padding: 0px 8px;"><![endif]-->
+                                    <div class="o_px-xs">
+                                        <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="o_re o_bb-light" style="font-size: 16px; line-height: 16px; height: 16px;">&nbsp; </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!--[if mso]></td></tr></table><![endif]-->
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!--[if mso]></td></tr></table><![endif]-->
+                </td>
+            </tr>
+        </tbody>
+    </table>
+}
+<!-- order-total -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_re o_bg-white o_px-md o_py" align="right">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                    <tbody>
+                                        <tr>
+                                            <td width="284" align="left">
+                                                <table width="100%" role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td width="50%" class="o_pt-xs" align="left">
+                                                                <p class="o_sans o_text o_text-secondary">Subtotal</p>
+                                                            </td>
+                                                            <td width="50%" class="o_pt-xs" align="right">
+                                                                <p class="o_sans o_text o_text-secondary">@(AppSettings.Value.FormatCurrency(Model.OrderModel.Order.SubtotalAmount))</p>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="50%" class="o_pt-xs" align="left">
+                                                                <p class="o_sans o_text o_text-secondary">Delivery fee</p>
+                                                            </td>
+                                                            <td width="50%" class="o_pt-xs" align="right">
+                                                                <p class="o_sans o_text o_text-secondary">@(AppSettings.Value.FormatCurrency(Model.OrderModel.Order.DeliveryFee))</p>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="o_pt o_bb-light">&nbsp; </td>
+                                                            <td class="o_pt o_bb-light">&nbsp; </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="50%" class="o_pt" align="left">
+                                                                <p class="o_sans o_text o_text-secondary"><strong>Total</strong></p>
+                                                            </td>
+                                                            <td width="50%" class="o_pt" align="right">
+                                                                <p class="o_sans o_text o_text-primary"><strong>@(AppSettings.Value.FormatCurrency(Model.OrderModel.Order.TotalAmount))</strong></p>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!-- spacer -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-white" style="font-size: 24px; line-height: 24px; height: 24px;">&nbsp; </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>

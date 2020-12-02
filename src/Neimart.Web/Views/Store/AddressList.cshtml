@@ -1,0 +1,78 @@
+﻿@model AddressListModel
+@{
+    Html.AddTitle("Addresses");
+
+    Layout = "_AccountLayout";
+
+    var seller = await Context.GetSellerAsync();
+    var customer = await Context.GetMemberAsync();
+}
+
+<div class="card card-condenced mb-4">
+    <div class="card-body pb-2" style="min-height: 470px;">
+        <div class="card-title d-flex align-items-start justify-content-between pb-3">
+            <h5 class="mb-0 h4">Addresses (@(Model.TotalItems))</h5>
+            <div>
+                <button class="btn btn-primary" type="button"
+                        data-submit="click"
+                        data-action="@(Url.Action("AddAddress", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, returnUrl = Context.Request.Query["returnUrl"] }))"
+                        data-method="get"
+                        data-dialog="modal">
+                    Add Address
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            @if (Model.Items.Any())
+            {
+                @foreach (var addressModel in Model.Items)
+                {
+                    <div class="col-md-6">
+                        <div class="mb-4">
+                            @(await Html.PartialAsync("Partials/_StoreAddressItem", addressModel))
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-center pb-3 mb-5">
+                        <div class="py-5 my-3 text-center">
+                            <div class="d-inline-block mb-4"><i class="fad fa-address-book fa-5x text-primary"></i></div>
+                            <h4 class="h4">No Addresses</h4>
+                            <p class="text-muted">Once you start adding your addresses, you'll see them here.</p>
+                            <div class="d-inline-block">
+                                <button class="btn btn-primary" type="button"
+                                        data-submit="click"
+                                        data-action="@(Url.Action("AddAddress", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, returnUrl = Context.Request.Query["returnUrl"] }))"
+                                        data-method="get"
+                                        data-dialog="modal">
+                                    Add Address
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="card-footer pt-3 pb-0" visible="@(Model.TotalItems > 0)">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
+            <div class="pb-3 pr-3 d-none d-md-block">Showing @(Model.PageFrom)-@(Model.PageTo) out of @("address".ToQuantity(Model.TotalItems))</div>
+
+            <div class="pb-3">
+                <ul style="margin-bottom: 0px"
+                    data-preserve="scrollbar"
+                    data-toggle="paginator"
+                    data-page="@Model.Page"
+                    data-total-pages="@Model.TotalPages"
+                    data-submit="pageClick"
+                    data-action="@Url.Action("Addresses", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug })"
+                    data-method="get"
+                    data-name="page">
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

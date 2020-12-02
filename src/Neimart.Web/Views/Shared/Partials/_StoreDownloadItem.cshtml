@@ -1,0 +1,27 @@
+﻿@model OrderItemModel
+@{
+    var seller = await Context.GetSellerAsync();
+    var customer = await Context.GetMemberAsync();
+}
+
+<div class="media">
+    <div class="d-flex justify-content-center align-items-center w-60px h-60px p-1 border theme-bg-white rounded">
+        <div visible="@(Model.OrderItem.Image != null)"><img class="img-fluid rounded" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-toggle="lozad" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(Model.OrderItem.Image.DirectoryName, Model.OrderItem.Image.FileName), width: 80, height: 80))" /></div>
+        <i visible="@(Model.OrderItem.Image == null)" class="fad fa-image fa-2x text-light"></i>
+    </div>
+    <div class="media-body ml-3 d-flex justify-content-between align-self-stretch">
+        <div class="d-flex flex-column flex-md-row flex-fill justify-content-start justify-content-md-between">
+            <div class="mb-2">
+                <div><a class="text-body" asp-action="Products" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)" asp-route-slug="@(Model.OrderItem.Slug)">@(Model.OrderItem.Name)</a></div>
+                <div class="text-small">
+                    <span class="text-muted">Type:</span> <span>@(Model.OrderItem.Document.FileType)</span>
+                    <span class="text-muted mx-1">|</span>
+                    <span class="text-muted">Size:</span> <span>@(Model.OrderItem.Document.FileSize.Bytes().Humanize("#.#"))</span>
+                </div>
+            </div>
+            <div class="align-self-md-center">
+                <a class="btn btn-primary" asp-action="DownloadOrderDocument" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)" asp-route-orderItemId="@(Model.OrderItem.Id)">Download</a>
+            </div>
+        </div>
+    </div>
+</div>

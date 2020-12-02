@@ -1,0 +1,56 @@
+﻿@model AddressModel
+@{
+    var seller = await Context.GetSellerAsync();
+    var customer = await Context.GetMemberAsync();
+
+    var returnUrl = Context.Request.Query["returnUrl"].ToString();
+    if (string.IsNullOrWhiteSpace(returnUrl)) returnUrl = Context.Request.RelativeUrl();
+}
+<div class="card card-condenced shadow-none bg-transparent border">
+    <div class="card-body">
+        <address class="mb-0">
+            <div visible="(!string.IsNullOrWhiteSpace(Model.Address.FullName))"><span>@(Model.Address.FullName)</span></div>
+            <div visible="(!string.IsNullOrWhiteSpace(Model.Address.Email))">@(Model.Address.Email)</div>
+            <div visible="(!string.IsNullOrWhiteSpace(Model.Address.PhoneNumber))">@(AppSettings.Value.FormatPhoneNumber(Model.Address.PhoneNumber))</div>
+            <div visible="(!string.IsNullOrWhiteSpace(Model.Address.Organization))"><span>@(Model.Address.Organization)</span></div>
+            <div visible="(!string.IsNullOrWhiteSpace(Model.Address.FullAddress))"><span>@(Model.Address.FullAddress)</span></div>
+        </address>
+    </div>
+    <div class="card-footer pt-1 pb-1">
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <div class="d-inline-flex flex-wrap">
+                <label visible="@(Model.AddressType != null)" class="switcher switcher-square mb-0">
+                    <input type="checkbox" class="switcher-input" @(Model.Address.AddressTypes.Any(x => x == Model.AddressType.Value) ? "checked" : "")
+                           data-submit="click"
+                           data-method="post"
+                           data-action="@Url.Action("SetAddressType", "Store", new { area = string.Empty, addressId = Model.Address.Id, addressType = Model.AddressType.Value, toggle = !Model.Address.AddressTypes.Any(x => x == Model.AddressType.Value), storeSlug = seller.StoreSlug, returnUrl = returnUrl })" />
+                    <span class="switcher-indicator">
+                        <span class="switcher-yes"></span>
+                        <span class="switcher-no"></span>
+                    </span>
+                    <span class="switcher-label">Use as @(Model.AddressType.Value.GetEnumText().ToLowerInvariant()) address</span>
+                </label>
+            </div>
+            <div class="pb-1">
+                <button class="btn btn-default icon-btn borderless rounded-pill" type="button" data-toggle="tooltip" title="Edit address"
+                        data-submit="click"
+                        data-action="@(Url.Action("EditAddress", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, addressId = Model.Address.Id, returnUrl = returnUrl  }))"
+                        data-method="get"
+                        data-dialog="modal">
+                    <i class="fas fa-pen"></i>
+                </button>
+                <button class="btn btn-default icon-btn borderless rounded-pill" type="button" data-toggle="tooltip" title="Delete address"
+                        data-submit="click"
+                        data-action="@(Url.Action("DeleteAddress", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, addressId = Model.Address.Id, returnUrl = returnUrl  }))"
+                        data-method="post"
+                        data-title="Delete Address"
+                        data-message="Are you sure you want to delete adderss?"
+                        data-dialog="confirm"
+                        data-confirm-label="Delete"
+                        data-confirm-class-name="btn-danger">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

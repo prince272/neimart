@@ -1,0 +1,455 @@
+﻿@model StoreEditModel
+@{
+    Html.AddTitle("Store");
+
+    var seller = await Context.GetMemberAsync();
+    var noteTemplateTypes = EnumHelper.GetEnumValues<NoteTemplateType>();
+    var formId = Guid.NewGuid().ToString();
+
+    Model.StoreDeliveries = Model.StoreDeliveries.Any() ? Model.StoreDeliveries : new List<DeliveryEditModel> { new DeliveryEditModel() };
+}
+
+@section Styles {
+    @(await Html.PartialAsync("Libraries/_EditorStyles"))
+    @(await Html.PartialAsync("Libraries/_UploaderStyles"))
+    @(await Html.PartialAsync("Libraries/_TableStyles"))
+    <style>
+        #store-logo-container,
+        #store-logo-container .filepond--root {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            text-align: center;
+            border-radius: .25rem;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/vendor/libs/crudable/crudable.js" asp-append-version="true"></script>
+    <script>
+        $(function () {
+            function updateIndexes() {
+                var crudElements = $('.store-delivery-crudable', '#@formId').parent().children();
+
+                for (var crudIndex = 0; crudIndex < crudElements.length; crudIndex++) {
+                    var crudInput = $(crudElements[crudIndex]).find(':input');
+                    crudInput.attr('name', function (index, value) {
+                        if (value != null) {
+                            value = value.replace(/^(\w+)\[.*?\]/, '$1[' + (crudIndex) + ']');
+                            return value;
+                        } else {
+                            return value;
+                        }
+                    });
+
+                    var crudValMsg = $(crudElements[crudIndex]).find('[data-valmsg-for]');
+                    crudValMsg.attr('data-valmsg-for', function (index, value) {
+                        if (value != null) {
+                            value = value.replace(/^(\w+)\[.*?\]/, '$1[' + (crudIndex) + ']');
+                            return value;
+                        } else {
+                            return value;
+                        }
+                    });
+                }
+            }
+
+            $('.store-delivery-crudable').crudable({
+                crudableLabel: 'store-delivery-crudable',
+                afterCreate: function (crudElement) {
+                    crudElement.find('.double-selector').each(function (index, element) {
+                        // Generate a new target id of the double selector.
+                        var element = $(element);
+                        var oldTargetId = element.attr('data-target').replace(/^(\#)/, "")
+                        var newTargetId = `${generateUUID()}`;
+                        element.attr('data-target', `#${newTargetId}`);
+                        element.attr('data-value', '');
+
+                        crudElement.find(`#${oldTargetId}`).attr('data-value', '');
+                        crudElement.find(`#${oldTargetId}`).attr('id', newTargetId);
+                    });
+                    updateIndexes();
+                    initComponents(crudElement);
+                    reparseFormValidator($('#@formId'));
+                },
+                afterDelete: function () {
+                    updateIndexes();
+                }
+            });
+        });
+    </script>
+    @(await Html.PartialAsync("Libraries/_EditorScripts"))
+    @(await Html.PartialAsync("Libraries/_UploaderScripts"))
+    @(await Html.PartialAsync("Libraries/_TableScripts"))
+}
+
+<form asp-action="EditStore" asp-controller="Account" asp-area="Portal" id="@(formId)" class="row">
+    <div class="col-12">
+        <div asp-validation-summary="All" class="alert callout-danger my-3 mb-lg-3 mt-lg-0" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+    <div class="col-lg-10">
+        <div>
+            <div class="card card-condenced mb-4">
+                <div class="card-body pb-2">
+                    <div class="card-title pb-3">
+                        <h5 class="mb-0">Store Information</h5>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Store logo</label>
+                        <div id="store-logo-container" class="border">
+                            <input id="store-logo-input" type="file" style="opacity: 0;"
+                                   data-toggle="filepond"
+                                   data-input-name="@(Html.NameFor(x => x.StoreLogo))"
+                                   data-allow-multiple="false"
+                                   data-allow-reorder="false"
+                                   data-directory-name="@(seller.Id)"
+                                   data-files="@(Model.StoreLogo != null ? new[] { Model.StoreLogo }.ToJsonString() : "[]")"
+                                   data-max-files="1"
+                                   data-file-type="image"
+                                   data-file-extensions="@(AppSettings.Value.ImageFileExtensions.ToJsonString())"
+                                   data-file-max-size="@(AppSettings.Value.ImageFileMaxSize)"
+                                   data-layout="logo"
+                                   data-image-resize="@(Model.StoreLogoResize.ToJsonString())"
+                                   data-image-preview-height="200" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" asp-for="StoreName"></label>
+                        <input class="form-control" asp-for="StoreName" />
+                        <span asp-validation-for="StoreName"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <label class="form-label" asp-for="StoreSlug"></label>
+                            <a class="form-label" href="javascript:void(0)" data-toggle="clipboard" data-clipboard-action="copy" data-clipboard-text="@(Url.ContentLink(Url.Action("Index", "Store", new { area = string.Empty, storeSlug = Model.StoreSlug })))">Copy store link</a>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">@(Url.ContentLink("~/"))</div>
+                            </div>
+                            <input id="user-store-url-input" class="form-control text-lowercase" asp-for="StoreSlug" />
+                            <div class="input-group-append">
+                                <a class="icon-btn btn btn-default" href="@(Url.Action("Index", "Store", new { area = string.Empty, storeSlug = Model.StoreSlug }))" target="_blank" data-toggle="tooltip" title="Visit link"><i class="fal fa-link"></i></a>
+                            </div>
+                        </div>
+                        <span asp-validation-for="StoreSlug"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" asp-for="StoreDescription"></label>
+                        <textarea class="form-control" rows="8" asp-for="StoreDescription"></textarea>
+                        <span asp-validation-for="StoreDescription"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" asp-for="StoreCategorySelections">Store categories</label>
+                        <div class="form-control pr-0 pb-0" style="height: auto; max-height: 127px; overflow-y: auto; overflow-x: hidden;">
+                            <div class="row">
+                                @foreach (var storeCategoryOption in Model.StoreCategoryOptions)
+                                {
+                                    <div class="col-12 col-md-6">
+                                        <label class="custom-control custom-checkbox pr-2 pb-2 m-0 d-inline-block">
+                                            <input name="@(Html.NameFor(x => x.StoreCategorySelections))" type="checkbox" class="custom-control-input" @(storeCategoryOption.Selected ? "checked" : "") value="@(storeCategoryOption.Value)" />
+                                            <span class="custom-control-label">@(storeCategoryOption.Text)</span>
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-12 col-sm-6">
+                            <label class="form-label" asp-for="StoreStatus"></label>
+                            <select style="opacity: 0;" data-toggle="select2" asp-for="StoreStatus" asp-items="@(Model.StoreStatusOptions)"></select>
+                            <span asp-validation-for="StoreStatus"></span>
+                        </div>
+                        <div class="form-group col-12 col-sm-6">
+                            <label class="form-label" asp-for="StoreDeliveryRequired"></label>
+                            <select style="opacity: 0;" data-toggle="select2" asp-for="StoreDeliveryRequired" asp-items="@(Model.StoreDeliveryRequiredOptions)"></select>
+                            <span asp-validation-for="StoreDeliveryRequired"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-condenced mb-4">
+                <div class="card-body pb-2">
+                    <div class="card-title pb-3">
+                        <h5 class="mb-0">Store Appearance</h5>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-12 col-sm-6">
+                            <label class="form-label" asp-for="StoreThemeMode"></label>
+                            <select style="opacity: 0;" data-toggle="select2" asp-for="StoreThemeMode" asp-items="@(Model.StoreThemeModeOptions)"></select>
+                            <span asp-validation-for="StoreThemeMode"></span>
+                        </div>
+                        <div class="form-group col-12 col-sm-6">
+                            <label class="form-label" asp-for="StoreThemeStyle"></label>
+                            <select style="opacity: 0;" data-toggle="select2" asp-for="StoreThemeStyle" asp-items="@(Model.StoreThemeStyleOptions)"></select>
+                            <span asp-validation-for="StoreThemeStyle"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-condenced mb-4">
+                <div class="card-body pb-2">
+                    <div class="card-title pb-3">
+                        <h5 class="mb-0">Store Location</h5>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-12 col-sm-6">
+                            <label class="form-label" asp-for="StoreRegion"></label>
+                            <select class="form-control double-selector" data-target="#@(formId)-place-select" asp-for="StoreRegion" data-entities="regions" data-value="@(Html.ValueFor(x => x.StoreRegion))" style="opacity: 0;" data-toggle="select2" data-minimum-results-for-search="-1"></select>
+                            <span asp-validation-for="StoreRegion"></span>
+                        </div>
+                        <div class="form-group col-12 col-sm-6">
+                            <label class="form-label" asp-for="StorePlace"></label>
+                            <select id="@(formId)-place-select" class="form-control" asp-for="StorePlace" data-value="@(Html.ValueFor(x => x.StorePlace))" style="opacity: 0;" data-toggle="select2" data-minimum-results-for-search="-1"></select>
+                            <span asp-validation-for="StorePlace"></span>
+                        </div>
+                        <div class="form-group col-12 col-sm-6">
+                            <label class="form-label" asp-for="StoreStreet"></label>
+                            <input class="form-control" asp-for="StoreStreet" />
+                            <span asp-validation-for="StoreStreet"></span>
+                        </div>
+                        <div class="form-group col-12 col-sm-6">
+                            <label class="form-label" asp-for="StorePostal"></label>
+                            <input class="form-control" asp-for="StorePostal" />
+                            <span asp-validation-for="StorePostal"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-condenced mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Store Delivery</h5>
+                </div>
+                <table class="card-table table table-striped">
+                    <thead>
+                        <tr>
+                            <th style="border-bottom: none;">Region</th>
+                            <th style="border-bottom: none;">Place</th>
+                            <th style="border-bottom: none;">Fee (@(AppSettings.Value.CurrencySymbol))</th>
+                            <th style="border-bottom: none;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.StoreDeliveries.Count; i++)
+                        {
+                            <tr class="store-delivery-crudable">
+                                @{
+                                    var storeDeliveryPlaceId = Guid.NewGuid();
+                                }
+                                <td>
+                                    <select class="form-control double-selector" id="" asp-for="@(Model.StoreDeliveries[i].Region)" data-default-text="All regions" data-target="#@(storeDeliveryPlaceId)" data-entities="regions" data-value="@(Model.StoreDeliveries[i].Region)" style="opacity: 0;" data-toggle="select2" data-minimum-results-for-search="-1"></select>
+                                    <span class="text-wrap" asp-validation-for="@(Model.StoreDeliveries[i].Region)"></span>
+                                </td>
+                                <td>
+                                    <select id="@(storeDeliveryPlaceId)" asp-for="@Model.StoreDeliveries[i].Place" class="form-control" data-default-text="All places" data-value="@(Model.StoreDeliveries[i].Place)" style="opacity: 0;" data-toggle="select2" data-minimum-results-for-search="-1"></select>
+                                    <span class="text-wrap" asp-validation-for="@(Model.StoreDeliveries[i].Place)"></span>
+                                </td>
+                                <td>
+                                    <div class="input-group">
+                                        <input id="" class="form-control" asp-for="@Model.StoreDeliveries[i].Fee" data-toggle="cleave" data-numeral="true" type="number" step=".01" />
+                                    </div>
+                                    <span class="text-wrap" asp-validation-for="@(Model.StoreDeliveries[i].Fee)"></span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-default icon-btn crudable-create"><i class="fad fa-plus"></i></button>
+                                        <button type="button" class="btn btn-default icon-btn crudable-delete"><i class="fad fa-minus"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div visible="@(seller.StoreAccess != StoreAccess.Approved)" class="card card-condenced mb-4">
+                <div class="card-body pb-2">
+                    <div class="card-title pb-3">
+                        <h5 class="mb-0">Store Certificate <a href="javasript:void(0)" class="text-body" data-submit="click" data-dialog="alert" data-title="Store Certificate" data-message="The maximum accepted file size is @(AppSettings.Value.AnyFileMaxSize.Bytes()) and the accepted file formats are @(AppSettings.Value.AnyFileExtensions.Select(x => x.TrimStart('.').ToUpperInvariant()).Humanize())."><i class="fal fa-info-circle"></i></a></h5>
+                    </div>
+
+                    <div class="form-group">
+                        <div id="store-document-container" class="form-control h-auto p-0">
+                            <input id="store-document-input" type="file" style="opacity: 0;"
+                                   data-toggle="filepond"
+                                   data-input-name="@(Html.NameFor(x => x.StoreDocument))"
+                                   data-allow-multiple="false"
+                                   data-allow-reorder="false"
+                                   data-directory-name="@(seller.Id)"
+                                   data-files="@(Model.StoreDocument != null ? new[] { Model.StoreDocument }.ToJsonString() : "[]")"
+                                   data-max-files="1"
+                                   data-file-type="any"
+                                   data-file-extensions="@(AppSettings.Value.AnyFileExtensions.ToJsonString())"
+                                   data-file-max-size="@(AppSettings.Value.AnyFileMaxSize)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="notes" class="card mb-4">
+                <div class="list-group list-group-flush text-nowrap text-center overflow-auto flex-row">
+                    @foreach (var noteTemplateType in noteTemplateTypes)
+                    {
+                        <a class="list-group-item list-group-item-action @(noteTemplateType == noteTemplateTypes.First() ? "active" : "")" data-toggle="tab" href="#@(noteTemplateType.ToString().ToLowerInvariant())-note">
+                            <span>@(noteTemplateType.GetEnumText())</span>
+                        </a>
+                    }
+                </div>
+                <div class="tab-content">
+                    @foreach (var noteTemplateType in noteTemplateTypes)
+                    {
+                        <div class="tab-pane fade @(noteTemplateType == noteTemplateTypes.First() ? "show active" : "")" id="@(noteTemplateType.ToString().ToLowerInvariant())-note">
+                            <div class="card-body">
+                                <div class="form-group mb-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <label class="form-label">@(noteTemplateType.GetEnumText())</label>
+                                        <a class="form-label" href="javascript:void(0)"
+                                           data-submit="click"
+                                           data-action="@(Url.Action("GenerateNote", "Account", new { area = "Portal", noteTemplateType = noteTemplateType, returnUrl = Context.Request.RelativeUrl() }))"
+                                           data-method="post"
+                                           data-mode="ajax"
+                                           data-update="replace"
+                                           data-target="#account-@(noteTemplateType.ToString().ToLowerInvariant())-note"
+                                           data-title="Generate from template?"
+                                           data-message="Your current &quot;@(noteTemplateType.GetEnumText())&quot; will be replace with our template. Are you sure you want to generate from template?"
+                                           data-dialog="confirm"
+                                           data-confirm-label="Generate">Generate from template</a>
+                                    </div>
+                                    <textarea id="account-@(noteTemplateType.ToString().ToLowerInvariant())-note" style="opacity: 0;" data-toggle="summernote" name="@(Model.GetType().GetProperty($"{noteTemplateType}Note").Name)">
+                                               @(Model.GetType().GetProperty($"{noteTemplateType}Note").GetValue(Model))
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="card card-condenced mb-4">
+                <div class="card-body pb-2">
+                    <div class="card-title pb-3">
+                        <h5 class="mb-0">Store Contact</h5>
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <label class="form-label" asp-for="WhatsAppNumber"></label>
+                            <a class="form-label" href="javascript:void(0)" data-toggle="clipboard" data-clipboard-action="copy" data-clipboard-target="#user-whatsapp-link">Copy number</a>
+                        </div>
+                        <div class="input-group flex-nowrap">
+                            <div class="input-group-prepend">
+                                <a class="icon-btn btn btn-whatsapp text-white" href="https://wa.me/@(Model.WhatsAppNumber)" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                            </div>
+                            <input asp-for="WhatsAppNumber" type="tel" id="user-whatsapp-link" class="form-control" data-toggle="intltel" data-country-code="@(AppSettings.Value.CountryCode)" />
+                        </div>
+                        <span asp-validation-for="WhatsAppNumber"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <label class="form-label" asp-for="FacebookLink"></label>
+                            <a class="form-label" href="javascript:void(0)" data-toggle="clipboard" data-clipboard-action="copy" data-clipboard-target="#user-facebook-link">Copy link</a>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <a class="icon-btn btn btn-facebook text-white" href="@(Model.FacebookLink)" target="_blank" data-toggle="tooltip" title="Visit link"><i class="fab fa-facebook-f"></i></a>
+                            </div>
+                            <input id="user-facebook-link" class="form-control" asp-for="FacebookLink" />
+                        </div>
+                        <span asp-validation-for="FacebookLink"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <label class="form-label" asp-for="TwitterLink"></label>
+                            <a class="form-label" href="javascript:void(0)" data-toggle="clipboard" data-clipboard-action="copy" data-clipboard-target="#user-twitter-link">Copy link</a>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <a class="icon-btn btn btn-twitter text-white" href="@(Model.TwitterLink)" target="_blank" data-toggle="tooltip" title="Visit link"><i class="fab fa-twitter"></i></a>
+                            </div>
+                            <input id="user-twitter-link" class="form-control" asp-for="TwitterLink" />
+                        </div>
+                        <span asp-validation-for="TwitterLink"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <label class="form-label" asp-for="YoutubeLink"></label>
+                            <a class="form-label" href="javascript:void(0)" data-toggle="clipboard" data-clipboard-action="copy" data-clipboard-target="#user-youtube-link">Copy link</a>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <a class="icon-btn btn btn-youtube text-white" href="@(Model.YoutubeLink)" target="_blank" data-toggle="tooltip" title="Visit link"><i class="fab fa-youtube"></i></a>
+                            </div>
+                            <input id="user-youtube-link" class="form-control" asp-for="YoutubeLink" />
+                        </div>
+                        <span asp-validation-for="YoutubeLink"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <label class="form-label" asp-for="InstagramLink"></label>
+                            <a class="form-label" href="javascript:void(0)" data-toggle="clipboard" data-clipboard-action="copy" data-clipboard-target="#user-instagram-link">Copy link</a>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <a class="icon-btn btn btn-instagram text-white" href="@(Model.InstagramLink)" target="_blank" data-toggle="tooltip" title="Visit link"><i class="fab fa-instagram"></i></a>
+                            </div>
+                            <input id="user-instagram-link" class="form-control" asp-for="InstagramLink" />
+                        </div>
+                        <span asp-validation-for="InstagramLink"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <label class="form-label" asp-for="LinkedInLink"></label>
+                            <a class="form-label" href="javascript:void(0)" data-toggle="clipboard" data-clipboard-action="copy" data-clipboard-target="#user-linkedin-link">Copy link</a>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <a class="icon-btn btn btn-linkedin text-white" href="@(Model.LinkedInLink)" target="_blank" data-toggle="tooltip" title="Visit link"><i class="fab fa-linkedin-in"></i></a>
+                            </div>
+                            <input id="user-linkedin-link" class="form-control" asp-for="LinkedInLink" />
+                        </div>
+                        <span asp-validation-for="LinkedInLink"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <label class="form-label" asp-for="PinterestLink"></label>
+                            <a class="form-label" href="javascript:void(0)" data-toggle="clipboard" data-clipboard-action="copy" data-clipboard-target="#user-pinterest-link">Copy link</a>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <a class="icon-btn btn btn-pinterest text-white" href="@(Model.PinterestLink)" target="_blank" data-toggle="tooltip" title="Visit link"><i class="fab fa-pinterest-p"></i></a>
+                            </div>
+                            <input id="user-pinterest-link" class="form-control" asp-for="PinterestLink" />
+                        </div>
+                        <span asp-validation-for="PinterestLink"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <label class="form-label" asp-for="MapLink"></label>
+                            <a class="form-label" href="javascript:void(0)" data-toggle="clipboard" data-clipboard-action="copy" data-clipboard-target="#user-map-link">Copy link</a>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <a class="icon-btn btn btn-default" href="@(Model.MapLink)" target="_blank" data-toggle="tooltip" title="Visit link"><i class="fal fa-map-marker-alt"></i></a>
+                            </div>
+                            <input id="user-map-link" class="form-control" asp-for="MapLink" />
+                        </div>
+                        <span asp-validation-for="MapLink"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap justify-content-end py-2 position-sticky bg-body" style="bottom: 0px; z-index: 20;">
+                <div class="py-2">
+                    <div class="d-flex flex-wrap">
+                        <a class="btn btn-default mr-2" asp-action="EditStore" asp-controller="Account" asp-area="Portal">Cancel</a>
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

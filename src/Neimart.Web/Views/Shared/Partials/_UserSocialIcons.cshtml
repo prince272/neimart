@@ -1,0 +1,25 @@
+﻿@model User
+
+<div class="d-inline-flex">
+    <a class="btn btn-facebook btn-sm icon-btn rounded-pill mx-1 d-flex justify-content-center align-items-center" href="@(Model.FacebookLink)" target="_blank" visible="@(!string.IsNullOrWhiteSpace(Model.FacebookLink))">
+        <i class="fab fa-facebook-f fa-1x align-middle"></i>
+    </a>
+    <a class="btn btn-twitter btn-sm icon-btn rounded-pill mx-1 d-flex justify-content-center align-items-center" href="@(Model.TwitterLink)" target="_blank" visible="@(!string.IsNullOrWhiteSpace(Model.TwitterLink))">
+        <i class="fab fa-twitter fa-1x align-middle"></i>
+    </a>
+    <a class="btn btn-youtube btn-sm icon-btn rounded-pill mx-1 d-flex justify-content-center align-items-center" href="@(Model.YoutubeLink)" target="_blank" visible="@(!string.IsNullOrWhiteSpace(Model.YoutubeLink))">
+        <i class="fab fa-youtube fa-1x align-middle"></i>
+    </a>
+    <a class="btn btn-instagram btn-sm icon-btn rounded-pill mx-1 d-flex justify-content-center align-items-center" href="@(Model.InstagramLink)" target="_blank" visible="@(!string.IsNullOrWhiteSpace(Model.InstagramLink))">
+        <i class="fab fa-instagram fa-1x align-middle"></i>
+    </a>
+    <a class="btn btn-linkedin btn-sm icon-btn rounded-pill mx-1 d-flex justify-content-center align-items-center" href="@(Model.LinkedInLink)" target="_blank" visible="@(!string.IsNullOrWhiteSpace(Model.LinkedInLink))">
+        <i class="fab fa-linkedin fa-1x align-middle"></i>
+    </a>
+    <a class="btn btn-pinterest btn-sm icon-btn rounded-pill mx-1 d-flex justify-content-center align-items-center" href="@(Model.PinterestLink)" target="_blank" visible="@(!string.IsNullOrWhiteSpace(Model.PinterestLink))">
+        <i class="fab fa-pinterest-p fa-1x align-middle"></i>
+    </a>
+    <a class="btn btn-whatsapp btn-sm icon-btn rounded-pill mx-1 d-flex justify-content-center align-items-center" href="https://wa.me/@(Model.WhatsAppNumber)" target="_blank" visible="@(!string.IsNullOrWhiteSpace(Model.WhatsAppNumber))">
+        <i class="fab fa-whatsapp fa-1x align-middle"></i>
+    </a>
+</div>

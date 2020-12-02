@@ -1,0 +1,197 @@
+﻿@model UserListModel
+@{
+    Html.AddTitle("Stores");
+}
+
+@section Styles {
+    <partial name="Libraries/_TableStyles" />
+}
+
+@section Scripts {
+    <partial name="Libraries/_TableScripts" />
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex flex-wrap align-items-center justify-content-between">
+            <div class="pb-3">
+                <h1 class="h3 mb-0 pr-3">Stores (@(Model.TotalItems))</h1>
+            </div>
+            <div class="pb-3">
+                <div class="d-flex flex-wrap">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (Model.TotalItems > 0 || Model.HasRequestValues())
+    {
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header p-0">
+                    <div class="d-flex flex-wrap align-items-center pt-3 pl-3">
+                        <div class="ml-auto"></div>
+                        <div class="pb-3 pr-3" visible="@(Model.HasRequestValues())">
+                            <button class="btn btn-default"
+                                    type="button"
+                                    data-submit="click"
+                                    data-action="@Url.Action("Index", "Stores", new { area = "Portal" })"
+                                    data-method="get">
+                                <span>Clear Filters</span>
+                            </button>
+                        </div>
+                        <div class="pb-3 pr-3">
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                    <span>Filter</span>
+                                </button>
+                                <div class="dropdown-menu dropdown-static dropdown-menu-right">
+                                    <div class="dropdown-item-text">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="mr-3">Category</div>
+                                            <div class="input-group w-auto">
+                                                <select style="opacity: 0;"
+                                                        data-preserve="scrollbar"
+                                                        data-toggle="select2"
+                                                        data-submit="change"
+                                                        data-action="@Url.Action("Index", "Stores", new { area = "Portal" })"
+                                                        data-method="get"
+                                                        data-name="storeCategory"
+                                                        data-object="@(Model.GetRequestValues().ToJsonString())"
+                                                        asp-items="@(Model.StoreCategoryOptions)"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-item-text">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="mr-3">Setup</div>
+                                            <div class="input-group w-auto">
+                                                <select style="opacity: 0;"
+                                                        data-preserve="scrollbar"
+                                                        data-toggle="select2"
+                                                        data-submit="change"
+                                                        data-action="@Url.Action("Index", "Stores", new { area = "Portal" })"
+                                                        data-method="get"
+                                                        data-name="storeSetup"
+                                                        data-object="@(Model.GetRequestValues().ToJsonString())"
+                                                        asp-items="@(Model.StoreSetupOptions)"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pb-3 pr-3 w-100 w-md-auto">
+                            <form asp-action="Index" asp-controller="Stores" asp-area="Portal" method="get">
+                                <div class="input-group">
+                                    <input name="search" value="@(Context.Request.Query["search"])" autocomplete="off" type="text" class="form-control ignore-focus" />
+                                    <span class="input-group-append">
+                                        <button class="icon-btn btn btn-default" type="submit" data-toggle="tooltip" title="Search">
+                                            <i class="fal fa-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <table class="card-table table table-hover" style="margin: 0 !important;" data-toggle="datatable" data-checkbox-target=".product-checkbox-target">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="border-bottom: none;">Image</th>
+                            <th style="border-bottom: none;">Name</th>
+                            <th style="border-bottom: none;">Email</th>
+                            <th style="border-bottom: none;">Phone</th>
+                            <th style="border-bottom: none;">Status</th>
+                            <th style="border-bottom: none;">Access</th>
+                            <th style="border-bottom: none;">Balance</th>
+                            <th style="border-bottom: none;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var userModel in Model.Items)
+                        {
+                            <tr id="user-id-@(userModel.User.Id)"
+                                data-submit="click"
+                                data-action="@(Url.Action("Details", "Stores", new { area = "Portal", id = userModel.User.Id }))"
+                                data-method="get"
+                                data-dialog="modal"
+                                data-value="@(userModel.User.Id)"
+                                data-ignore-closest="td"
+                                data-ignore-target=":input">
+                                <td>
+                                    <div class="d-flex justify-content-center align-items-center w-50px h-50px p-1 border theme-bg-white rounded">
+                                        <div visible="@(userModel.User.StoreLogo != null)"><img class="img-fluid rounded" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-toggle="lozad" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(userModel.User.StoreLogo.DirectoryName, userModel.User.StoreLogo.FileName), width: 40, height: 40))" /></div>
+                                        <i visible="@(userModel.User.StoreLogo == null)" class="fad fa-user fa-2x text-light"></i>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="h-50px d-flex flex-column justify-content-center">
+                                        <div><a asp-action="Index" asp-controller="Store" asp-area="" asp-route-storeSlug="@(userModel.User.StoreSlug)" target="_blank">@(userModel.User.StoreName)</a></div>
+                                    </div>
+                                </td>
+                                <td><div>@(userModel.User.Email)</div></td>
+                                <td><div>@(!string.IsNullOrWhiteSpace(userModel.User.PhoneNumber) ? AppSettings.Value.FormatPhoneNumber(userModel.User.PhoneNumber) : "N/A")</div></td>
+                                <td><div>@(userModel.User.StoreStatus.GetEnumText())</div></td>
+                                <td><div>@(userModel.User.StoreAccess.GetEnumText())</div></td>
+                                <td>
+                                    <div class="h-50px d-flex flex-column justify-content-center">
+                                        <div>
+                                            <div>@(AppSettings.Value.FormatCurrency(userModel.User.Balance))</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-default rounded-pill icon-btn borderless" data-toggle="dropdown"><i class="far fa-ellipsis-h"></i></button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <button type="button" class="dropdown-item"
+                                                    data-submit="click"
+                                                    data-action="@(Url.Action("Details", "Stores", new { area = "Portal", id = userModel.User.Id }))"
+                                                    data-method="get"
+                                                    data-dialog="modal">Details</button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="card-footer pt-3 pb-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
+                        <div class="pb-3 pr-3 d-none d-md-block">
+                            Showing @(Model.PageFrom)-@(Model.PageTo) out of @("store".ToQuantity(Model.TotalItems))
+                        </div>
+
+                        <div class="pb-3">
+                            <ul style="margin-bottom: 0px"
+                                data-toggle="paginator"
+                                data-page="@Model.Page"
+                                data-total-pages="@Model.TotalPages"
+                                data-submit="pageClick"
+                                data-action="@Url.Action("Index", "Stores", new { area = "Portal" })"
+                                data-method="get"
+                                data-name="page"
+                                data-object="@(Model.GetRequestValues().ToJsonString())">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-center">
+                <div class="py-5 my-3 text-center">
+                    <div class="d-inline-block mb-4"><i class="fad fa-store fa-5x text-primary"></i></div>
+                    <h4 class="h3">No Stores</h4>
+                    <p class="text-muted">Once members start setting up their stores, you'll see them here.</p>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+

@@ -1,0 +1,39 @@
+﻿@model CategoryListModel
+@{
+    var seller = await Context.GetSellerAsync();
+}
+
+<div class="card mb-4" visible="@(Model.Items.Any())">
+    <div class="card-body p-2 ">
+        <div data-toggle="swiper" data-breakpoints='{"0":{"slidesPerView":3,"spaceBetween":8},"768":{"slidesPerView":5,"spaceBetween":8},"992":{"slidesPerView": 6,"spaceBetween": 8}}'>
+            <div class="swiper-container" style="position: inherit;">
+                <div class="swiper-wrapper">
+                    @foreach (var categoryModel in Model.Items)
+                    {
+                        <div class="swiper-slide" style="height: auto;">
+                            <a class="text-center btn btn-default border-0 p-0 w-100 h-100" asp-action="Products" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)" asp-route-search="@(categoryModel.Category.Slug)">
+                                <div style="--aspect-ratio: 1;">
+                                    <div>
+                                        <div visible="@(categoryModel.Category.Image != null)"><img class="img-fluid rounded" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-toggle="lozad" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(categoryModel.Category.Image.DirectoryName, categoryModel.Category.Image.FileName), width: 184, height: 184))" /></div>
+                                        <i visible="@(categoryModel.Category.Image == null)" class="fad fa-image fa-2x text-light"></i>
+                                    </div>
+                                </div>
+                                <div class="my-2 mx-1">@(categoryModel.Category.Name)</div>
+                            </a>
+                        </div>
+                    }
+                </div>
+                <div class="swiper-button swiper-button-next mr-n4" style="width: auto;">
+                    <button type="button" class="btn btn-default theme-bg-white icon-btn rounded-pill">
+                        <i class="fal fa-angle-right fa-1-3x align-middle"></i>
+                    </button>
+                </div>
+                <div class="swiper-button swiper-button-prev ml-n4" style="width: auto;">
+                    <button type="button" class="btn btn-default theme-bg-white icon-btn rounded-pill">
+                        <i class="fal fa-angle-left fa-1-3x align-middle"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

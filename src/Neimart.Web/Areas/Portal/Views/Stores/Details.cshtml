@@ -1,0 +1,100 @@
+﻿@model UserModel
+
+<div class="modal modal-fullscreen">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title d-flex flex-wrap align-items-center">
+                    <h5 class="h5 mb-2 mr-2">Store Details</h5>
+                </div>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="card card-condenced border-0" id="store-card">
+                    <a class="card-header border-0 theme-text-dark text-decoration-none" href="javascript:void(0)" data-toggle="collapse" data-target="#personal-info-collapse" aria-expanded="true">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-0">Personal Information</h6><div class="collapse-icon"></div>
+                        </div>
+                    </a>
+                    <div class="collapse" id="personal-info-collapse" data-parent="#store-card" data-preserve="collapse">
+                        <div class="card-body py-1">
+                            <div class="d-flex flex-wrap mb-2">
+                                <div class="mx-2">
+                                    <div class="mb-2"><div class="font-weight-semibold">Full name:</div> <div>@(Model.User.FullName)</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">User name:</div> <div>@(Model.User.UserName)</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Email:</div> <div>@(Model.User.Email)</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Phone number:</div> <div>@(!string.IsNullOrWhiteSpace(Model.User.PhoneNumber) ? Model.User.PhoneNumber : "N/A")</div></div>
+                                </div>
+                                <div class="mx-2">
+                                    <div class="mb-2"><div class="font-weight-semibold">Registration Date:</div> <div>@(AppSettings.Value.FormatDateTime(Model.User.CreatedOn))</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Modification Date:</div> <div>@(Model.User.Updated ? AppSettings.Value.FormatDateTime(Model.User.UpdatedOn) : "N/A")</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="m-0" />
+                    <a class="card-header border-0 theme-text-dark text-decoration-none" href="javascript:void(0)" data-toggle="collapse" data-target="#store-info-collapse" aria-expanded="true">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-0">Store Information</h6><div class="collapse-icon"></div>
+                        </div>
+                    </a>
+                    <div class="collapse" id="store-info-collapse" data-parent="#store-card" data-preserve="collapse">
+                        <div class="card-body py-1">
+                            <div class="d-flex flex-wrap mb-2">
+                                <div class="mx-2">
+                                    <div class="mb-2"><div class="font-weight-semibold">Name:</div> <span>@(!string.IsNullOrWhiteSpace(Model.User.StoreName) ? Model.User.StoreName : "N/A")</span></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Slug:</div> <span>@(!string.IsNullOrWhiteSpace(Model.User.StoreSlug) ? Model.User.StoreSlug : "N/A")</span></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Balance:</div> <span>@(AppSettings.Value.FormatCurrency(Model.User.Balance))</span></div>
+                                </div>
+                                <div class="mx-2">
+                                    <div class="mb-2"><div class="font-weight-semibold">Status:</div> <span>@(Model.User.StoreStatus.GetEnumText())</span></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Access:</div> <span>@(Model.User.StoreAccess.GetEnumText())</span></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Setup:</div> <span>@(Model.User.StoreSetup ? "Completed" : "Not Completed")</span></div>
+                                </div>
+                                <div class="mx-2">
+                                    <div class="mb-2"><div class="font-weight-semibold">Plan type:</div> <span>@(Model.User.StorePlanType.GetEnumText())</span></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Plan period:</div> <span>@(Model.User.StorePlanPeriod.GetEnumText())</span></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Plan expire:</div> <span>@(AppSettings.Value.FormatDate(Model.User.StorePlanEndedOn))</span> <span visible="@(Model.User.StorePlanEnded)" class="badge badge-danger">expired</span></div>
+                                </div>
+                                <div class="mx-2">
+                                    <div class="mb-2"><div class="font-weight-semibold">Delivery:</div> <span>@(Model.User.StoreDeliveryRequired ? "Required" : "Not Required")</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="m-0" />
+
+                    <div class="p-4 text-center" visible="@(Model.User.StoreDocument != null)">
+                        <a class="btn btn-default" href="@(FileClient.GetSourceUrl(Model.User.StoreDocument.DirectoryName, Model.User.StoreDocument.FileName))" download="Download Document">Download Document</a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <div class="dropdown dropup">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Actions</button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        @foreach (var storeAccess in EnumHelper.GetEnumValues<StoreAccess>())
+                        {
+                            <button type="button" class="dropdown-item"
+                                    data-submit="click"
+                                    data-action="@(Url.Action("SetStoreAccess", "Stores", new { area = "Portal", id = Model.User.Id, access = storeAccess }))"
+                                    data-method="post"
+                                    data-title="Store Access"
+                                    data-message="Are you sure you want to mark @(Model.User.StoreName) as @(storeAccess.GetEnumText())?"
+                                    data-dialog="confirm"
+                                    data-confirm-label="Mark as @(storeAccess.GetEnumText())"
+                                    data-confirm-class-name="btn-primary">
+                                Mark as @(storeAccess.GetEnumText())
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

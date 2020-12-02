@@ -1,0 +1,129 @@
+﻿@model BannerEditModel
+@{
+    Html.AddTitle(Model.IsEdit ? $"{Model.Title}" : $"Add").AddTitle("Banners");
+
+    var seller = await Context.GetMemberAsync();
+}
+
+@section Styles {
+    @(await Html.PartialAsync("Libraries/_UploaderStyles"))
+}
+
+@section Scripts {
+    @(await Html.PartialAsync("Libraries/_UploaderScripts"))
+}
+
+<form asp-action="@(Model.IsEdit ? "Edit" : "Add")" asp-controller="Banners" asp-area="Portal">
+    <div class="row">
+        <div class="col-12">
+            <div class="mb-2"><a asp-action="Index" asp-controller="Banners" asp-area="Portal"><i class="fal fa-angle-left fa-1-3x align-middle"></i><span class="pl-1">Banners</span></a></div>
+            <div class="d-flex flex-wrap align-items-center justify-content-between">
+                <div class="pb-3">
+                    <h1 class="h3 mb-0 pr-3">@(Model.IsEdit ? "Edit Banner" : "Add Banner")</h1>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div asp-validation-summary="All" class="alert callout-danger mb-3" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card card-condenced mb-4">
+                <div class="card-body pb-2">
+                    <div class="form-group">
+                        <label class="form-label" asp-for="Title"></label>
+                        <input class="form-control" asp-for="Title" />
+                        <span asp-validation-for="Title"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" asp-for="Permalink"></label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                    @(Url.ContentLink(Url.Action("Index", "Store", new { area = "", storeSlug = seller.StoreSlug })))
+                                </div>
+                            </div>
+                            <input class="form-control" asp-for="Permalink" />
+                        </div>
+                        <span asp-validation-for="Permalink"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-condenced mb-4">
+                <div class="card-body pb-2">
+                    <div class="card-title pb-3">
+                        <h5 class="mb-0">
+                            <span>Image </span>
+                            <a href="javasript:void(0)" class="text-body" data-submit="click" data-dialog="alert" data-title="Image Requirements" data-message="The maximum accepted file size is @(AppSettings.Value.ImageFileMaxSize.Bytes()) and the accepted file formats are @(AppSettings.Value.ImageFileExtensions.Select(x => x.TrimStart('.').ToUpperInvariant()).Humanize())."><i class="fal fa-info-circle"></i></a>
+                        </h5>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Image size: @(Model.Size.GetEnumText())</label>
+                        <div id="banner-images-container" class="form-control h-auto p-0">
+                            <input id="banner-images-input" type="file" style="opacity: 0;"
+                                   data-toggle="filepond"
+                                   data-input-name="@(Html.NameFor(x => x.Image))"
+                                   data-allow-multiple="false"
+                                   data-allow-reorder="false"
+                                   data-directory-name="@(seller.Id)"
+                                   data-files="@(Model.Image != null ? new[] { Model.Image }.ToJsonString() : "[]")"
+                                   data-max-files="1"
+                                   data-file-extensions="@(AppSettings.Value.ImageFileExtensions.ToJsonString())"
+                                   data-file-max-size="@(AppSettings.Value.ImageFileMaxSize)" 
+                                   data-image-resize="@(Model.ImageResize.ToJsonString())" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-condenced mb-4">
+                <div class="card-body pb-2">
+                    <div class="form-group">
+                        <label class="d-flex media align-items-middle mb-0 py-2">
+                            <span class="switcher switcher-square d-block m-0">
+                                <input class="switcher-input" type="checkbox" asp-for="Published" />
+                                <span class="switcher-indicator"> <span class="switcher-yes"></span> <span class="switcher-no"></span></span>
+                            </span>
+                            <span class="media-body pl-3"><span>@(Model.GetDisplayByMember(x => x.Published).Description)</span></span>
+                        </label>
+                        <span asp-validation-for="Published"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 py-2 position-sticky bg-body" style="bottom: 0px; z-index: 20;">
+            <div class="d-flex flex-wrap justify-content-between">
+                <div class="py-2">
+                    <button class="btn btn-danger"
+                            type="button"
+                            data-submit="click"
+                            data-action="@(Url.Action("Delete", "Banners", new { area = "Portal" }))"
+                            data-method="post"
+                            data-name="id"
+                            data-value="@(Model.Id)"
+                            data-title="Delete Banner"
+                            data-message="Are you sure you want to delete @(Model.Title) banner?"
+                            data-dialog="confirm"
+                            data-confirm-label="Delete"
+                            data-confirm-class-name="btn-danger"
+                            visible="@(Model.IsEdit)">
+                        <span>Delete</span>
+                    </button>
+                </div>
+                <div class="py-2">
+                    <div class="d-flex flex-wrap">
+                        <a class="btn btn-default mr-2" asp-action="Index" asp-controller="Banners" asp-area="Portal">Cancel</a>
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input asp-for="Id" type="hidden" />
+    <input asp-for="Size" type="hidden" />
+</form>

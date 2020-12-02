@@ -1,0 +1,258 @@
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@{
+    var openGraph = Html.GetGraph();
+    var theme = await Context.GetThemeAsync();
+    var xsrf = Xsrf.GetAndStoreTokens(Context);
+}
+<!DOCTYPE html>
+
+<html lang="en" class="@(theme.Mode.ToString().ToLowerInvariant())-style" @(Html.Raw(openGraph?.HtmlXmlnsValues ?? string.Empty))>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="IE=edge,chrome=1" />
+    <meta name="description" content="@(Html.GetDescription())" />
+    <meta name="keywords" content="Sell, Buy & Earn" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <!-- Core scripts -->
+    <script src="~/vendor/js/jquery.js" asp-append-version="true"></script>
+
+    @(Html.Raw(openGraph?.ToString() ?? string.Empty))
+    @(await Html.PartialAsync("_AppFavicons"))
+
+    <title>@(Html.GetTitle())</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900" />
+
+    <link rel="stylesheet" href="~/vendor/css/bootstrap@(Html.GetThemeModeSuffix()).css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vendor/css/appwork@(Html.GetThemeModeSuffix()).css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vendor/css/theme@(Html.GetThemeStyleSuffix())@(Html.GetThemeModeSuffix()).css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vendor/css/colors@(Html.GetThemeModeSuffix()).css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vendor/css/uikit.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vendor/libs/animate-css/animate.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="~/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vendor/libs/select2/select2.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vendor/libs/toastr/toastr.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vendor/libs/fontawesome/css/all.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vendor/libs/intl-tel-input/css/intl-tel-input.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vendor/libs/rateyo/rateyo.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vendor/libs/bootstrap-slider/bootstrap-slider.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vendor/libs/typeahead/typeahead.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vendor/libs/animated-headline/animated-headline.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vendor/libs/ladda/ladda.css" asp-append-version="true" />
+    <style>
+    .iti {
+        display: block;
+        width: 100%;
+    }
+
+    .iti--container {
+        z-index: 2090 !important;
+    }
+
+    .iti__flag {
+        background-image: url('@(Url.Content("~/vendor/libs/intl-tel-input/img/flags.png"))');
+    }
+
+    @@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        .iti__flag {
+            background-image: url('@(Url.Content("~/vendor/libs/intl-tel-input/img/flags@2x.png"))');
+        }
+    }
+    </style>
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
+    @(await RenderSectionAsync("Styles", required: false))
+</head>
+<body>
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="neimart-logo" viewBox="0 0 512 512">
+            <g>
+                <path d="M239,193.48c.46,9.78.79,19.56,1.41,29.33,2.73,42.85,5.18,85.73,8.53,128.54,1,13,4.59,25.74,7,38.6,1.12,6.08,4.76,10.18,10,13,10.73,5.77,22.22,8.34,34.32,8.77,3.67.14,4-2.4,4.92-4.7q34.57-84.76,69.15-169.55,17.53-43,35-86c.65-1.58,1.39-3.13,2.25-5.07,4.11,3.61,7.76,7.52,12.06,10.44,14,9.47,28.14,18.61,42.28,27.82,11.71,7.63,24,14.43,35.07,22.94,11.63,9,20.9,20.37,23.9,35.61,3.08,15.59.26,29.71-10.09,42.12-11.24,13.46-25.61,22.62-40.64,30.78-35,19-66.53,42.73-91.79,73.86-19,23.4-36.19,48.33-54.09,72.64-7,9.53-13.2,19.75-20.84,28.72-10.17,11.94-22.85,20-39.14,20.63-12.12.46-22.66-3.39-32.05-11.11-13.11-10.75-22.34-24.62-30.34-39.29-13.05-23.92-27.45-46.82-45.08-67.59-1.07-1.26-.9-4.45-.18-6.29q26.26-66.72,52.8-133.32,11-27.81,22.08-55.62c.75-1.89,1.61-3.73,2.42-5.6Z" transform="translate(-14 0)" />
+                <path d="M295,298.89c-5.22-67.27-10.44-134.54-15.69-202.24-13.4.16-26.37.11-38.76,4.34a32.46,32.46,0,0,0-19.08,16.76C191.6,176.2,162,234.79,137.91,296c-6.85,17.43-12.76,35.24-19.1,52.88-.39,1.09-.83,2.17-1.1,2.85-24.09-15.42-48.32-30.4-71.92-46.34-7.64-5.17-14.41-12.22-20.21-19.52-16.31-20.53-15.15-47.45,2-67.19C37.94,206.76,50.36,197.43,64,189.83c27.92-15.57,53.54-34.35,75.87-57.3,10.32-10.61,19.06-22.89,27.9-34.88,15.67-21.26,30.4-43.24,46.49-64.16,6.82-8.86,15.45-16.65,24.38-23.39C257.27-4,277.41-3.28,295.28,11.85A201.48,201.48,0,0,1,319,36.07c20.38,24.32,40.27,49.06,60.62,74-35.46,59.61-54.41,126.63-83,189.27Z" transform="translate(-14 0)" />
+            </g>
+        </symbol>
+        <svg id="fas-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z" /></svg>
+    </svg>
+
+    @RenderBody()
+
+    <script>
+    var xsrf = {
+        headerName: '@xsrf.HeaderName',
+        formFieldName: '@xsrf.FormFieldName',
+        requestToken: '@xsrf.RequestToken',
+    };
+
+    var environment = {
+        currentName: '@(WebEnvironment.EnvironmentName)',
+        isEnvironment: function (environmentName) { this.currentName.toLowerCase() == environmentName.toLowerCase(); },
+        isDevelopment: @(WebEnvironment.IsDevelopment().ToJsonString()),
+        isProduction: @(WebEnvironment.IsProduction().ToJsonString()),
+        isStaging: @(WebEnvironment.IsStaging().ToJsonString()),
+    };
+
+    // Global variables
+    var bodyStyle = getComputedStyle(document.body);
+    var themeColors = {
+        primary: bodyStyle.getPropertyValue('--primary'),
+        secondary: bodyStyle.getPropertyValue('--secondary'),
+        success: bodyStyle.getPropertyValue('--success'),
+        info: bodyStyle.getPropertyValue('--info'),
+        warning: bodyStyle.getPropertyValue('--warning'),
+        danger: bodyStyle.getPropertyValue('--danger'),
+        light: bodyStyle.getPropertyValue('--light'),
+        dark: bodyStyle.getPropertyValue('--dark'),
+        gray: bodyStyle.getPropertyValue('--gray'),
+        grayDark: bodyStyle.getPropertyValue('--gray-dark'),
+        white: bodyStyle.getPropertyValue('--white'),
+    };
+    </script>
+    <script>
+    // ServiceWorker is a progressive technology. Ignore unsupported browsers
+    if ('serviceWorker' in navigator) {
+        console.log('CLIENT: service worker registration in progress.');
+        navigator.serviceWorker.register('@(Url.Content("~/app-worker.js"))').then(function () {
+            console.log('CLIENT: service worker registration complete.');
+        }, function () {
+            console.log('CLIENT: service worker registration failure.');
+        });
+    } else {
+        console.log('CLIENT: service worker is not supported.');
+    }
+    </script>
+    <script src="~/vendor/js/polyfills.js" asp-append-version="true"></script>
+    <script>document['documentMode'] === 10 && document.write('<script src="https://polyfill.io/v3/polyfill.min.js?features=Intl.~locale.en"><\/script>')</script>
+    <script src="~/vendor/js/layout-helpers.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/popper/popper.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/easing/easing.js" asp-append-version="true"></script>
+    <script src="~/vendor/js/bootstrap.js" asp-append-version="true"></script>
+    <script src="~/vendor/js/bootstrap-breakpoint.js" asp-append-version="true"></script>
+    <script src="~/vendor/js/sidenav.js" asp-append-version="true"></script>
+    <script src="~/vendor/js/dropdown-hover.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/perfect-scrollbar/perfect-scrollbar.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/select2/select2.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/toastr/toastr.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/bootbox/bootbox.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/collapser/collapser.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/animated-headline/animated-headline.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/bootstrap-paginator/bootstrap-paginator.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/validate/validate.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/validate/validate.unobtrusive.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/cleave/cleave.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/lozad/lozad.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/block-ui/block-ui.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/clipboard/clipboard.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/intl-tel-input/js/intl-tel-input.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/intl-tel-input/js/intl-tel-input-jquery.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/intl-tel-input/js/intl-tel-input-utils.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/rateyo/rateyo.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/bootstrap-slider/bootstrap-slider.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/sharer/sharer.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/crs/crs.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/typeahead/typeahead.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/spin/spin.js" asp-append-version="true"></script>
+    <script src="~/vendor/libs/ladda/ladda.js" asp-append-version="true"></script>
+    <script>
+    $(function () {
+        var alerts = @(Html.Raw(Html.ViewData.GetAlerts().Concat(Html.TempData.GetAlerts()).Reverse().ToJsonString()));
+
+        $.each(alerts, function (index, alert) {
+            showAlert(alert.mode.toCamelCase(), alert.type.toCamelCase(), alert.message, alert.title, alert.returnUrl, alert.returnText, alert.cancelUrl, alert.cancelText);
+        });
+    });
+
+    function showAlert(mode, type, message, title, returnUrl, returnText, cancelUrl, cancelText) {
+        if (mode == 'notify') {
+
+            toastr[type](message, title, {
+                positionClass: 'toast-top-center',
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                newestOnTop: true,
+            });
+        }
+        else if (mode == 'alert' || mode == 'confirm') {
+            var typeClassName =
+                type == 'info' ? 'primary' :
+                    type == 'warning' ? 'warning' :
+                        type == 'error' ? 'danger' :
+                            type == 'success' ? 'primary' : 'primary';
+
+            var typeName =
+                type == 'info' ? 'Information' :
+                    type == 'warning' ? 'Warning' :
+                        type == 'error' ? 'Danger' :
+                            type == 'success' ? 'Success' : 'Alert';
+
+            var typeTitle = `<div class="mb-0 h4 text-${typeClassName}">${typeName}</div>`;
+
+            if (mode == 'confirm') {
+                bootbox.confirm({
+                    className: 'modal-fullscreen',
+                    title: title || typeTitle,
+                    message: message,
+                    buttons: {
+                        confirm: {
+                            label: returnText || 'Proceed',
+                            className: 'btn-' + typeClassName
+                        },
+                        cancel: {
+                            label: cancelText || 'Cancel',
+                            className: 'btn-default'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            if (returnUrl) setLocation(returnUrl);
+                        }
+                        else {
+                            if (cancelUrl) setLocation(cancelUrl);
+                        }
+                    }
+                });
+            }
+            else if (mode == 'alert') {
+                bootbox.alert({
+                    className: 'modal-fullscreen',
+                    title: title || typeTitle,
+                    message: message,
+                    buttons: {
+                        ok: {
+                            label: returnText || 'Okay',
+                            className: 'btn-' + typeClassName
+                        }
+                    },
+                    callback: function () {
+                        if (returnUrl) setLocation(returnUrl);
+                    }
+                });
+            }
+        }
+    }
+
+    </script>
+    <script>
+        $(document).ajaxError(function (e, xhr, settings, exception) {
+            var response = parseObject(xhr.responseText);
+            var message = phraseError(response || xhr.status || exception);
+            var redirectUrl = response && response.extensions && response.extensions.redirectUrl;
+
+            if (redirectUrl) {
+                setLocation(redirectUrl);
+            }
+            else {
+                if (environment.isDevelopment) {
+                    showAlert('notify', 'error', message);
+                }
+            }
+        });
+    </script>
+    <script src="~/app-core.js" asp-append-version="true"></script>
+    @(await RenderSectionAsync("Scripts", required: false))
+    @(await Html.PartialAsync("Libraries/_AnalyticsScripts"))
+    <script src="~/app-initializer.js" asp-append-version="true"></script>
+</body>
+</html>

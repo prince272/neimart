@@ -1,0 +1,220 @@
+﻿@inject IFileClient FileClient
+
+<script src="~/vendor/libs/doka/doka.js" asp-append-version="true"></script>
+
+<script src="~/vendor/libs/filepond/filepond.js" asp-append-version="true"></script>
+<script src="~/vendor/libs/filepond/filepond.jquery.js" asp-append-version="true"></script>
+<script src="~/vendor/libs/filepond/plugins/image-exif-orientation/image-exif-orientation.js" asp-append-version="true"></script>
+<script src="~/vendor/libs/filepond/plugins/image-crop/image-crop.js" asp-append-version="true"></script>
+<script src="~/vendor/libs/filepond/plugins/image-preview/image-preview.js" asp-append-version="true"></script>
+<script src="~/vendor/libs/filepond/plugins/image-edit/image-edit.js" asp-append-version="true"></script>
+<script src="~/vendor/libs/filepond/plugins/image-resize/image-resize.js" asp-append-version="true"></script>
+<script src="~/vendor/libs/filepond/plugins/image-transform/image-transform.js" asp-append-version="true"></script>
+<script src="~/vendor/libs/filepond/plugins/file-metadata/file-metadata.js" asp-append-version="true"></script>
+<script src="~/vendor/libs/filepond/plugins/file-get/file-get.js" asp-append-version="true"></script>
+<script>
+
+    $.fn.filepond.registerPlugin(FilePondPluginImageExifOrientation);
+    $.fn.filepond.registerPlugin(FilePondPluginImageCrop);
+    $.fn.filepond.registerPlugin(FilePondPluginImageEdit);
+    $.fn.filepond.registerPlugin(FilePondPluginImagePreview);
+    $.fn.filepond.registerPlugin(FilePondPluginImageResize);
+    $.fn.filepond.registerPlugin(FilePondPluginImageExifOrientation);
+    $.fn.filepond.registerPlugin(FilePondPluginImageTransform);
+    $.fn.filepond.registerPlugin(FilePondPluginGetFile);
+
+    function initFilepond(owner) {
+        $('[data-toggle="filepond"]', owner).each(function (index, el) {
+
+            // Since the element is lost after initiliaztion, we store the element id.
+            var element = $(el);
+            var elementId = element.attr('id');
+            var elementName = element.attr('data-input-name');
+
+            var allowMultiple = parseObject(element.attr('data-allow-multiple')) || false;
+            var allowReplace = parseObject(element.attr('data-allow-replace')) || false;
+            var allowReorder = parseObject(element.attr('data-allow-reorder')) || false;
+
+            var directoryName = element.attr('data-directory-name');
+            var fileModels = parseObject(element.attr('data-files'));
+            var fileExtensions = element.attr('data-file-extensions');
+            var fileMaxSize = element.attr('data-file-max-size');
+
+            var layout = element.attr('data-layout');
+
+            var serverProcessUrl = '@(Url.Action("Upload", "Media", new { area = string.Empty }))';
+            var serverPatchUrl = '@(Url.Action("Upload", "Media", new { area = string.Empty }).TrimEnd('/'))?fileName=';
+            var serverLoadUrl = '@(Url.Action("Load", "Media", new { area = string.Empty }).TrimEnd('/'))?fileName=';
+            var serverRevertUrl = '@(Url.Action("Delete", "Media", new { area = string.Empty }))';
+
+            element.filepond({
+                allowImageExifOrientation: true,
+                allowImageCrop: true,
+                allowImageEdit: true,
+                allowImagePreview: true,
+                allowImageResize: true,
+                allowImageTransform: true,
+                allowImageFilter: true,
+                allowMultiple: allowMultiple,
+                allowReplace: allowReplace,
+                allowReorder: allowReorder,
+                files: $.map(fileModels, function (fileModel) {
+                    return {
+                        source: fileModel.fileName,
+                        options: { type: 'local', },
+                    };
+                }),
+                maxFiles: parseObject(element.attr('data-max-files')) || null,
+
+                chunkUploads: true,
+                chunkForce: true,
+
+                labelButtonDownloadItem: 'Download file', // by default 'Download file'
+                allowDownloadByUrl: true, // by default downloading by URL disabled
+
+                server: {
+                    process: {
+                        url: serverProcessUrl,
+                        method: 'POST',
+                        headers: (file) => {
+                            return {
+                                'Upload-Name': file.name,
+                                'Upload-Extensions': fileExtensions,
+                                'Upload-Size': file.size,
+                                'Upload-Max-Size': fileMaxSize,
+                                'X-Requested-With': 'XMLHttpRequest',
+                                [xsrf.headerName]: xsrf.requestToken,
+                            }
+                        },
+                        onerror: (response) => {
+                            var error = parseObject(response);
+                            var message = phraseError(error);
+                            showAlert('notify', 'error', message);
+                        },
+                    },
+                    patch: {
+                        url: serverPatchUrl,
+                        method: 'PATCH',
+                        headers: {
+                            'Upload-Image-Resize': element.attr('data-image-resize'),
+                            [xsrf.headerName]: xsrf.requestToken,
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        onerror: (response) => {
+                            var error = parseObject(response);
+                            var message = phraseError(error);
+                            showAlert('notify', 'error', message);
+                        },
+                    },
+                    load: {
+                        url: serverLoadUrl,
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        onerror: (response) => {
+                            if (response instanceof Blob) {
+                                showAlert('notify', 'error', `An error occured while loading one or more files.`); // occured
+                            }
+                            else {
+                                var error = parseObject(response);
+                                var message = phraseError(error);
+                                showAlert('notify', 'error', message);
+                            }
+                        },
+                    },
+                    revert: {
+                        url: serverRevertUrl,
+                        method: 'POST',
+                        headers: {
+                            [xsrf.headerName]: xsrf.requestToken,
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        onerror: (response) => {
+                            var error = parseObject(response);
+                            var message = phraseError(error);
+                            showAlert('notify', 'error', message);
+                        },
+                    },
+                },
+
+                labelIdle: element.attr('data-label-idle') || 'Drag & Drop your files or <span class="filepond--label-action btn btn-default m-2 text-decoration-none"> Browse </span>',
+                stylePanelLayout: layout == 'avatar' ? 'compact circle' : layout == 'logo' ? 'integrated' : element.attr('data-style-panel-layout') || null,
+                styleLoadIndicatorPosition: layout == 'avatar' ? 'center bottom' : layout == 'logo' ? 'center bottom' : element.attr('data-style-load-indicator-position') || 'right',
+                styleProgressIndicatorPosition: layout == 'avatar' ? 'right bottom' : layout == 'logo' ? 'right bottom' : element.attr('data-style-progress-indicator-position') || 'right',
+                styleButtonRemoveItemPosition: layout == 'avatar' ? 'left bottom' : layout == 'logo' ? 'left bottom' : element.attr('data-style-button-remove-item-position') || 'left',
+                styleButtonProcessItemPosition: layout == 'avatar' ? 'right bottom' : layout == 'logo' ? 'right bottom' : element.attr('data-style-button-process-item-position') || 'right',
+
+                imagePreviewHeight: parseObject(element.attr('data-image-preview-height')) || null,
+                imageEditInstantEdit: layout == 'avatar' ? true : parseObject(element.attr('data-image-edit-instant-edit')) || false,
+                imageCropAspectRatio: layout == 'avatar' ? '1:1' : element.attr('data-image-crop-aspect-ratio') || null,
+
+                // Use Doka.js as image editor.
+                imageEditEditor: Doka.create({
+                    cropMask: layout == 'avatar' ? (root, setInnerHTML) => {
+
+                        // This sets the SVG inner HTML
+                        // 1. It defines a <mask> (white background, black circle on top)
+                        // 2. Then it fills the screen with transparent white, the mask is applied to this layer
+                        // 3. Finally it draws a one pixel line around the masked circular area
+                        setInnerHTML(root, `<mask id="my-mask"><rect x="0" y="0" width="100%" height="100%" fill="white"/><circle cx="50%" cy="50%" r="50%" fill="black"/></mask><rect fill="rgba(0,0,0,.3125)" x="0" y="0" width="100%" height="100%" mask="url(#my-mask)"/><circle cx="50%" cy="50%" r="50%" fill="transparent" stroke-width="1" stroke="#fff"/>`);
+
+                    } : null,
+                    onconfirm: (output, item) => {
+                        element.filepond('processFile', item);
+                    }
+                })
+            });
+
+            // Reload the element with the element id.
+            element = $(`#${elementId}`);
+
+            var elementForm = element.closest('form');
+            elementForm.submit(function (e) {
+
+                var fileModels = $.map(element.filepond('getFiles'), function (file) {
+                    return {
+                        FileTitle: file.filename,
+                        FileName: file.serverId,
+                        FileSize: file.fileSize,
+                        FileType: file.fileType,
+                        DirectoryName: directoryName,
+                    };
+                });
+
+                // source: https://stackoverflow.com/questions/2364982/jquery-selector-for-inputs-with-square-brackets-in-the-name-attribute
+                // Remove all inputs with the element name of square brackets.
+                $(`input[name^="${elementName}"]`, elementForm).remove();
+
+                if (allowMultiple) {
+
+                    $.each(fileModels, function (fileModelIndex, fileModel) {
+                        $.each(fileModel, function (fileModelProName, fileModelProValue) {
+                            $('<input />', {
+                                type: 'hidden',
+                                name: `${elementName}[${fileModelIndex}].${fileModelProName}`,
+                                value: fileModelProValue
+                            }).appendTo(elementForm);
+                        });
+                    });
+                } else {
+
+                    var fileModel = fileModels[0];
+
+                    $.each(fileModel, function (fileModelProName, fileModelProValue) {
+                        $('<input />', {
+                            type: 'hidden',
+                            name: `${elementName}.${fileModelProName}`,
+                            value: fileModelProValue
+                        }).appendTo(elementForm);
+                    });
+                }
+            });
+        });
+    }
+
+
+    $(function () {
+        initFilepond(document);
+    });
+</script>

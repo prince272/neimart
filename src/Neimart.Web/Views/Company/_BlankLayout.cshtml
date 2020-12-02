@@ -1,0 +1,49 @@
+﻿@{
+    Html.AddTitle(EnumHelper.GetEnumValues<StoreCategory>().Take(4).Humanize());
+
+    ViewData["ShowLayoutHeader"] = false;
+    ViewData["ShowLayoutFooter"] = false;
+
+    Layout = "_Layout";
+}
+@section Styles {
+    @(await Html.PartialAsync("Libraries/_SliderStyles"))
+}
+@section Scripts {
+    @(await Html.PartialAsync("Libraries/_SliderScripts"))
+}
+
+<div class="layout-wrapper layout-1 layout-without-sidenav">
+    <div class="layout-inner">
+        <div class="sticky-top position-absolute w-100">
+            <div class="container container-p-x py-3 d-flex align-items-center justify-content-end">
+                @*<a class="d-flex align-items-center text-decoration-none theme-text-dark" asp-action="Index" asp-controller="Company" asp-area="">
+                <svg class="w-30px h-30px fill-primary"><use href="#neimart-logo" /></svg>
+                <span class="ml-2 h3 mb-0 font-weight-semibold font-italic">Neimart</span>
+            </a>*@
+                <a asp-action="Selling" asp-controller="Company" asp-area="" class="btn btn-primary">Seller Center</a>
+            </div>
+        </div>
+
+        <div class="layout-container">
+            <div class="layout-content">
+                @RenderBody()
+
+                <footer class="layout-footer footer bg-footer-theme">
+                    <div class="container d-flex flex-column flex-sm-row justify-content-center justify-content-sm-between text-center container-p-x pb-3">
+                        <div>
+                            <a asp-action="Index" asp-controller="Company" asp-area="" target="_blank" class="footer-link pt-3">Home</a>
+                            <a asp-action="About" asp-controller="Company" asp-area="" target="_blank" class="footer-link pt-3 ml-4">About</a>
+                            <a asp-action="Contact" asp-controller="Company" asp-area="" target="_blank" class="footer-link pt-3 ml-4">Contact</a>
+                            <a asp-action="Terms" asp-controller="Company" asp-area="" target="_blank" class="footer-link pt-3 ml-4">Terms</a>
+                            <a asp-action="Privacy" asp-controller="Company" asp-area="" target="_blank" class="footer-link pt-3 ml-4">Privacy</a>
+                        </div>
+                        <div class="pt-3">
+                            <div>&copy; @($"{(AppSettings.Value.Company.EstablishedOn.Year != DateTimeOffset.UtcNow.Year ? $"{AppSettings.Value.Company.EstablishedOn.Year} - {DateTimeOffset.UtcNow.Year}" : $"{DateTimeOffset.UtcNow.Year}")}") <span class="footer-text font-weight-semibold">Neimart</span></div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+﻿@using Neimart.Core
+@using Neimart.Core.Entities
+@using Neimart.Core.Utilities.Extensions
+@using Neimart.Core.Utilities.Helpers
+@using Neimart.Core.Infrastructure.Storing
+@using Neimart.Core.Infrastructure.Imaging
+@using Neimart.Core.Infrastructure.Web
+@using Neimart.Web
+@using Neimart.Core.Settings
+@using Neimart.Web.Models
+@using Neimart.Web.Models.Account
+@using Microsoft.Extensions.Options
+@using reCAPTCHA.AspNetCore
+@using reCAPTCHA.AspNetCore.Versions
+@using Humanizer
+@using Humanizer.Localisation
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Neimart.Core
+
+@inject IOptions<AppSettings> AppSettings
+@inject IOptions<RecaptchaSettings> RecaptchaSettings
+@inject IFileClient FileClient 

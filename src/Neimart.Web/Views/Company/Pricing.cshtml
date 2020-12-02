@@ -1,0 +1,26 @@
+﻿@{
+    Html.AddTitle("Choose a Plan That Fits Your Needs");
+}
+<section id="later">
+    <div class="bg-primary text-white text-center py-5">
+        <div class="container">
+            <div class="row py-5">
+                <div class="col-md-10 col-lg-9 text-center px-0 mx-auto">
+                    <h1 class="font-weight-semibold">Create an account, pick a plan later</h1>
+                    <p class="text-large">
+                        Try Neimart for @(AppSettings.Value.PlanTrialDays) days, no payment required
+                    </p>
+                    <a class="btn btn-outline-white btn-lg rounded-pill px-5" asp-action="Signup" asp-controller="Account" asp-area="">Start Free Trial</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="pricing">
+    <div class="pt-5">
+        <div class="container">
+            <div class="mb-4">@(await Html.PartialAsync("Partials/_SharedPlanPricing"))</div>
+        </div>
+    </div>
+</section>

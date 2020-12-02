@@ -1,0 +1,31 @@
+﻿<script src="~/vendor/libs/datatables/datatables.js" asp-append-version="true"></script>
+<script src="~/vendor/libs/datatables/datatables.select.js" asp-append-version="true"></script>
+<script src="~/vendor/libs/datatables/datatables.checkboxes.js" asp-append-version="true"></script>
+
+<script>
+    function initDatatable(owner) {
+        $('[data-toggle="datatable"]').each(function (index, el) {
+            var element = $(el);
+
+            var table = element.DataTable({
+                dom: 't',
+                columnDefs: [
+                    {
+                        className: 'align-middle text-nowrap', 
+                        targets: '_all',
+                    }
+                ],
+                searching: false,
+                ordering: false,
+                paging: false,
+                autoWidth: true,
+                scrollX: true,
+                scrollY: 400,
+            });
+        });
+    }
+
+    $(function () {
+        initDatatable(document);
+    });
+</script>

@@ -1,0 +1,20 @@
+﻿@model string
+
+<section class="navbar-section" style="height: 250px">
+    <div class="text-white py-5 h-100 ui-bg-cover ui-bg-overlay-container" data-toggle="lozad" data-background-image="@(Url.Content("~/img/company/1.png"))">
+        <div class="ui-bg-overlay bg-dark"></div>
+        <div class="container h-100">
+            <div class="row align-items-center h-100">
+                <div class="col-md-9 col-lg-8 mx-auto text-center pt-5">
+                    <h1 class="text-primary">@(Model)</h1>
+                    <ol class="breadcrumb d-inline-flex mb-0 text-medium">
+                        <li class="breadcrumb-item">
+                            <a asp-action="Index" asp-controller="Company" asp-area="">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active text-white">@(Model)</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

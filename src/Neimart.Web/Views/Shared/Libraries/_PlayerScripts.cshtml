@@ -1,0 +1,14 @@
+﻿<script src="~/vendor/libs/plyr/plyr.js" asp-append-version="true"></script>
+<script>
+    function initPlyr(owner) {
+        $('[data-toggle="plyr"]', owner).each(function (index, el) {
+            var element = $(el);
+
+            new Plyr(element[0]);
+        });
+    }
+
+    $(function () {
+        initPlyr(document);
+    });
+</script>

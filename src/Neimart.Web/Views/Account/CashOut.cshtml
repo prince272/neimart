@@ -1,0 +1,114 @@
+﻿@model CashOutModel
+@{ 
+    var contentId = Guid.NewGuid().ToString();
+    bool.TryParse(ViewData["Persistent"]?.ToString(), out var persistent);
+}
+
+<form asp-antiforgery="true" class="modal modal-fullscreen">
+    <div class="modal-dialog modal-dialog-scrollable modal-sm">
+        <div class="modal-content" id="@(contentId)" data-valid="@(ViewData.ModelState.IsValid.ToString().ToLowerInvariant())" data-redirect="@(ViewData["Redirect"])" data-persistent="@(persistent.ToString().ToLowerInvariant())">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h5 class="h5 mb-0">Payment for Withdrawal</h5>
+                </div>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="card-body">
+                    <div asp-validation-summary="All" class="alert callout-danger mb-4" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="@(persistent ? "d-none" : "")">
+                        <div class="form-group" visible="@(Model.Mode == PaymentMode.Bank)">
+                            <label class="form-label" asp-for="BankIssuer"></label>
+                            <select id="@($"{contentId}_{Html.IdFor(x => x.BankIssuer)}")" disabled style="opacity: 0;" data-toggle="select2" data-minimum-results-for-search="-1" asp-for="BankIssuer" asp-items="@(Model.BankIssuerOptions)"></select>
+                            <span asp-validation-for="BankIssuer"></span>
+                        </div>
+                        <div class="form-group" visible="@(Model.Mode == PaymentMode.Bank)">
+                            <div class="d-flex justify-content-between"><label asp-for="BankNumber" class="form-label"></label><a href="javascript:void(0)" class="form-label"  data-submit="click" data-action="@(Url.Action("EditPayment", "Account", new { area = string.Empty, mode = PaymentMode.Bank, returnUrl = Context.Request.RefererUrl() }))" data-method="get" data-dialog="modal">Set bank details</a></div>
+                            <input disabled asp-for="BankNumber" class="form-control" />
+                            <span asp-validation-for="BankNumber"></span>
+                        </div>
+                        <div class="form-group" visible="@(Model.Mode == PaymentMode.Mobile)">
+                            <label class="form-label" asp-for="MobileIssuer"></label>
+                            <select id="@($"{contentId}_{Html.IdFor(x => x.MobileIssuer)}")" disabled style="opacity: 0;" data-toggle="select2" asp-for="MobileIssuer" asp-items="@(Model.MobileIssuerOptions)"></select>
+                            <span asp-validation-for="MobileIssuer"></span>
+                        </div>
+                        <div class="form-group" visible="@(Model.Mode == PaymentMode.Mobile)">
+                            <div class="d-flex justify-content-between"><label asp-for="MobileNumber" class="form-label"></label><a href="javascript:void(0)" class="form-label" data-submit="click" data-action="@(Url.Action("EditPayment", "Account", new { area = string.Empty, mode = PaymentMode.Mobile, returnUrl = Context.Request.RefererUrl() }))" data-method="get" data-dialog="modal">Set mobile details</a></div>
+                            <input disabled asp-for="MobileNumber" type="tel" class="form-control" data-toggle="intltel" data-country-code="@(AppSettings.Value.CountryCode)" />
+                            <span asp-validation-for="MobileNumber"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" asp-for="Fee"></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text bg-transparent">@(AppSettings.Value.CurrencySymbol)</div>
+                                </div>
+                                <input class="form-control exclude-asterisks" disabled asp-for="Fee" data-toggle="cleave" data-numeral="true" type="number" step=".01" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" asp-for="Amount"></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">@(AppSettings.Value.CurrencySymbol)</div>
+                                </div>
+                                <input class="form-control" name="@(Html.NameFor(x => x.Amount))" value="@(Html.ValueFor(x => x.Amount))" data-toggle="cleave" data-numeral="true" type="number" step=".01" />
+                            </div>
+                            <span asp-validation-for="Amount"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" asp-for="TotalAmount"></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text bg-transparent">@(AppSettings.Value.CurrencySymbol)</div>
+                                </div>
+                                <input class="form-control exclude-asterisks" asp-for="TotalAmount" disabled data-toggle="cleave" data-numeral="true" type="number" step=".01" />
+                            </div>
+                            <span asp-validation-for="TotalAmount"></span>
+                        </div>
+                    </div>
+                    <div class="@(persistent ? "" : "d-none")">
+                        Are you sure you want to make a withdrawal of <b>@(AppSettings.Value.FormatCurrency(Model.Amount))</b> to <b>@(Model.AccountNumber)</b>?
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-submit="modal">Proceed</button>
+            </div>
+            <input asp-for="Reference" type="hidden" />
+            <script>
+                (function () {
+                    var contentElement = $('#@(contentId)');
+
+                    var feeInput = $('input[name="@(Html.NameFor(x => x.Fee))"]', contentElement);
+                    var amountInput = $('input[name="@(Html.NameFor(x => x.Amount))"]', contentElement);
+                    var totalAmountInput = $('input[name="@(Html.NameFor(x => x.TotalAmount))"]', contentElement);
+
+                    function updateView() {
+                        var paymentRate = @(AppSettings.Value.PaymentRate);
+                        var paymentAmount = amountInput.val() * 1;
+
+                        // Round to at most 2 decimal places (only if necessary)
+                        // source: https://stackoverflow.com/questions/11832914/round-to-at-most-2-decimal-places-only-if-necessary
+                        var paymentFee = Math.round(((((paymentRate * 100) * paymentAmount) / 100) + Number.EPSILON) * 100) / 100;
+
+                        feeInput.val(paymentFee);
+                        totalAmountInput.val(paymentFee + paymentAmount);
+                    }
+
+                    updateView();
+                    amountInput.on('input', function () { updateView(); });
+                })();
+                // # sourceURL=cash-out.js
+            </script>
+        </div>
+    </div>
+</form>

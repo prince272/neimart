@@ -1,0 +1,24 @@
+﻿<script src="~/vendor/libs/summernote/summernote.js" asp-append-version="true"></script>
+<script>
+    function initSummernote(owner) {
+        $('[data-toggle="summernote"]', owner).each(function (index, el) {
+            var element = $(el);
+
+            element.summernote({
+                height: parseObject(element.attr('data-height')) || 260,                 // set editor height
+                minHeight: parseObject(element.attr('data-min-height')) || 260,             // set minimum height of editor
+                maxHeight: parseObject(element.attr('data-max-height')),             // set maximum height of editor
+                focus: parseObject(element.attr('data-focus'))                  // set focus to editable area after initializing summernote
+            });
+
+            // Update the summernote when the element changes. 
+            element.on('change', function (e) {
+                element.summernote('code', element.val()); 
+            });
+        });
+    }
+
+    $(function () {
+        initSummernote(document);
+    });
+</script>

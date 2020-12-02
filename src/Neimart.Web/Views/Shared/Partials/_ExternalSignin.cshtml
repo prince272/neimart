@@ -1,0 +1,37 @@
+﻿@model (string ActionDisplay, List<AuthenticationScheme> AuthSchemes)
+@using Microsoft.AspNetCore.Authentication
+
+<div visible="@(Model.AuthSchemes.Any())">
+    <div class="row row-bordered align-items-center mx-5 mb-3"><div class="col"></div><div class="text-light px-2">or</div><div class="col"></div></div>
+    <div>
+        @foreach (var authScheme in Model.AuthSchemes)
+        {
+            if (Enum.IsDefined(typeof(AuthenticationProvider), authScheme.Name))
+            {
+                <div visible="@(Enum.Parse<AuthenticationProvider>(authScheme.Name) == AuthenticationProvider.Facebook)" class="mb-3">
+                    <form asp-action="SigninExternal" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Context.Request.Query["returnUrl"])" method="post">
+                        <button type="submit" name="provider" value="@authScheme.Name" class="btn btn-default btn-block">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="row align-items-center position-relative">
+                                    <div class="col-auto position-absolute"><img src="~/img/svg/facebook-f.svg" class="w-20px h-20px" /></div>
+                                    <div class="col">@(Model.ActionDisplay) with Facebook</div>
+                                </div>
+                            </div>
+                        </button>
+                    </form>
+
+                </div>
+                <div visible="@(Enum.Parse<AuthenticationProvider>(authScheme.Name) == AuthenticationProvider.Google)" class="mb-3">
+                    <form asp-action="SigninExternal" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Context.Request.Query["returnUrl"])" method="post">
+                        <button type="submit" name="provider" value="@authScheme.Name" class="btn btn-default btn-block">
+                            <div class="row align-items-center position-relative">
+                                <div class="col-auto position-absolute"><img src="~/img/svg/google-g.svg" class="w-20px h-20px" /></div>
+                                <div class="col">@(Model.ActionDisplay) with Google</div>
+                            </div>
+                        </button>
+                    </form>
+                </div>
+            }
+        }
+    </div>
+</div>

@@ -1,0 +1,150 @@
+﻿@model CheckoutModel
+@{
+    Html.AddTitle("Checkout");
+
+    var seller = await Context.GetSellerAsync();
+
+    var checkoutCount = 0;
+}
+
+<form asp-action="Checkout" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex align-items-center">
+                <div class="mb-3"><h1 class="h3 mb-0">Checkout</h1></div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div asp-validation-summary="All" class="alert callout-danger mb-3" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="row">
+                <div class="col-12 col-lg-8">
+                    @foreach (var addressModel in Model.AddressModels)
+                    {
+                        <div class="card card-condenced shadow-none mb-4">
+                            <div class="card-header d-flex align-items-center justify-content-between cursor-pointer border-bottom-0" data-toggle="collapse" data-target="#checkout-@(addressModel.AddressType.ToString().ToLowerInvariant())-address-collapse" aria-expanded="true">
+                                <div>
+                                    <h5 class="mb-0">@(++checkoutCount). @(addressModel.AddressType.Value.GetEnumText()) Address</h5>
+                                </div>
+                                <div class="collapse-icon"></div>
+                            </div>
+                            <div class="collapse show" id="checkout-@(addressModel.AddressType.ToString().ToLowerInvariant())-address-collapse" data-preserve="collapse">
+                                <div class="card-body pt-0">
+                                    @if (addressModel.Address != null)
+                                    {
+                                        <div class="d-flex justify-content-end mb-1">
+                                            <a href="javascript:void(0)"
+                                               data-submit="click"
+                                               data-action="@(Url.Action("AddressBook", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, showAddressType = addressModel.AddressType, returnUrl = Context.Request.RelativeUrl() }))"
+                                               data-method="get"
+                                               data-dialog="modal">Address Book</a>
+                                        </div>
+                                        @(await Html.PartialAsync("Partials/_StoreAddressItem", addressModel))
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex flex-column justify-content-center align-items-center text-center py-4">
+                                            <div class="h5 mb-3">No @(addressModel.AddressType.Value.GetEnumText().ToLowerInvariant()) address</div>
+                                            <div>
+                                                <button class="btn btn-outline-primary" type="button"
+                                                        data-submit="click"
+                                                        data-action="@(Url.Action("AddAddress", "Store", new { area = string.Empty, addressType = addressModel.AddressType, storeSlug = seller.StoreSlug, ReturnUrl = Context.Request.Query["returnUrl"] }))"
+                                                        data-method="get"
+                                                        data-dialog="modal">
+                                                    Add Address
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="card card-condenced mb-4">
+                        <div class="card-header border-bottom-0 cursor-pointer" data-toggle="collapse" data-target="#checkout-carts-collapse" aria-expanded="true">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h5 class="mb-0">Cart (@("Item".ToQuantity(Model.CartListModel.CartListEvaluation.TotalQuantity)))</h5>
+                                <div class="collapse-icon"></div>
+                            </div>
+                        </div>
+
+                        <div class="collapse show" id="checkout-carts-collapse" data-preserve="collapse">
+                            <div class="list-group list-group-flush" style="max-height: 303px; overflow-y: auto;">
+                                @foreach (var cartModel in Model.CartListModel.Items)
+                                {
+                                    <div class="list-group-item">
+                                        <div class="media">
+                                            <a class="d-block text-decoration-none">
+                                                <div class="d-flex justify-content-center align-items-center w-80px h-80px p-1 border theme-bg-white rounded">
+                                                    <div visible="@(cartModel.ProductModel.Product.Image != null)"><img class="img-fluid rounded" alt="@(cartModel.ProductModel.Product.Name)" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-toggle="lozad" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(cartModel.ProductModel.Product.Image.DirectoryName, cartModel.ProductModel.Product.Image.FileName), width: 70, height: 70))" /></div>
+                                                    <i visible="@(cartModel.ProductModel.Product.Image == null)" class="fad fa-image fa-2x text-light"></i>
+                                                </div>
+                                            </a>
+                                            <div class="media-body ml-3">
+                                                <div class="mb-1"><span class="mb-0 text-body text-truncate-1">@(cartModel.ProductModel.Product.Name)</span></div>
+                                                <div class="d-inline-flex flex-wrap align-items-center">
+                                                    <div class="mr-2 text-big">
+                                                        <span class="font-weight-semibold">@(AppSettings.Value.FormatCurrency(cartModel.Evaluation.TotalAmount))</span>
+                                                    </div>
+                                                </div>
+                                                <div>Quantity: @(cartModel.Quantity)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="card-footer py-1">
+                            <div class="d-flex justify-content-between align-items-center my-2">
+                                <div>Subtotal</div>
+                                <div class="mb-0">@(AppSettings.Value.FormatCurrency(Model.SubtotalAmount))</div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center my-2" visible="@(seller.StoreDeliveryRequired)">
+                                <div>Delivery fee</div>
+                                <div class="h5 mb-0">
+                                    <span visible="@(Model.DeliveryCalculated)">@(AppSettings.Value.FormatCurrency(Model.DeliveryFee))</span>
+                                    <span class="text-danger" visible="@(!Model.DeliveryCalculated)">Not yet</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="font-weight-semibold h5 mb-0">Total</div>
+                                <div class="font-weight-bold text-primary h3 mb-0">@(AppSettings.Value.FormatCurrency(Model.TotalAmount))</div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-center">
+                                <a class="btn btn-default" asp-action="Cart" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Modify Cart</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3" visible="@(Model.DeliveryRequired)">
+                <div class="alert callout-primary">
+                    <div class="media align-items-center">
+                        <i class="fad fa-exclamation-circle fa-1-3x text-primary"></i>
+                        <div class="media-body ml-2">Please contact <b>@(seller.StoreName)</b> directly to arrange for package collection after you've placed your order.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 py-3 position-sticky bg-body" style="bottom: 0px; z-index: 20;">
+            <div class="card card-condenced">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap justify-content-end">
+                        <button type="submit" class="btn btn-primary btn-lg flex-grow-1 flex-md-grow-0 px-5">Place Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

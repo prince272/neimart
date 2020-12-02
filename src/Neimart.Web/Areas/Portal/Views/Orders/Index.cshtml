@@ -1,0 +1,192 @@
+﻿@model OrderListModel
+@{
+    Html.AddTitle("Orders");
+
+    var seller = await Context.GetMemberAsync();
+}
+
+@section Styles {
+    @(await Html.PartialAsync("Libraries/_TableStyles"))
+}
+
+@section Scripts {
+    @(await Html.PartialAsync("Libraries/_TableScripts"))
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex flex-wrap align-items-center justify-content-between">
+            <div class="pb-3">
+                <h1 class="h3 mb-0 pr-3">Orders (@(Model.TotalItems))</h1>
+            </div>
+            <div class="pb-3">
+                <div class="d-flex flex-wrap">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (Model.TotalItems > 0 || Model.HasRequestValues())
+    {
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs tabs-alt card-header-tabs nav-responsive-md flex-nowrap text-nowrap" style="overflow-x: auto; overflow-y: hidden;">
+                        @foreach (var statusItem in Model.StatusOptions)
+                        {
+                            <li class="nav-item mb-0">
+                                <a class="nav-link @(statusItem.Selected ? "active" : "")" asp-action="Index" asp-controller="Orders" asp-area="Portal" asp-route-status="@(statusItem.Value)">@(statusItem.Text)</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="card-header p-0">
+                    <div class="d-flex flex-wrap align-items-center pt-3 pl-3">
+                        <div class="ml-auto"></div>
+                        <div class="pb-3 pr-3" visible="@(Model.HasRequestValues())">
+                            <button class="btn btn-default"
+                                    type="button"
+                                    data-submit="click"
+                                    data-action="@Url.Action("Index", "Orders", new { area = "Portal" })"
+                                    data-method="get">
+                                <span>Clear Filters</span>
+                            </button>
+                        </div>
+                        <div class="pb-3 pr-3">
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                    <span>Filter</span>
+                                </button>
+                                <div class="dropdown-menu dropdown-static dropdown-menu-right">
+                                    <div class="dropdown-item-text">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="mr-3">Status</div>
+                                            <div class="input-group w-auto">
+                                                <select style="opacity: 0;"
+                                                        data-toggle="select2"
+                                                        data-submit="change"
+                                                        data-action="@Url.Action("Index", "Orders", new { area = "Portal" })"
+                                                        data-method="get"
+                                                        data-name="status"
+                                                        data-object="@(Model.GetRequestValues().ToJsonString())"
+                                                        asp-items="@(Model.StatusOptions)"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pb-3 pr-3 w-100 w-md-auto">
+                            <form asp-action="Index" asp-controller="Orders" asp-area="Portal" method="get">
+                                <div class="input-group">
+                                    <input name="search" type="text" asp-for="Filter.Search" autocomplete="off" class="form-control ignore-focus" />
+                                    <span class="input-group-append">
+                                        <button class="icon-btn btn btn-default" type="submit" data-toggle="tooltip" title="Search">
+                                            <i class="fal fa-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <table class="card-table table table-hover" style="margin: 0 !important;" data-toggle="datatable" data-checkbox-target=".order-checkbox-target">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="border-bottom: none;">Image</th>
+                            <th style="border-bottom: none;">Order</th>
+                            <th style="border-bottom: none;">Delivery</th>
+                            <th style="border-bottom: none;">Date</th>
+                            <th style="border-bottom: none;">Amount</th>
+                            <th style="border-bottom: none;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var orderModel in Model.Items)
+                        {
+                            <tr id="order-id-@(orderModel.Order.Id)"
+                                data-submit="click"
+                                data-action="@(Url.Action("Details", "Orders", new { area = "Portal", id = orderModel.Order.Id }))"
+                                data-method="get"
+                                data-dialog="modal"
+                                data-ignore-closest="td"
+                                data-ignore-target=":input">
+                                <td>
+                                    <div class="d-flex justify-content-center align-items-center w-50px h-50px p-1 border theme-bg-white rounded">
+                                        <i class="fad fa-clipboard-list-check fa-2x text-primary"></i>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="h-50px d-flex flex-column justify-content-center">
+                                        <div>@(orderModel.Order.OrderCode)</div>
+                                        <div class="d-flex flex-wrap">
+                                            <div><span class="badge badge-@(orderModel.Order.Status == OrderStatus.Pending ? "default" : orderModel.Order.Status == OrderStatus.Complete ? "sucess" : orderModel.Order.Status == OrderStatus.Cancelled ? "danger" : "warning")">@(orderModel.Order.Status.GetEnumText())</span></div>
+                                            <div class="mx-1"></div>
+                                            <div><span class="badge badge-@(orderModel.Order.Paid ? "primary" : "default")">@(orderModel.Order.Paid ? "Paid" : "Unpaid")</span></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>@(orderModel.Order.DeliveryRequired? "Required" : "Not Required")</div>
+                                </td>
+                                <td>
+                                    <div>@(orderModel.Order.CreatedOn.Humanize())</div>
+                                </td>
+                                <td>
+                                    <div>@(AppSettings.Value.FormatCurrency(orderModel.Order.TotalAmount))</div>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-default rounded-pill icon-btn borderless" data-toggle="dropdown"><i class="far fa-ellipsis-h"></i></button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <button type="button" class="dropdown-item"
+                                                    data-submit="click"
+                                                    data-action="@(Url.Action("Details", "Orders", new { area = "Portal", id = orderModel.Order.Id }))"
+                                                    data-method="get"
+                                                    data-dialog="modal">
+                                                View Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="card-footer pt-3 pb-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
+                        <div class="pb-3 pr-3 d-none d-md-block">
+                            Showing @(Model.PageFrom)-@(Model.PageTo) out of @("order".ToQuantity(Model.TotalItems))
+                        </div>
+
+                        <div class="pb-3">
+                            <ul style="margin-bottom: 0px"
+                                data-toggle="paginator"
+                                data-page="@Model.Page"
+                                data-total-pages="@Model.TotalPages"
+                                data-submit="pageClick"
+                                data-action="@Url.Action("Index", "Orders", new { area = "Portal" })"
+                                data-method="get"
+                                data-name="page"
+                                data-object="@(Model.GetRequestValues().ToJsonString())">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-center">
+                <div class="py-5 my-3 text-center">
+                    <div class="d-inline-block mb-4"><i class="fad fa-clipboard-list-check fa-5x text-primary"></i></div>
+                    <h4 class="h4">No Orders Yet</h4>
+                    <p class="text-muted">Once your customers start placing orders, you'll see them here.</p>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>

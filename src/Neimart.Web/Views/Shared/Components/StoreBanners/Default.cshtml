@@ -1,0 +1,50 @@
+﻿@model BannerListModel
+@{
+    var seller = await Context.GetSellerAsync();
+}
+
+@if (Model.ViewType == ViewType.SingleSlide || Model.ViewType == ViewType.SignleStatic)
+{
+    @if (Model.Items.Any())
+    {
+        <div data-toggle="swiper" data-lazy="true" data-autoplay="true" data-loop="@((Model.ViewType != ViewType.SignleStatic).ToString().ToLowerInvariant())" data-effect="fade" data-watch-overflow="true">
+            <div class="swiper-container" style="--aspect-ratio: @(Model.ImageWidth)/@(Model.ImageHeight)">
+                <div class="swiper-wrapper">
+                    @foreach (var bannerModel in Model.Items)
+                    {
+                        <a class="swiper-slide d-flex justify-content-center align-items-center w-100 h-100 text-decoration-none" href="@($"{Url.Action("Index", "Store", new { area = "", storeSlug = seller.StoreSlug })}{bannerModel.Banner.Permalink}")">
+                            <div visible="@(bannerModel.Banner.Image != null)">
+                                <img class="d-block img-fluid rounded swiper-lazy" alt="@(bannerModel.Banner.Title)" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(bannerModel.Banner.Image.DirectoryName, bannerModel.Banner.Image.FileName)))" width="@(Model.ImageWidth)" height="@(Model.ImageHeight)" />
+                            </div>
+                            <i visible="@(bannerModel.Banner.Image == null)" class="fad fa-image fa-3x text-light"></i>
+                        </a>
+                    }
+                </div>
+                <div class="swiper-pagination" visible="@(Model.ViewType != ViewType.SignleStatic)"></div>
+                <div class="swiper-button swiper-button-next swiper-button-hover" style="width: 15%;">
+                    <button type="button" class="btn btn-dark icon-btn rounded-pill">
+                        <i class="fal fa-angle-right fa-1-3x align-middle"></i>
+                    </button>
+                </div>
+                <div class="swiper-button swiper-button-prev swiper-button-hover" style="width: 15%;">
+                    <button type="button" class="btn btn-dark icon-btn rounded-pill">
+                        <i class="fal fa-angle-left fa-1-3x align-middle"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div style="--aspect-ratio: @(Model.ImageWidth)/@(Model.ImageHeight)">
+            <div class="d-flex align-items-center justify-content-center">
+                <div class="text-center p-2">
+                    <div class="d-inline-block mb-3"><i class="fad fa-sign fa-4x theme-text-dark"></i></div>
+                    <h4 class="h5">No banners</h4>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+

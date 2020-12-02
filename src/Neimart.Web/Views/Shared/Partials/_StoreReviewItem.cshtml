@@ -1,0 +1,45 @@
+﻿@model ReviewModel
+@{
+    var seller = await Context.GetSellerAsync();
+    var customer = await Context.GetMemberAsync();
+}
+
+<div class="media">
+    <div class="d-flex justify-content-center align-items-center w-60px h-60px border rounded-pill">
+        <div visible="@(Model.Review.Customer.UserImage != null)"><img class="img-fluid rounded-pill" alt="@(Model.Review.Customer.FullName)" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-toggle="lozad" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(Model.Review.Customer.UserImage.DirectoryName, Model.Review.Customer.UserImage.FileName), width: 80, height: 80))" /></div>
+        <i visible="@(Model.Review.Customer.UserImage == null)" class="fad fa-user fa-2x"></i>
+    </div>
+    <div class="media-body ml-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-inline-flex align-items-center"><div class="h5 mb-1 text-break text-truncate-1">@(Model.Review.Title)</div> <div class="badge badge-warning ml-2" visible="@(!Model.Review.Approved)">Rejected</div></div>
+            <div class="dropdown">
+                <button type="button" class="btn btn-default rounded-pill icon-btn borderless" data-toggle="dropdown"><i class="far fa-ellipsis-h"></i></button>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <button @(Model.Review.Customer.Id != customer?.Id ? "disabled" : "") type="button" class="dropdown-item" data-submit="click" data-action="@(Url.Action("EditReview", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, reviewId = Model.Review.Id, returnUrl = Context.Request.RelativeUrl() }))" data-method="post" data-dialog="modal">Edit Review</button>
+                    <button @(Model.Review.Customer.Id != customer?.Id ? "disabled" : "") type="button" class="dropdown-item"
+                            data-submit="click"
+                            data-action="@(Url.Action("DeleteReview", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, reviewId = Model.Review.Id, returnUrl = Context.Request.RelativeUrl() }))"
+                            data-method="post"
+                            data-title="Delete Review"
+                            data-message="Are you sure you want to delete @(Model.Review.Title) review?"
+                            data-dialog="confirm"
+                            data-confirm-label="Delete"
+                            data-confirm-class-name="btn-danger">
+                        Delete Review
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="d-inline-flex flex-wrap align-items-end line-height-1 text-small mb-2">
+            <div class="px-0 mr-2" data-toggle="rateyo" data-readonly="true" data-star-width="16px" data-rating="@(Model.Review.Rating)"></div>
+            <div>@(AppSettings.Value.FormatDate(Model.Review.CreatedOn))</div>
+        </div>
+        <div class="text-break mb-2" data-toggle="collapser" data-mode="lines" data-truncate="4">@(Model.Review.Comment)</div>
+        <div class="text-small mb-2 d-flex justify-content-between">
+            <div><span class="text-muted">Review by</span> <span class="font-weight-semibold">@(Model.Review.Customer.FullName)</span></div>
+        </div>
+        <div visible="(!string.IsNullOrWhiteSpace(Model.Review.Reply) && customer.Id == Model.Review.Customer.Id)" class="alert callout-primary">
+            <div class="text-break" data-toggle="collapser" data-mode="lines" data-truncate="4">@(Model.Review.Reply)</div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,211 @@
+﻿@model OrderModel
+@{
+    var theme = await Context.GetThemeAsync();
+}
+
+<div class="modal modal-fullscreen">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title d-flex flex-wrap align-items-center">
+                    <h5 class="h5 my-2 mr-2">@(Model.Order.OrderCode)</h5>
+                    <div class="d-inline-flex my-2 mr-2">
+                        <div><span class="badge badge-@(Model.Order.Status == OrderStatus.Pending ? "default" : Model.Order.Status == OrderStatus.Complete ? "sucess" : Model.Order.Status == OrderStatus.Cancelled ? "danger" : "warning")">@(Model.Order.Status.GetEnumText())</span></div>
+                        <div class="mx-1"></div>
+                        <div><span class="badge badge-@(Model.Order.Paid ? "primary" : "default")">@(Model.Order.Paid ? "Paid" : "Unpaid")</span></div>
+                    </div>
+                </div>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="card card-condenced border-0" id="order-card">
+                    <a class="card-header border-0 theme-text-dark text-decoration-none" href="javascript:void(0)" data-toggle="collapse" data-target="#order-general-collapse" aria-expanded="true">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-0">Order Information</h6><div class="collapse-icon"></div>
+                        </div>
+                    </a>
+                    <div class="collapse" id="order-general-collapse" data-parent="#order-card" data-preserve="collapse">
+                        <div class="card-body py-1">
+                            <div class="d-flex flex-wrap mb-2">
+                                <div class="mx-2">
+                                    <div class="mb-2"><div class="font-weight-semibold">Order code:</div> <div>@(Model.Order.OrderCode)</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Tracking code:</div> <div>@(Model.Order.TrackingCode)</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Date:</div> <div>@(AppSettings.Value.FormatDateTime(Model.Order.CreatedOn))</div></div>
+                                </div>
+                                <div class="mx-2">
+                                    <div class="mb-2"><div class="font-weight-semibold">Delivery:</div> <div>@(Model.Order.DeliveryRequired ? "Required" : "Not Required")</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Status:</div> <div>@(Model.Order.Status.GetEnumText())</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Amount:</div> <div>@(AppSettings.Value.FormatCurrency(Model.Order.TotalAmount))</div></div>
+                                </div>
+                                <div class="mx-2">
+                                    <div class="mb-2"><div class="font-weight-semibold">Quantity:</div> <div>@(Model.Order.TotalQuantity)</div></div>
+                                    <div class="mb-2"><div class="font-weight-semibold">Payment:</div> <div>@(Model.Order.Paid ? "Paid" : "Not Paid")</div></div>
+                                    <div class="mb-2" visible="@(Model.Order.Paid)"><div class="font-weight-semibold">Payment On:</div> <div>@(AppSettings.Value.FormatDateTime(Model.Order.PaidOn))</div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group list-group-flush border-top">
+                            @foreach (var orderItemModel in Model.OrderItemModels)
+                            {
+                                <div class="list-group-item">
+                                    <div class="media">
+                                        <div class="d-flex justify-content-center align-items-center w-60px h-60px p-1 border theme-bg-white rounded">
+                                            <div visible="@(orderItemModel.OrderItem.Image != null)"><img class="img-fluid rounded" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-toggle="lozad" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(orderItemModel.OrderItem.Image.DirectoryName, orderItemModel.OrderItem.Image.FileName), width: 80, height: 80))" /></div>
+                                            <i visible="@(orderItemModel.OrderItem.Image == null)" class="fad fa-image fa-2x text-light"></i>
+                                        </div>
+                                        <div class="media-body ml-2">
+                                            <div>@(orderItemModel.OrderItem.Name)</div>
+                                            <div><strong class="h5 mb-0 align-middle">@(AppSettings.Value.FormatCurrency(orderItemModel.OrderItem.Amount))</strong>&nbsp;&nbsp;<span class="font-weight-semibold text-small">(@(orderItemModel.OrderItem.Quantity) x @(AppSettings.Value.FormatCurrency(orderItemModel.OrderItem.Price)))</span></div>
+                                            <span>
+                                                <span class="text-small"><span class="font-weight-semibold">Quantity:</span> @(orderItemModel.OrderItem.Quantity)</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="card-body py-2">
+                            <div class="my-1 text-right"><span>Subtotal:</span> <span>@(AppSettings.Value.FormatCurrency(Model.Order.SubtotalAmount))</span></div>
+                            <div class="my-1 text-right"><span>Delivery fee:</span> <span>@(AppSettings.Value.FormatCurrency(Model.Order.DeliveryFee))</span></div>
+                            <div class="my-1 text-right"><span class="font-weight-semibold">Total:</span> <span class="text-primary h4 mb-0">@(AppSettings.Value.FormatCurrency(Model.Order.TotalAmount))</span></div>
+                        </div>
+                    </div>
+
+                    @foreach (var userWithRole in Model.UsersWithRoles)
+                    {
+                        if ((theme.Area == ThemeArea.Portal && userWithRole.Role == RoleNames.Customer) ||
+                            (theme.Area == ThemeArea.Store && userWithRole.Role == RoleNames.Seller))
+                        {
+                            <hr class="m-0">
+                            <a class="card-header border-0 theme-text-dark text-decoration-none" href="javascript:void(0)" data-toggle="collapse" data-target="#order-customer-collapse" aria-expanded="true">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-0">@(userWithRole.Role) Information</h6><div class="collapse-icon"></div>
+                                </div>
+                            </a>
+                            <div class="collapse" id="order-customer-collapse" data-parent="#order-card" data-preserve="collapse">
+                                <div class="card-body py-3">
+                                    <div class="media">
+                                        <div class="d-flex justify-content-center">
+                                            <div class="d-flex justify-content-center align-items-center w-60px h-60px border rounded-pill">
+                                                <div visible="@(userWithRole.User.UserImage != null)"><img class="img-fluid rounded-pill" alt="@(userWithRole.User.FullName)" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-toggle="lozad" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(userWithRole.User.UserImage.DirectoryName, userWithRole.User.UserImage.FileName), width: 60, height: 60))" /></div>
+                                                <i visible="@(userWithRole.User.UserImage == null)" class="fad fa-user fa-2x text-light"></i>
+                                            </div>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <div class="mb-1 h5">@(userWithRole.User.FullName)</div>
+                                            <div class="mb-1 text-break"><a href="mailto:@(userWithRole.User.Email)">@(userWithRole.User.Email)</a></div>
+                                            <div class="mb-1" visible="(!string.IsNullOrWhiteSpace(userWithRole.User.PhoneNumber))"><a href="tel:@(userWithRole.User.PhoneNumber)">@(AppSettings.Value.FormatPhoneNumber(userWithRole.User.PhoneNumber))</a></div>
+                                            <div class="mb-1" visible="@(userWithRole.Role == RoleNames.Seller)">@(await Html.PartialAsync("Partials/_UserSocialIcons", userWithRole.User))</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    <hr class="m-0">
+                    <a class="card-header border-0 theme-text-dark text-decoration-none" href="javascript:void(0)" data-toggle="collapse" data-target="#order-processing-collapse" aria-expanded="true">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-0">Processing Information</h6><div class="collapse-icon"></div>
+                        </div>
+                    </a>
+                    <div class="collapse" id="order-processing-collapse" data-parent="#order-card" data-preserve="collapse">
+                        <div class="card-body pt-1">
+                            @if (!string.IsNullOrWhiteSpace(Model.Order.ProcessingInfo))
+                            {
+                                <div class="text-break" data-toggle="collapser" data-mode="chars" data-truncate="250">@(Model.Order.ProcessingInfo)</div>
+                            }
+                            else
+                            {
+                                <div class="py-5 d-flex justify-content-center text-center">
+                                    <h5 class="mb-0">No processing information yet</h5>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <hr class="m-0">
+                    <a class="card-header border-0 theme-text-dark text-decoration-none" href="javascript:void(0)" data-toggle="collapse" data-target="#order-delivery-collapse" aria-expanded="true">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-0">Delivery Information</h6><div class="collapse-icon"></div>
+                        </div>
+                    </a>
+                    <div class="collapse" id="order-delivery-collapse" data-parent="#order-card" data-preserve="collapse">
+                        <div class="card-body pt-1">
+                            @if (!string.IsNullOrWhiteSpace(Model.Order.DeliveryInfo))
+                            {
+                                <div class="text-break" data-toggle="collapser" data-mode="chars" data-truncate="250">@(Model.Order.DeliveryInfo)</div>
+                            }
+                            else
+                            {
+                                <div class="py-5 d-flex justify-content-center text-center">
+                                    <h5 class="mb-0">No delivery information yet</h5>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    @foreach (var addressModelWithType in Model.AddressesWithTypes)
+                    {
+                        <hr class="m-0">
+                        <a class="card-header border-0 theme-text-dark text-decoration-none" href="javascript:void(0)" data-toggle="collapse" data-target="#order-@(addressModelWithType.AddressType.ToString().ToLowerInvariant())-address-collapse" aria-expanded="true">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="mb-0">@(addressModelWithType.AddressType.GetEnumText()) Address</h6><div class="collapse-icon"></div>
+                            </div>
+                        </a>
+                        <div class="collapse" id="order-@(addressModelWithType.AddressType.ToString().ToLowerInvariant())-address-collapse" data-parent="#order-card" data-preserve="collapse">
+                            <div class="card-body pt-1">
+                                @if (addressModelWithType.Address != null)
+                                {
+                                    <address class="mb-0">
+                                        <div visible="(!string.IsNullOrWhiteSpace(addressModelWithType.Address.FullName))"><span>@(addressModelWithType.Address.FullName)</span></div>
+                                        <div visible="(!string.IsNullOrWhiteSpace(addressModelWithType.Address.Email))">@(addressModelWithType.Address.Email)</div>
+                                        <div visible="(!string.IsNullOrWhiteSpace(addressModelWithType.Address.PhoneNumber))">@(AppSettings.Value.FormatPhoneNumber(addressModelWithType.Address.PhoneNumber))</div>
+                                        <div visible="(!string.IsNullOrWhiteSpace(addressModelWithType.Address.Organization))"><span>@(addressModelWithType.Address.Organization)</span></div>
+                                        <div visible="(!string.IsNullOrWhiteSpace(addressModelWithType.Address.FullAddress))"><span>@(addressModelWithType.Address.FullAddress)</span></div>
+                                    </address>
+                                }
+                                else
+                                {
+                                    <div class="d-flex flex-column justify-content-center align-items-center text-center py-4">
+                                        <div class="h5 mb-0">No @(addressModelWithType.AddressType.GetEnumText().ToLowerInvariant()) address was provided</div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" visible="@(theme.Area == ThemeArea.Store && (!Model.Order.Paid && Model.Order.Status != OrderStatus.Cancelled))"
+                        data-submit="click"
+                        data-action="@(Url.Action("CashIn", "Account", new
+                                     {
+                                         reference = Model.Order.OrderCode,
+                                         type = TransactionType.Order,
+                                         returnUrl = Context.Request.RelativeUrl()
+                                     }))"
+                        data-method="get"
+                        data-dialog="modal">
+                    Pay Order
+                </button>
+                <div class="dropdown dropup" visible="@(theme.Area == ThemeArea.Portal)">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Actions</button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        @foreach (var status in EnumHelper.GetEnumValues<OrderStatus>())
+                        {
+                            <button type="button" class="dropdown-item" visible="@(Model.StatusActions.Any(x => x.Status == status && x.CanChangeStatus))"
+                                    data-submit="click"
+                                    data-action="@(Url.Action("Status", "Orders", new { area = "Portal", id = Model.Order.Id, status }))"
+                                    data-dialog="modal">
+                                Mark as @(status.GetEnumText())
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

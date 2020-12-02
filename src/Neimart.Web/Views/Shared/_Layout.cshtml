@@ -1,0 +1,11 @@
+﻿@{
+    Layout = "_App";
+}
+@section Styles {
+    @(await RenderSectionAsync("Styles", required: false))
+}
+@section Scripts {
+    @(await RenderSectionAsync("Scripts", required: false))
+}
+
+@RenderBody()

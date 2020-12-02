@@ -1,0 +1,221 @@
+﻿@model TransactionListModel
+@{
+    Html.AddTitle("Transactions");
+
+    var seller = await Context.GetMemberAsync();
+}
+
+@section Styles {
+    @(await Html.PartialAsync("Libraries/_TableStyles"))
+}
+
+@section Scripts {
+    @(await Html.PartialAsync("Libraries/_TableScripts"))
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex flex-wrap align-items-center justify-content-between">
+            <div class="pb-3">
+                <h1 class="h3 mb-0 pr-3">Transactions (@(Model.TotalItems))</h1>
+            </div>
+        </div>
+    </div>
+    @if (Model.TotalItems > 0 || Model.HasRequestValues())
+    {
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header p-0">
+                    <div class="d-flex flex-wrap align-items-center pt-3 pl-3">
+                        <div class="ml-auto"></div>
+                        <div class="pb-3 pr-3" visible="@(Model.HasRequestValues())">
+                            <button class="btn btn-default"
+                                    type="button"
+                                    data-submit="click"
+                                    data-action="@Url.Action("Index", "Transactions", new { area = "Portal" })"
+                                    data-method="get">
+                                <span>Clear Filters</span>
+                            </button>
+                        </div>
+                        <div class="pb-3 pr-3">
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                    <span>Filter</span>
+                                </button>
+                                <div class="dropdown-menu dropdown-static dropdown-menu-right">
+                                    <div class="dropdown-item-text">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="mr-3">Status</div>
+                                            <div class="input-group w-auto">
+                                                <select style="opacity: 0;"
+                                                        data-toggle="select2"
+                                                        data-submit="change"
+                                                        data-action="@Url.Action("Index", "Transactions", new { area = "Portal" })"
+                                                        data-method="get"
+                                                        data-name="status"
+                                                        data-object="@(Model.GetRequestValues().ToJsonString())"
+                                                        asp-items="@(Model.StatusOptions)"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-item-text">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="mr-3">Mode</div>
+                                            <div class="input-group w-auto">
+                                                <select style="opacity: 0;"
+                                                        data-toggle="select2"
+                                                        data-submit="change"
+                                                        data-action="@Url.Action("Index", "Transactions", new { area = "Portal" })"
+                                                        data-method="get"
+                                                        data-name="mode"
+                                                        data-object="@(Model.GetRequestValues().ToJsonString())"
+                                                        asp-items="@(Model.ModeOptions)"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-item-text">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="mr-3">Processor</div>
+                                            <div class="input-group w-auto">
+                                                <select style="opacity: 0;"
+                                                        data-toggle="select2"
+                                                        data-submit="change"
+                                                        data-action="@Url.Action("Index", "Transactions", new { area = "Portal" })"
+                                                        data-method="get"
+                                                        data-name="processor"
+                                                        data-object="@(Model.GetRequestValues().ToJsonString())"
+                                                        asp-items="@(Model.ProcessorOptions)"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-item-text">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="mr-3">Type</div>
+                                            <div class="input-group w-auto">
+                                                <select style="opacity: 0;"
+                                                        data-toggle="select2"
+                                                        data-submit="change"
+                                                        data-action="@Url.Action("Index", "Transactions", new { area = "Portal" })"
+                                                        data-method="get"
+                                                        data-name="type"
+                                                        data-object="@(Model.GetRequestValues().ToJsonString())"
+                                                        asp-items="@(Model.TypeOptions)"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pb-3 pr-3 w-100 w-md-auto">
+                            <form asp-action="Index" asp-controller="Transactions" asp-area="Portal" method="get">
+                                <div class="input-group">
+                                    <input name="search" type="text" asp-for="Filter.Search" autocomplete="off" class="form-control ignore-focus" />
+                                    <span class="input-group-append">
+                                        <button class="icon-btn btn btn-default" type="submit" data-toggle="tooltip" title="Search">
+                                            <i class="fal fa-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <table class="card-table table table-hover" style="margin: 0 !important;" data-toggle="datatable" data-checkbox-target=".transaction-checkbox-target">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="border-bottom: none;"></th>
+                            <th style="border-bottom: none;">Reference</th>
+                            <th style="border-bottom: none;">Type</th>
+                            <th style="border-bottom: none;">Mode</th>
+                            <th style="border-bottom: none;">Issuer</th>
+                            <th style="border-bottom: none;">Amount</th>
+                            @*<th style="border-bottom: none;">Actions</th>*@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var transactionModel in Model.Items)
+                        {
+                            <tr id="transaction-id-@(transactionModel.Transaction.Id)"
+                                data-submit="click"
+                                data-action="@(Url.Action("Details", "Transactions", new { area = "Portal", id = transactionModel.Transaction.Id }))"
+                                data-method="get"
+                                data-value="@(transactionModel.Transaction.Id)"
+                                data-dialog="modal"
+                                data-ignore-closest="td"
+                                data-ignore-target=":input">
+                                <td>
+                                    <div class="d-flex justify-content-center align-items-center w-50px h-50px p-1 border theme-bg-white rounded">
+                                        <i class="fad fa-retweet fa-2x text-primary"></i>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="h-50px d-flex flex-column justify-content-center">
+                                        <div>@(transactionModel.Transaction.Reference)</div>
+                                        <div>
+                                            <span class="mr-2">@(transactionModel.Transaction.Updated ? AppSettings.Value.FormatDateTime(transactionModel.Transaction.UpdatedOn) : AppSettings.Value.FormatDateTime(transactionModel.Transaction.CreatedOn))</span>
+                                            <span class="badge badge-@(transactionModel.Transaction.Status == TransactionStatus.Succeeded ? "success" : transactionModel.Transaction.Status == TransactionStatus.Failed ? "danger" : "warning")">@(transactionModel.Transaction.Status.GetEnumText())</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>@(transactionModel.Transaction.Mode?.GetEnumText() ?? "N/A")</div>
+                                </td>
+                                <td>
+                                    <div>@(transactionModel.Transaction.Type.GetEnumText())</div>
+                                </td>
+                                <td>
+                                    <div>@(!string.IsNullOrWhiteSpace(transactionModel.Transaction.Issuer) ? transactionModel.Transaction.Issuer : "N/A")</div>
+                                </td>
+                                <td>
+                                    <div>@(AppSettings.Value.FormatCurrency(transactionModel.Transaction.Amount))</div>
+                                </td>
+                                @*<td>
+                                        <div class="dropdown">
+                                            <button type="button" class="btn btn-default rounded-pill icon-btn borderless" data-toggle="dropdown"><i class="far fa-ellipsis-h"></i></button>
+                                            <div class="dropdown-menu dropdown-menu-right">
+
+                                            </div>
+                                        </div>
+                                    </td>*@
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="card-footer pt-3 pb-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
+                        <div class="pb-3 pr-3 d-none d-md-block">
+                            Showing @(Model.PageFrom)-@(Model.PageTo) out of @("transaction".ToQuantity(Model.TotalItems))
+                        </div>
+
+                        <div class="pb-3">
+                            <ul style="margin-bottom: 0px"
+                                data-toggle="paginator"
+                                data-page="@Model.Page"
+                                data-total-pages="@Model.TotalPages"
+                                data-submit="pageClick"
+                                data-action="@Url.Action("Index", "Transactions", new { area = "Portal" })"
+                                data-method="get"
+                                data-name="page"
+                                data-object="@(Model.GetRequestValues().ToJsonString())">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-center">
+                <div class="py-5 my-3 text-center">
+                    <div class="d-inline-block mb-4"><i class="fad fa-retweet fa-5x text-primary"></i></div>
+                    <h4 class="h3">No Transactions</h4>
+                    <p class="text-muted">Once you start making transactions, you'll see them here.</p>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+

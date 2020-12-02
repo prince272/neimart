@@ -1,0 +1,161 @@
+﻿@model (User User, object Data)
+@{
+    Layout = "Templates/Email/_CompanyLayout";
+
+    ViewData["Title"] = "Welcome to Neimart";
+
+    var planTypes = EnumHelper.GetEnumValues<PlanType>().ToList();
+    var planFeaturesByTypes = AppSettings.Value.PlanFeatures;
+    var planRates = AppSettings.Value.PlanRates;
+}
+
+<!-- hero-icon-lines -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-primary o_px-md o_py-xl o_xs-py-md o_sans o_text-md o_text-white" align="center">
+                                <table cellspacing="0" cellpadding="0" border="0" role="presentation">
+                                    <tbody>
+                                        <tr>
+                                            <td class="o_sans o_text o_text-white o_b-white o_px o_py o_br-max" align="center">
+                                                <img src="@(Url.ContentLink("~/img/email/shopping_cart-48-white.png"))" width="48" height="48" alt="" style="max-width: 48px;">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size: 24px; line-height: 24px; height: 24px;">&nbsp; </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <h2 class="o_heading o_text-white o_mb-xxs">
+                                    <span>You have just started a new business</span>
+                                </h2>
+                                <p class="o_text-white o_mb-md">We're so happy to hear you have started a new business.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!-- spacer -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-white" style="font-size: 24px; line-height: 24px; height: 24px;">&nbsp; </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!-- content -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-white o_px-md o_py o_sans o_text o_text-secondary" align="center">
+                                <h4 class="o_heading o_text-dark o_mb-xs">Hello, @(Model.User.FirstName)</h4>
+                                <p>We're so happy to hear you have started a new business. We all know that starting a business is no easy task, but there’s no better place to start than Neimart.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!-- label-xs -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-white o_px-md o_py o_sans o_text-xs o_text-light" align="center">
+                                <p class="o_mb"><strong>Here is your store link</strong></p>
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                    <tbody>
+                                        <tr>
+                                            <td width="284" class="o_bg-ultra_light o_br o_text-xs o_sans o_px-xs o_py" align="center">
+                                                <a class="o_text-primary" href="@(Url.ContentLink(Url.Action("Index", "Store", new { area = string.Empty, storeSlug = Model.User.StoreSlug })))"><strong>@(Url.ContentLink(Url.Action("Index", "Store", new { area = string.Empty, storeSlug = Model.User.StoreSlug })))</strong></a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!-- content -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-white o_px-md o_py o_sans o_text o_text-secondary" align="center">
+                                <p class="o_mb-md">We’ll handle everything from marketing and payments to secure checkout and shipping so you can focus on what you love. Select a plan that fits your needs.</p>
+                                <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                                    <tbody>
+                                        <tr>
+                                            <td width="300" class="o_btn o_bg-primary o_br o_heading o_text" align="center">
+                                                <a class="o_text-white" href="@(Url.ContentLink(Url.Action("PlanPricing", "Account", new { area = string.Empty, returnUrl = Url.Action("Index", "Home", new { area = "Portal" }) })))">Select a Plan</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!-- spacer-lg -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-white" style="font-size: 48px; line-height: 48px; height: 48px;">&nbsp; </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>

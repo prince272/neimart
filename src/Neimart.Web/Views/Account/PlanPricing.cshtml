@@ -1,0 +1,10 @@
+﻿@{
+    Html.AddTitle("Pricing Plans");
+
+    var theme = await Context.GetThemeAsync();
+    var member = await Context.GetMemberAsync();
+
+    Layout = theme.Layout;
+}
+
+@(await Html.PartialAsync("Partials/_SharedPlanPricing"))

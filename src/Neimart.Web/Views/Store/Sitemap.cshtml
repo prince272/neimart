@@ -1,0 +1,19 @@
+﻿@{
+    Html.AddTitle("Sitemap");
+}
+
+@(await Html.PartialAsync("Partials/_StorePageTitle", "Sitemap"))
+
+<div class="row">
+    <div class="col-sm-6 col-lg-4">
+        <h2>General</h2>
+        <div class="card">
+            <div class="list-group">
+                <a class="list-group-item list-group-item-action" asp-action="Index" asp-controller="Store" asp-area="">Home</a>
+                <a class="list-group-item list-group-item-action" asp-action="Index" asp-controller="Store" asp-area="">Home</a>
+                <a class="list-group-item list-group-item-action" asp-action="Index" asp-controller="Store" asp-area="">Home</a>
+                <a class="list-group-item list-group-item-action" asp-action="Index" asp-controller="Store" asp-area="">Home</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,63 @@
+﻿@model ReviewListModel
+@{
+    Html.AddTitle("Reviews");
+
+    Layout = "_AccountLayout";
+
+    var seller = await Context.GetSellerAsync();
+    var customer = await Context.GetMemberAsync();
+}
+
+    <div class="card card-condenced mb-4">
+        <div class="card-body pb-0" style="min-height: 470px;">
+            <div class="card-title d-flex align-items-start justify-content-between pb-3">
+                <h5 class="mb-0 h4">Reviews (@(Model.TotalItems))</h5>
+                <a asp-action="ReviewPolicy" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Review Policy</a>
+            </div>
+            <div class="row">
+                @if (Model.Items.Any())
+                {
+                    <div class="col-12">
+                        <div class="list-group list-group-flush mx-n3">
+                            @foreach (var reviewModel in Model.Items)
+                            {
+                                <div class="list-group-item">
+                                    @(await Html.PartialAsync("Partials/_StoreReviewItem", reviewModel))
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-12">
+                        <div class="d-flex align-items-center justify-content-center pb-3 px-3 mb-5">
+                            <div class="py-5 my-3 text-center">
+                                <div class="d-inline-block mb-4"><i class="fad fa-star fa-5x text-primary"></i></div>
+                                <h4 class="h4">No Reviews Yet</h4>
+                                <p class="text-muted">Once you start adding your reviews for any product, you'll see them here.</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="card-footer pt-3 pb-0" visible="@(Model.TotalItems > 0)">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
+                <div class="pb-3 pr-3 d-none d-md-block">Showing @(Model.PageFrom)-@(Model.PageTo) out of @("review".ToQuantity(Model.TotalItems))</div>
+
+                <div class="pb-3">
+                    <ul style="margin-bottom: 0px"
+                        data-preserve="scrollbar"
+                        data-toggle="paginator"
+                        data-page="@Model.Page"
+                        data-total-pages="@Model.TotalPages"
+                        data-submit="pageClick"
+                        data-action="@Url.Action("Reviews", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug })"
+                        data-method="get"
+                        data-name="page">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>

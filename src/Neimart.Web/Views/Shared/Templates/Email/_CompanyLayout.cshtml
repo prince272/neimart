@@ -1,0 +1,122 @@
+﻿@{
+    Layout = null;
+
+    var Title = (string)ViewData["Title"];
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="x-apple-disable-message-reformatting">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@(Title)</title>
+    <!-- build:maincss -->
+    <style src="~/css/email.css" asp-append-content="true"></style>
+    <!-- endbuild -->
+    <!--[if mso]>
+    <style>
+      table { border-collapse: collapse; }
+      .o_col { float: left; }
+    </style>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+    <![endif]-->
+</head>
+<body class="o_body o_bg-light">
+    <!-- header-white-link -->
+    <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+        <tbody>
+            <tr>
+                <td class="o_bg-light o_px-xs o_pt-lg o_xs-pt-xs" align="center">
+                    <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                    <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                        <tbody>
+                            <tr>
+                                <td class="o_re o_bg-white o_px o_pb-md o_br-t" align="center">
+                                    <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="200" align="left" valign="top" style="padding:0px 8px;"><![endif]-->
+                                    <div class="o_col o_col-2">
+                                        <div style="font-size: 24px; line-height: 24px; height: 24px;">&nbsp; </div>
+                                        <div class="o_px-xs o_sans o_text o_left o_xs-center">
+                                            <p><a class="o_text-primary" href="@(Url.ContentLink(Url.Action("Index", "Company", new { area = string.Empty })))"><img src="@(Url.ContentLink("~/img/logo-label.png"))" alt="Neimart Logo" style="max-width: 142px;"></a></p>
+                                        </div>
+                                    </div>
+                                    <!--[if mso]></td><td width="400" align="right" valign="top" style="padding:0px 8px;"><![endif]-->
+                                    @*<div class="o_col o_col-4">
+                                        <div style="font-size: 22px; line-height: 22px; height: 22px;">&nbsp; </div>
+                                        <div class="o_px-xs">
+                                            <table class="o_right o_xs-center" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="o_btn-b o_heading o_text-xs" align="center">
+                                                            <a class="o_text-light" href="https://example.com/"><span>Woodrow Nikolaus </span> <img src="images/person-24-light.png" width="24" height="24" alt="" style="max-width: 24px;"></a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>*@
+                                    <!--[if mso]></td></tr></table><![endif]-->
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!--[if mso]></td></tr></table><![endif]-->
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    @RenderBody()
+
+    <!-- footer-white-2cols -->
+    <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+        <tbody>
+            <tr>
+                <td class="o_bg-light o_px-xs o_pb-lg o_xs-pb-xs" align="center">
+                    <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                    <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                        <tbody>
+                            <tr>
+                                <td class="o_re o_bg-dark o_px o_pb-lg o_bt-light o_br-b" align="center">
+                                    <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="200" align="left" valign="top" style="padding:0px 8px;"><![endif]-->
+                                    <div class="o_col">
+                                        <div style="font-size: 32px; line-height: 32px; height: 32px;">&nbsp; </div>
+                                        <div class="o_px-xs o_sans o_text-xs o_text-light o_center">
+                                            <div class="o_mb-xs"><span>&copy; @($"{(AppSettings.Value.Company.EstablishedOn.Year != DateTimeOffset.UtcNow.Year ? $"{AppSettings.Value.Company.EstablishedOn.Year} - {DateTimeOffset.UtcNow.Year}" : $"{DateTimeOffset.UtcNow.Year}")}") <b>Neimart</b></span><br>@(AppSettings.Value.Company.Address)</div>
+                                            <div>
+                                                <div>
+                                                    <span visible="@(!string.IsNullOrWhiteSpace(AppSettings.Value.Company.FacebookLink))"><a class="o_text-dark_light o_pb-xs" href="@(AppSettings.Value.Company.FacebookLink)"><img src="@(Url.ContentLink("~/img/email/facebook-light.png"))" width="36" height="36" alt="Facebook" style="max-width: 36px;"></a><span> &nbsp;</span></span>
+                                                    <span visible="@(!string.IsNullOrWhiteSpace(AppSettings.Value.Company.TwitterLink))"><a class="o_text-dark_light o_pb-xs" href="@(AppSettings.Value.Company.TwitterLink)"><img src="@(Url.ContentLink("~/img/email/twitter-light.png"))" width="36" height="36" alt="Twitter" style="max-width: 36px;"></a><span> &nbsp;</span></span>
+                                                    <span visible="@(!string.IsNullOrWhiteSpace(AppSettings.Value.Company.YoutubeLink))"><a class="o_text-dark_light o_pb-xs" href="@(AppSettings.Value.Company.YoutubeLink)"><img src="@(Url.ContentLink("~/img/email/youtube-light.png"))" width="36" height="36" alt="Youtube" style="max-width: 36px;"></a><span> &nbsp;</span></span>
+                                                    <span visible="@(!string.IsNullOrWhiteSpace(AppSettings.Value.Company.InstagramLink))"> <a class="o_text-dark_light o_pb-xs" href="@(AppSettings.Value.Company.InstagramLink)"><img src="@(Url.ContentLink("~/img/email/instagram-light.png"))" width="36" height="36" alt="Instagram" style="max-width: 36px;"></a><span> &nbsp;</span></span>
+                                                    <span visible="@(!string.IsNullOrWhiteSpace(AppSettings.Value.Company.LinkedInLink))"><a class="o_text-dark_light o_pb-xs" href="@(AppSettings.Value.Company.LinkedInLink)"><img src="@(Url.ContentLink("~/img/email/linkedin-light.png"))" width="36" height="36" alt="LinkedIn" style="max-width: 36px;"></a><span> &nbsp;</span></span>
+                                                    <span visible="@(!string.IsNullOrWhiteSpace(AppSettings.Value.Company.PinterestLink))"><a class="o_text-dark_light o_pb-xs" visible="@(!string.IsNullOrWhiteSpace(AppSettings.Value.Company.PinterestLink))" href="@(AppSettings.Value.Company.PinterestLink)"><img src="@(Url.ContentLink("~/img/email/pinterest-light.png"))" width="36" height="36" alt="Pinterest" style="max-width: 36px;"></a></span>
+                                                </div>
+                                            </div>
+                                            <div class="o_mb-xs">
+                                                <a class="o_text-light" href="@(Url.ContentLink(Url.Action("Index", "Company", new { area = string.Empty })))">Home</a> <span>&nbsp; • &nbsp;</span>
+                                                <a class="o_text-light" href="@(Url.ContentLink(Url.Action("About", "Company", new { area = string.Empty })))">About</a> <span>&nbsp; • &nbsp;</span>
+                                                <a class="o_text-light" href="@(Url.ContentLink(Url.Action("Contact", "Company", new { area = string.Empty })))">Contact</a> <span>&nbsp; • &nbsp;</span>
+                                                <a class="o_text-light" href="@(Url.ContentLink(Url.Action("Terms", "Company", new { area = string.Empty })))">Terms</a> <span>&nbsp; • &nbsp;</span>
+                                                <a class="o_text-light" href="@(Url.ContentLink(Url.Action("Privacy", "Company", new { area = string.Empty })))">Privacy</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--[if mso]></td><td width="400" align="right" valign="top" style="padding:0px 8px;"><![endif]-->
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!--[if mso]></td></tr></table><![endif]-->
+                    <div class="o_hide-xs" style="font-size: 64px; line-height: 64px; height: 64px;">&nbsp; </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

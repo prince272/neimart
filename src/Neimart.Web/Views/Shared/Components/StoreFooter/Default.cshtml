@@ -1,0 +1,69 @@
+﻿@{
+    var seller = await Context.GetSellerAsync();
+
+    var showLayoutFooter = TypeHelper.ConvertToObject<bool>(ViewData["ShowLayoutFooter"] ?? true);
+}
+
+<footer class="footer bg-footer-theme pt-2" visible="@(showLayoutFooter)">
+    <div class="container pt-4">
+        <div class="row">
+            <div class="col-12 col-md-3 pb-4">
+                <a class="footer-text h4 font-weight-semibold font-italic text-decoration-none media align-items-center mb-3" asp-action="Index" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">
+                    <div visible="@(seller.StoreLogo != null)" class="w-30px h-30px"><img class="img-fluid" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-toggle="lozad" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(seller.StoreLogo.DirectoryName, seller.StoreLogo.FileName), width: 40, height: 40))" /></div>
+                    <div class="media-body ml-2">
+                        <span>@(seller.StoreName)</span>
+                    </div>
+                </a>
+                <p>@(seller.StoreDescription)</p>
+            </div>
+            <div class="col-6 col-md-2 pb-4">
+                <div class="footer-text small font-weight-bold mb-1">RESOURCES</div>
+                <hr class="mx-0 mt-1 mb-3 bg-primary" style="width: 50px;" />
+                <a class="footer-link d-block pb-2" asp-action="Index" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Home</a>
+                <a class="footer-link d-block pb-2" asp-action="About" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">About</a>
+                <a class="footer-link d-block pb-2" asp-action="Contact" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Contact</a>
+                <a class="footer-link d-block pb-2" asp-action="Terms" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Terms</a>
+                <a class="footer-link d-block pb-2" asp-action="Products" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Products</a>
+            </div>
+            <div class="col-6 col-md-2 pb-4">
+                <div class="footer-text small font-weight-bold mb-1">LEGAL</div>
+                <hr class="mx-0 mt-1 mb-3 bg-primary" style="width: 50px;" />
+                <a class="footer-link d-block pb-2" asp-action="ReturnPolicy" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Return Policy</a>
+                <a class="footer-link d-block pb-2" asp-action="ReviewPolicy" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Reviews Policy</a>
+                <a class="footer-link d-block pb-2" asp-action="PrivacyPolicy" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Privacy Policy</a>
+            </div>
+            <div class="col-6 col-md-2 pb-4">
+                <div class="footer-text small font-weight-bold mb-1">ACCOUNT</div>
+                <hr class="mx-0 mt-1 mb-3 bg-primary" style="width: 50px;" />
+                <a class="footer-link d-block pb-2" asp-action="Addresses" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Addresses</a>
+                <a class="footer-link d-block pb-2" asp-action="Orders" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Orders</a>
+                <a class="footer-link d-block pb-2" asp-action="Downloads" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Downloads</a>
+                <a class="footer-link d-block pb-2" asp-action="Wishlist" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Wishlist</a>
+                <a class="footer-link d-block pb-2" asp-action="Reviews" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Reviews</a>
+            </div>
+            <div class="col-auto pb-4">
+                <div class="footer-text small font-weight-bold mb-1">GET IN TOUCH</div>
+                <hr class="mx-0 mt-1 mb-3 bg-primary" style="width: 50px;" />
+                <div class="pb-2">
+                    <div class="mb-1"><span>Phone:</span></div>
+                    <a class="footer-link d-block" href="tel:@(seller.PhoneNumber)"><span>@(AppSettings.Value.FormatPhoneNumber(seller.PhoneNumber))</span></a>
+                </div>
+                <div class="pb-2">
+                    <div class="mb-1"><span>Email:</span></div>
+                    <a class="footer-link d-block" href="mailto:@(seller.Email)"><span>@(seller.Email)</span></a>
+                </div>
+                <div class="pb-2">
+                    <div class="mb-1"><span>Social:</span></div>
+                    @(await Html.PartialAsync("Partials/_UserSocialIcons", seller))
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="my-1" />
+    <div>
+        <div class="container d-flex flex-wrap justify-content-center justify-content-sm-between text-center container-p-x py-2">
+            <div>&copy; @($"{(seller.CreatedOn.Year != DateTimeOffset.UtcNow.Year ? $"{seller.CreatedOn.Year} - {DateTimeOffset.UtcNow.Year}" : $"{DateTimeOffset.UtcNow.Year}")}") <span class="footer-text font-weight-semibold">@(seller.StoreName)</span>.</div>
+            <div class="mx-2"><span>Powered by</span> <span class="footer-text font-weight-semibold">Neimart</span>.</div>
+        </div>
+    </div>
+</footer>

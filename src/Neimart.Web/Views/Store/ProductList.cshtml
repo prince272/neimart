@@ -1,0 +1,246 @@
+﻿@model ProductListModel
+@{
+    // Html.AddTitle(Model.Category?.Name).AddTitle("Products");
+
+    var seller = await Context.GetSellerAsync();
+}
+
+@section Scripts {
+    <script>
+
+        $(function () {
+
+            var priceFilterSlider = $('#products-filter-price-input');
+            var minPriceFilterInput = $('#products-filter-min-price-input');
+            var maxPriceFilterInput = $('#products-filter-max-price-input');
+
+            function updatePriceFilterInputs() {
+                var values = priceFilterSlider.val().split(',') || [];
+                var minPrice = values[0];
+                var maxPrice = values[1];
+
+                minPriceFilterInput.val(minPrice);
+                maxPriceFilterInput.val(maxPrice);
+            }
+
+            function updatePriceFilterSlider() {
+                var minPrice = parseObject(minPriceFilterInput.val()) || @Model.LowestMinPrice;
+                var maxPrice = parseObject(maxPriceFilterInput.val()) || @Model.HighestMaxPrice;
+
+                priceFilterSlider.slider('setValue', [minPrice, maxPrice]);
+            }
+
+            priceFilterSlider.on('change', function () {
+                updatePriceFilterInputs();
+            });
+
+            minPriceFilterInput.on('input', function () {
+                updatePriceFilterSlider();
+            });
+
+            maxPriceFilterInput.on('input', function () {
+                updatePriceFilterSlider();
+            });
+        });
+    </script>
+}
+
+<div class="row">
+    <div class="col-lg-3">
+        <div id="product-filter" class="card card-condenced mb-3">
+            <a class="card-header border-0 theme-text-dark text-decoration-none" href="javascript:void(0)" data-toggle="collapse" data-target="#products-filter-category" aria-expanded="true">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-0">Category</h6><div class="collapse-icon"></div>
+                </div>
+            </a>
+            <div class="collapse" id="products-filter-category" data-parent="#product-filter" data-preserve="collapse">
+                <div class="card-body pt-1">
+                    <div class="custom-controls-stacked" style="max-height: 147px; overflow-y: auto;">
+                        @foreach (var categoryOption in Model.CategoryOptions)
+                        {
+                            <label class="custom-control custom-radio"
+                                   data-submit="click"
+                                   data-action="@Url.Action("Products", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, slug = string.Empty })"
+                                   data-method="get"
+                                   data-name="search"
+                                   data-value="@(categoryOption.Value)"
+                                   data-object="@(Model.GetRequestValues().ToJsonString())">
+                                <input type="radio" name="" class="custom-control-input" @(categoryOption.Selected ? "checked" : string.Empty) />
+                                <span class="custom-control-label d-flex">
+                                    <span class="ml-1">@(categoryOption.Text)</span>
+                                </span>
+                            </label>
+                        }
+                    </div>
+          
+                    <button type="button" class="btn btn-default btn-block mt-3"
+                            data-submit="click"
+                            data-action="@Url.Action("Products", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug })"
+                            data-method="get"
+                            data-name="search"
+                            data-value=""
+                            data-object="@(Model.GetRequestValues().ToJsonString())">Clear category</button>
+                </div>
+            </div>
+            <hr class="m-0" />
+
+            <a class="card-header border-0 theme-text-dark text-decoration-none" href="javascript:void(0)" data-toggle="collapse" data-target="#products-filter-price" aria-expanded="true">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-0">Price</h6><div class="collapse-icon"></div>
+                </div>
+            </a>
+            <div class="collapse" id="products-filter-price" data-parent="#product-filter" data-preserve="collapse">
+                <div class="card-body pt-0">
+                    <div class="py-3">
+                        <div class="slider-primary">
+                            <input id="products-filter-price-input" class="bs-slider-variant" type="text" style="opacity: 0;" data-toggle="slider" data-slider-formatter="@AppSettings.Value.FormatCurrency("{value}")" data-slider-min="@Model.LowestMinPrice" data-slider-max="@Model.HighestMaxPrice" data-slider-step="1" data-slider-value="[@($"{Model.Filter.MinPrice.GetValueOrDefault(Model.LowestMinPrice)}, {Model.Filter.MaxPrice.GetValueOrDefault(Model.HighestMaxPrice)}")]" />
+                        </div>
+
+                    </div>
+
+                    <form data-submit="form"
+                          data-action="@Url.Action("Products", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug })"
+                          data-method="get"
+                          data-object="@(Model.GetRequestValues().ToJsonString())">
+                        <div class="form-row">
+                            <div class="form-group col-6">
+                                <label class="form-label">@(AppSettings.Value.CurrencySymbol) (Min)</label>
+                                <input id="products-filter-min-price-input" class="form-control" name="minPrice" asp-for="Filter.MinPrice" value="@(Model.Filter.MinPrice ?? Model.LowestMinPrice)" data-toggle="cleave" data-numeral="true" type="number" step=".01" />
+                            </div>
+                            <div class="form-group col-6">
+                                <label class="form-label">@(AppSettings.Value.CurrencySymbol) (Min)</label>
+                                <input id="products-filter-max-price-input" class="form-control" name="maxPrice" asp-for="Filter.MaxPrice" value="@(Model.Filter.MaxPrice ?? Model.HighestMaxPrice)" data-toggle="cleave" data-numeral="true" type="number" step=".01" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <button type="submit" class="btn btn-primary btn-block">Filter price</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <hr class="m-0" />
+
+            <a class="card-header border-0 theme-text-dark text-decoration-none" href="javascript:void(0)" data-toggle="collapse" data-target="#products-filter-rating" aria-expanded="true">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-0">Rating</h6><div class="collapse-icon"></div>
+                </div>
+            </a>
+            <div class="collapse" id="products-filter-rating" data-parent="#product-filter" data-preserve="collapse">
+                <div class="card-body custom-controls-stacked pt-1">
+                    @foreach (var ratingItem in Model.RatingOptions)
+                    {
+                        <label class="custom-control custom-radio"
+                               data-submit="click"
+                               data-action="@Url.Action("Products", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug })"
+                               data-method="get"
+                               data-name="rating"
+                               data-value="@(ratingItem.Value)"
+                               data-object="@(Model.GetRequestValues().ToJsonString())">
+                            <input type="radio" name="" class="custom-control-input" @(ratingItem.Selected ? "checked" : string.Empty) />
+                            <span class="custom-control-label d-flex">
+                                <span data-toggle="rateyo" data-rating="@(!string.IsNullOrWhiteSpace(ratingItem.Value) ? ratingItem.Value : "0")" data-readonly="true"></span>
+                                <span class="ml-1">@(ratingItem.Text)</span>
+                            </span>
+                        </label>
+                    }
+
+                    <button type="button" class="btn btn-default btn-block mt-3"
+                            data-submit="click"
+                            data-action="@Url.Action("Products", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug })"
+                            data-method="get"
+                            data-name="rating"
+                            data-value=""
+                            data-object="@(Model.GetRequestValues().ToJsonString())">
+                        Clear rating
+                    </button>
+                </div>
+            </div>
+
+            <hr class="m-0" />
+
+            <a class="card-header border-0 theme-text-dark text-decoration-none" href="javascript:void(0)" data-toggle="collapse" data-target="#products-filter-discount" aria-expanded="true">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-0">Discount</h6><div class="collapse-icon"></div>
+                </div>
+            </a>
+            <div class="collapse" id="products-filter-discount" data-parent="#product-filter" data-preserve="collapse">
+                <div class="card-body custom-controls-stacked pt-1">
+                    @foreach (var discountItem in Model.DiscountOptions)
+                    {
+                        <label class="custom-control custom-radio"
+                               data-submit="click"
+                               data-action="@Url.Action("Products", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug })"
+                               data-method="get"
+                               data-name="discount"
+                               data-value="@(discountItem.Value)"
+                               data-object="@(Model.GetRequestValues().ToJsonString())">
+                            <input type="radio" name="" class="custom-control-input" @(discountItem.Selected ? "checked" : string.Empty) />
+                            <span class="custom-control-label d-flex">
+                                <span class="ml-1">@(discountItem.Text)</span>
+                            </span>
+                        </label>
+                    }
+
+                    <button type="button" class="btn btn-default btn-block mt-3"
+                            data-submit="click"
+                            data-action="@Url.Action("Products", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug })"
+                            data-method="get"
+                            data-name="discount"
+                            data-value=""
+                            data-object="@(Model.GetRequestValues().ToJsonString())">
+                        Clear discount
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-9">
+        <div class="card card-condenced mb-4">
+            <div class="card-header py-2">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="mb-0">Products</h4>
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="mr-2 font-weight-semibold">Sort by:</div>
+                            <div class="input-group w-auto">
+                                <select style="opacity: 0;"
+                                        data-preserve="scrollbar"
+                                        data-toggle="select2"
+                                        data-submit="change"
+                                        data-action="@Url.Action("Products", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug })"
+                                        data-method="get"
+                                        data-name="sort"
+                                        data-object="@(Model.GetRequestValues().ToJsonString())"
+                                        asp-items="@(Model.SortOptions)"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body px-0">
+                @(await Component.InvokeAsync("StoreProducts", new { model = Model }))
+            </div>
+            <div class="card-footer pt-3 pb-0" visible="@(Model.TotalItems > 0)">
+                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
+                    <div class="pb-3 pr-3 d-none d-md-block">Showing @(Model.PageFrom)-@(Model.PageTo) out of @("product".ToQuantity(Model.TotalItems))</div>
+
+                    <div class="pb-3">
+                        <ul style="margin-bottom: 0px"
+                            data-preserve="scrollbar"
+                            data-toggle="paginator"
+                            data-page="@Model.Page"
+                            data-total-pages="@Model.TotalPages"
+                            data-submit="pageClick"
+                            data-action="@Url.Action("Products", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug })"
+                            data-method="get"
+                            data-name="page"
+                            data-object="@(Model.GetRequestValues().ToJsonString())">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

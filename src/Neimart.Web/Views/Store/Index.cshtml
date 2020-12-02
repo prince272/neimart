@@ -1,0 +1,128 @@
+﻿@{
+    var seller = await Context.GetSellerAsync();
+}
+@section Styles {
+    @(await Html.PartialAsync("Libraries/_SliderStyles"))
+}
+@section Scripts {
+    @(await Html.PartialAsync("Libraries/_SliderScripts"))
+}
+
+<div>
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                @(await Component.InvokeAsync("StoreBanners", new { model = new BannerListModel { Filter = new BannerFilter { Size = BannerSize.Large }, ViewType = ViewType.SingleSlide, SuggestItems = true, Page = 1, PageSize = 4 } }))
+            </div>
+        </div>
+    </div>
+</div>
+
+@(await Component.InvokeAsync("StoreCategories", new { model = new CategoryListModel { Filter = new CategoryFilter { ImageRequired = true }, ViewType = ViewType.MultiStatic, SuggestItems = true, Page = 1, PageSize = 12 } }))
+
+<div class="card card-condenced mb-4">
+    <div class="card-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <span class="h5 mb-0">Newest Products</span>
+        </div>
+    </div>
+    <div class="card-body pt-4 pb-2 px-0">
+        @(await Component.InvokeAsync("StoreProducts", new { model = new ProductListModel { Filter = new ProductFilter { Sort = ProductSort.Newest }, ViewType = ViewType.MultiStatic, SuggestItems = true, Page = 1, PageSize = 12 } }))
+    </div>
+    <div class="card-footer d-flex justify-content-center">
+        <div><a asp-action="Products" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)" asp-route-sort="@(ProductSort.Newest)"><span class="pr-1">Show more</span><i class="fal fa-angle-right fa-1-3x align-middle"></i></a></div>
+    </div>
+</div>
+
+<div class="mb-4">
+    <div class="card card-condenced p-1">
+        <div class="row no-gutters">
+            <div class="col-12 col-md-6">
+                <div class="p-1">
+                    @(await Component.InvokeAsync("StoreBanners", new { model = new BannerListModel { Filter = new BannerFilter { Size = BannerSize.Medium }, ViewType = ViewType.SignleStatic, SuggestItems = true, Page = 4, PageSize = 1 } }))
+                </div>
+            </div>
+            <div class="col-12 col-md-6 d-none d-md-block">
+                <div class="p-1">
+                    @(await Component.InvokeAsync("StoreBanners", new { model = new BannerListModel { Filter = new BannerFilter { Size = BannerSize.Medium }, ViewType = ViewType.SignleStatic, SuggestItems = true, Page = 5, PageSize = 1 } }))
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card card-condenced mb-4">
+    <div class="card-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <span class="h5 mb-0">Popular Products</span>
+        </div>
+    </div>
+    <div class="card-body pt-4 pb-2 px-0">
+        @(await Component.InvokeAsync("StoreProducts", new { model = new ProductListModel { Filter = new ProductFilter { Sort = ProductSort.Popular }, ViewType = ViewType.MultiStatic, SuggestItems = true, Page = 2, PageSize = 12 } }))
+    </div>
+    <div class="card-footer d-flex justify-content-center">
+        <div><a asp-action="Products" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)" asp-route-sort="@(ProductSort.Popular)"><span class="pr-1">Show more</span><i class="fal fa-angle-right fa-1-3x align-middle"></i></a></div>
+    </div>
+</div>
+
+<div class="mb-4">
+    <div class="card card-condenced p-1">
+        <div class="row no-gutters">
+            <div class="col-12 col-md-6">
+                <div class="p-1">
+                    @(await Component.InvokeAsync("StoreBanners", new { model = new BannerListModel { Filter = new BannerFilter { Size = BannerSize.Medium }, ViewType = ViewType.SignleStatic, SuggestItems = true, Page = 6, PageSize = 1 } }))
+                </div>
+            </div>
+            <div class="col-12 col-md-6 d-none d-md-block">
+                <div class="p-1">
+                    @(await Component.InvokeAsync("StoreBanners", new { model = new BannerListModel { Filter = new BannerFilter { Size = BannerSize.Medium }, ViewType = ViewType.SignleStatic, SuggestItems = true, Page = 7, PageSize = 1 } }))
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card card-condenced mb-4">
+    <div class="card-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <span class="h5 mb-0">Cheapest Products</span>
+        </div>
+    </div>
+    <div class="card-body pt-4 pb-2 px-0">
+        @(await Component.InvokeAsync("StoreProducts", new { model = new ProductListModel { Filter = new ProductFilter { Sort = ProductSort.LowestPrice }, ViewType = ViewType.MultiStatic, SuggestItems = true, Page = 3, PageSize = 12 } }))
+    </div>
+    <div class="card-footer d-flex justify-content-center">
+        <div><a asp-action="Products" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)" asp-route-sort="@(ProductSort.LowestPrice)"><span class="pr-1">Show more</span><i class="fal fa-angle-right fa-1-3x align-middle"></i></a></div>
+    </div>
+</div>
+
+<div class="card card-condenced mb-4">
+    <div class="card-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <span class="h5 mb-0">Updated Products</span>
+        </div>
+    </div>
+    <div class="card-body pt-4 pb-2 px-0">
+        @(await Component.InvokeAsync("StoreProducts", new { model = new ProductListModel { Filter = new ProductFilter { Sort = ProductSort.Updated }, ViewType = ViewType.MultiStatic, SuggestItems = true, Page = 4, PageSize = 12 } }))
+    </div>
+    <div class="card-footer d-flex justify-content-center">
+        <div><a asp-action="Products" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)" asp-route-sort="@(ProductSort.Updated)"><span class="pr-1">Show more</span><i class="fal fa-angle-right fa-1-3x align-middle"></i></a></div>
+    </div>
+</div>
+
+<div class="mb-4">
+    <div class="card card-condenced p-1">
+        <div class="row no-gutters">
+            <div class="col-12 col-md-6">
+                <div class="p-1">
+                    @(await Component.InvokeAsync("StoreBanners", new { model = new BannerListModel { Filter = new BannerFilter { Size = BannerSize.Medium }, ViewType = ViewType.SignleStatic, SuggestItems = true, Page = 8, PageSize = 1 } }))
+                </div>
+            </div>
+            <div class="col-12 col-md-6 d-none d-md-block">
+                <div class="p-1">
+                    @(await Component.InvokeAsync("StoreBanners", new { model = new BannerListModel { Filter = new BannerFilter { Size = BannerSize.Medium }, ViewType = ViewType.SignleStatic, SuggestItems = true, Page = 9, PageSize = 1 } }))
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

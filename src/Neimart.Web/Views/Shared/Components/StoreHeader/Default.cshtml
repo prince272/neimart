@@ -1,0 +1,171 @@
+﻿@model StoreHeaderModel
+@{
+    var seller = await Context.GetSellerAsync();
+    var customer = await Context.GetMemberAsync();
+
+    var showLayoutHeader = TypeHelper.ConvertToObject<bool>(ViewData["ShowLayoutHeader"] ?? true);
+}
+
+<div class="bg-dark" visible="@(showLayoutHeader)">
+    <div class="container px-lg-0">
+        <div class="d-flex align-items-center justify-content-between text-nowrap overflow-auto py-1" data-toggle="scrollbar">
+            <div class="d-inline-flex">
+                <a href="tel:@(seller.PhoneNumber)" class="p-1 mx-1 text-white" visible="@(!string.IsNullOrWhiteSpace(seller.PhoneNumber))">
+                    <i class="fas fa-phone-alt text-primary mr-1"></i><span>@(AppSettings.Value.FormatPhoneNumber(seller.PhoneNumber))</span>
+                </a>
+                <a href="mailto:@(seller.Email)" class="p-1 mr-2 text-white" visible="@(!string.IsNullOrWhiteSpace(seller.Email))">
+                    <i class="fas fa-envelope text-primary mx-1"></i><span>@(seller.Email)</span>
+                </a>
+            </div>
+            @(await Html.PartialAsync("Partials/_UserSocialIcons", seller))
+        </div>
+    </div>
+</div>
+
+<div class="navbar bg-lighter sticky-top shadow-sm" style="z-index: 1030;" visible="@(showLayoutHeader)">
+    <div class="container px-lg-0">
+        <div class="flex-row row align-items-center justify-content-between pt-2">
+            <div class="col-6 col-sm-auto pb-lg-0">
+                <a class="theme-text-dark h4 mb-0 font-weight-semibold font-italic text-decoration-none  media align-items-center" asp-action="Index" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">
+                    <div visible="@(seller.StoreLogo != null)" class="w-30px h-30px"><img class="img-fluid" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-toggle="lozad" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(seller.StoreLogo.DirectoryName, seller.StoreLogo.FileName), width: 40, height: 40))" /></div>
+                    <div class="media-body ml-2">
+                        <span>@(seller.StoreName)</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-12 col-lg-auto order-1 order-lg-0 flex-grow-1 py-1">
+                <form asp-action="Products" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)" asp-route-slug="" method="get">
+                    <div class="input-group">
+                        <input type="text" id="store-search-input" name="search" placeholder="Search products, categories and tags" autocomplete="off" class="form-control ignore-focus" />
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary icon-btn">
+                                <i class="fal fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-auto pb-md-0">
+                <div class="d-inline-flex align-items-center">
+                    <a class="btn btn-default px-2 borderless d-inline-flex align-items-center mr-2" asp-action="Cart" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">
+                        <div class="d-flex justify-content-center align-items-center w-30px h-30px"><i class="fad fa-shopping-cart fa-1-3x"></i></div>
+                        <span class="ml-2 d-none d-sm-inline">Cart</span>
+                        <span class="badge badge-primary ml-1">@(Model.CartListEvaluation.TotalQuantity)</span>
+                    </a>
+                    <div class="dropdown dropdown-scrollable mr-2">
+                        <a href="javascript:void(0)" class="btn btn-default px-2 borderless d-inline-flex align-items-center dropdown-toggle" data-toggle="dropdown">
+                            <div class="d-flex justify-content-center align-items-center w-30px h-30px border rounded-pill">
+                                <div visible="@(customer?.UserImage != null)">
+                                    <img class="img-fluid rounded-pill" alt="@(customer.FullName)" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-toggle="lozad" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(customer.UserImage.DirectoryName, customer.UserImage.FileName), width: 40, height: 40))" />
+                                </div>
+                                <div visible="@(customer?.UserImage == null)">
+                                    <i class="fad fa-user"></i>
+                                </div>
+                            </div>
+                            <div class="d-none d-sm-block">
+                                <div asp-authorize="true" class="ml-2 line-height-1 text-left">
+                                    <div class="mb-1">Hi, @(customer.FirstName)</div>
+                                    <div class="text-small text-muted">Cash: <span class="text-primary">@(AppSettings.Value.FormatCurrency(customer.Balance))</span></div>
+                                </div>
+                                <div asp-authorize="false" class="ml-2">Account</div>
+                            </div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a visible="@(seller.Id == customer?.Id)" class="dropdown-item mr-3" asp-action="Index" asp-controller="Home" asp-area="Portal">
+                                <i class="fad fa-tachometer align-middle w-20px mr-2"></i><span>Dashboard</span>
+                            </a>
+                            <a class="dropdown-item" asp-action="EditProfile" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Url.Action("Index", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug }))">
+                                <i class="fad fa-user align-middle w-20px mr-2"></i><span>Profile</span>
+                            </a>
+                            <a class="dropdown-item" asp-action="ManageWallet" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Url.Action("Index", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug }))">
+                                <i class="fad fa-wallet align-middle w-20px mr-2"></i><span>Wallet</span>
+                            </a>
+                            <a class="dropdown-item mr-3" asp-action="Addresses" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">
+                                <i class="fad fa-address-book align-middle w-20px mr-2"></i><span>Addresses</span>
+                            </a>
+                            <a class="dropdown-item mr-3" asp-action="Orders" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">
+                                <i class="fad fa-clipboard-list-check align-middle w-20px mr-2"></i><span>Orders</span>
+                            </a>
+                            <a class="dropdown-item mr-3" asp-action="Downloads" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">
+                                <i class="fad fa-download align-middle w-20px mr-2"></i><span>Downloads</span>
+                            </a>
+                            <a class="dropdown-item mr-3" asp-action="Wishlist" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">
+                                <i class="fad fa-magic align-middle w-20px mr-2"></i><span>Wishlist</span>
+                            </a>
+                            <a class="dropdown-item mr-3" asp-action="Reviews" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">
+                                <i class="fad fa-star align-middle w-20px mr-2"></i><span>Reviews</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <div asp-authorize="false">
+                                <h6 class="dropdown-header text-center text-small font-weight-normal">If you are a new user</h6>
+                                <div class="dropdown-item-text text-nowrap text-center">
+                                    <a class="btn btn-primary btn-block" asp-action="Signup" asp-controller="Account" asp-area="" asp-route-returnUrl="@(!string.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]) ? Context.Request.Query["returnUrl"].ToString() : Context.Request.RelativeUrl())">Register</a>
+                                </div>
+                                <a class="dropdown-item" asp-action="Signin" asp-controller="Account" asp-area="" asp-route-returnUrl="@(!string.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]) ? Context.Request.Query["returnUrl"].ToString() : Context.Request.RelativeUrl())">
+                                    <i class="fad fa-sign-in align-middle w-20px mr-2"></i><span>Sign into account</span>
+                                </a>
+                            </div>
+                            <div asp-authorize="true">
+                                <button class="dropdown-item" data-submit="click" data-action="@(Url.Action("Signout", "Account", new { area = "", returnUrl = Context.Request.RelativeUrl() }))" data-method="post"><i class="fad fa-sign-out align-middle w-20px mr-2"></i><span>Sign out</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 order-2">
+                <ul class="nav nav-tabs tabs-alt border-bottom-0 nav-nowrap text-nowrap flex-nowrap overflow-hidden">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@(Url.Action("Index", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, slug = string.Empty }))">
+                            <span class="align-middle mr-2"><i class="fad fa-home text-primary"></i></span><span>Home</span>
+                        </a>
+                    </li>
+
+                    @foreach (var categoryOption in Model.CategoryOptions)
+                    {
+                        @if ((categoryOption.RawValue?.Tags.Any() ?? false))
+                        {
+                            <li class="nav-item dropdown dropdown-scrollable">
+                                <a class="nav-link dropdown-toggle @(categoryOption.Selected ? "active" : "")" data-toggle="dropdown" data-display="static" href="javascript:void(0)">
+                                    <span visible="@(!string.IsNullOrWhiteSpace(categoryOption.RawValue?.Icon))" class="align-middle mr-2"><i class="fad fa-@(categoryOption.RawValue.Icon) text-primary"></i></span><span>@(categoryOption.Text)</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right">
+
+                                    <a class="dropdown-item" href="@(Url.Action("Products", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, slug = string.Empty, search = categoryOption.Value }))">
+                                        <span class="align-middle mr-2"><i class="fad fa-search"></i></span><span>All</span>
+                                    </a>
+                                    @foreach (var tag in categoryOption.RawValue.Tags)
+                                    {
+                                        <a class="dropdown-item" href="@(Url.Action("Products", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, slug = string.Empty, search = tag.Slug }))">
+                                            <span class="align-middle mr-2"><i class="fad fa-search"></i></span><span>@(tag.Name)</span>
+                                        </a>
+                                    }
+                                </div>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(categoryOption.Selected ? "active" : "")" href="@(Url.Action("Products", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, slug = string.Empty, search = categoryOption.Value }))">
+                                    @if (categoryOption.RawValue != null)
+                                    {
+                                        <span visible="@(!string.IsNullOrWhiteSpace(categoryOption.RawValue.Icon))" class="align-middle mr-2"><i class="fad fa-@(categoryOption.RawValue.Icon) text-primary"></i></span><span>@(categoryOption.Text)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="align-middle mr-2"><i class="fad fa-box text-primary"></i></span><span>@(categoryOption.Text)</span>
+                                    }
+                                </a>
+                            </li>
+                        }
+
+                    }
+
+                    <li class="nav-item dropdown dropdown-scrollable">
+                        <button type="button" class="nav-link dropdown-toggle" data-toggle="dropdown" data-display="static"><span class="align-middle mr-2"><i class="fad fa-ellipsis-h text-primary"></i></span><span>More</span></button>
+                        <div class="dropdown-menu dropdown-menu-right"></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

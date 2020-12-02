@@ -1,0 +1,63 @@
+﻿@{
+    Html.AddTitle("Wallet");
+
+    var theme = await Context.GetThemeAsync();
+    var member = await Context.GetMemberAsync();
+
+    Layout = theme.Layout;
+}
+
+<div class="row">
+    <div class="col-12 col-md-6 mb-4">
+        <div class="card card-condenced h-100">
+            <div class="card-body">
+                <div class="card-title pb-3">
+                    <h5 class="mb-0">Your balance</h5>
+                </div>
+                <div class="media flex-column text-center align-items-center">
+                    <i class="fad fa-wallet fa-3x text-primary"></i>
+                    <div class="media-body">
+                        <div class="fa-2x my-3">@(AppSettings.Value.FormatCurrency(member.Balance))</div>
+                        <div class="d-flex flex-wrap align-items-center">
+                            <div class="dropdown">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Withdraw</button>
+                                <div class="dropdown-menu">
+                                    <button type="button" class="dropdown-item" data-submit="click" data-action="@(Url.Action("CashOut", "Account", new { area = string.Empty, mode = PaymentMode.Mobile, reference = member.UserCode, returnUrl = Context.Request.RelativeUrl() }))" data-method="get" data-dialog="modal">Mobile Money</button>
+                                    <button type="button" class="dropdown-item" data-submit="click" data-action="@(Url.Action("CashOut", "Account", new { area = string.Empty, mode = PaymentMode.Bank, reference = member.UserCode, returnUrl = Context.Request.RelativeUrl() }))" data-method="get" data-dialog="modal">Bank Account</button>
+                                </div>
+                            </div>
+                            <div class="mx-2 text-muted">|</div>
+                            <button type="button" class="btn btn-default" data-submit="click" data-action="@(Url.Action("CashIn", "Account", new { area = string.Empty, reference = member.UserCode, type = TransactionType.Deposit, returnUrl = Context.Request.RelativeUrl() }))" data-method="get" data-dialog="modal">Deposit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 mb-4">
+        <div class="card card-condenced h-100">
+            <div class="card-body">
+                <div class="card-title pb-3">
+                    <h5 class="mb-0">Settlement details</h5>
+                </div>
+                <div class="media flex-column text-center align-items-center">
+                    <i class="fad fa-money-check-edit fa-3x text-primary"></i>
+                    <div class="media-body">
+                        <div class="my-3">
+                            Add or update settlement details so that payments are settled into your account.
+                        </div>
+                        <div class="d-flex flex-wrap align-items-center justify-content-end">
+                            <div class="dropdown">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Settlement</button>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <button type="button" class="dropdown-item" data-submit="click" data-action="@(Url.Action("EditPayment", "Account", new { area = string.Empty, mode = PaymentMode.Mobile, returnUrl = Context.Request.RelativeUrl() }))" data-method="get" data-dialog="modal">Mobile Money Settlement</button>
+                                    <button type="button" class="dropdown-item" data-submit="click" data-action="@(Url.Action("EditPayment", "Account", new { area = string.Empty, mode = PaymentMode.Bank, returnUrl = Context.Request.RelativeUrl() }))" data-method="get" data-dialog="modal">Bank Account Settlement</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

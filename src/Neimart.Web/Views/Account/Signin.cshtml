@@ -1,0 +1,59 @@
+﻿@model SignInModel
+@{
+    Html.AddTitle("Sign in");
+}
+
+<div>
+    <div class="card card-condenced mb-4 mx-md-5">
+        <div class="card-header p-0 border-bottom-0">
+            <ul class="nav nav-tabs tabs-alt">
+                <li class="nav-item flex-fill text-center">
+                    <a class="nav-link pt-3 text-primary active"  asp-action="Signin" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Context.Request.Query["returnUrl"])">Sign in</a>
+                </li>
+                <li class="nav-item flex-fill text-center">
+                    <a class="nav-link pt-3"   asp-action="Signup" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Context.Request.Query["returnUrl"])">Register</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body pb-2">
+            <div class="card-title d-flex align-items-center justify-content-between mb-4">
+                <h1 class="h4 mb-0">Sign in</h1>
+            </div>
+            <form asp-action="Signin" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Context.Request.Query["returnUrl"])">
+                <div asp-validation-summary="ModelOnly" class="alert callout-danger mb-3" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <label asp-for="Email" class="form-label"></label>
+                        <a asp-action="Signup" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Context.Request.Query["returnUrl"])" class="form-label">Create an account</a>
+                    </div>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <label asp-for="Password" class="form-label"></label>
+                        <a asp-action="ForgotPassword" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Context.Request.Query["returnUrl"])" class="form-label">Forgot your password?</a>
+                    </div>
+                    <input asp-for="Password" type="password" class="form-control" />
+                    <span asp-validation-for="Password"></span>
+                </div>
+                <div class="form-group">
+                    <div>@(Html.Recaptcha<RecaptchaV2Checkbox>(RecaptchaSettings.Value))</div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+                </div>
+            </form>
+            @(await Html.PartialAsync("Partials/_ExternalSignin", ("Sign in", Model.ExternalLogins)))
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center text-center">
+    <span>Don't have an account yet? <a asp-action="Signup" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Context.Request.Query["returnUrl"])">Sign up <i class="fal fa-angle-right fa-1-3x align-middle"></i></a></span>
+</div>

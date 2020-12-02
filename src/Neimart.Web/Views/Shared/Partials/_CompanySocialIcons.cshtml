@@ -1,0 +1,20 @@
+﻿<div class="d-inline-flex">
+    <a class="btn btn-facebook btn-sm icon-btn rounded-pill mx-1 d-flex justify-content-center align-items-center" href="@(AppSettings.Value.Company.FacebookLink)" target="_blank" visible="@(!string.IsNullOrWhiteSpace(AppSettings.Value.Company.FacebookLink))">
+        <i class="fab fa-facebook-f fa-1x align-middle"></i>
+    </a>
+    <a class="btn btn-twitter btn-sm icon-btn rounded-pill mx-1 d-flex justify-content-center align-items-center" href="@(AppSettings.Value.Company.TwitterLink)" target="_blank" visible="@(!string.IsNullOrWhiteSpace(AppSettings.Value.Company.TwitterLink))">
+        <i class="fab fa-twitter fa-1x align-middle"></i>
+    </a>
+    <a class="btn btn-youtube btn-sm icon-btn rounded-pill mx-1 d-flex justify-content-center align-items-center" href="@(AppSettings.Value.Company.YoutubeLink)" target="_blank" visible="@(!string.IsNullOrWhiteSpace(AppSettings.Value.Company.YoutubeLink))">
+        <i class="fab fa-youtube fa-1x align-middle"></i>
+    </a>
+    <a class="btn btn-instagram btn-sm icon-btn rounded-pill mx-1 d-flex justify-content-center align-items-center" href="@(AppSettings.Value.Company.InstagramLink)" target="_blank" visible="@(!string.IsNullOrWhiteSpace(AppSettings.Value.Company.InstagramLink))">
+        <i class="fab fa-instagram fa-1x align-middle"></i>
+    </a>
+    <a class="btn btn-linkedin btn-sm icon-btn rounded-pill mx-1 d-flex justify-content-center align-items-center" href="@(AppSettings.Value.Company.LinkedInLink)" target="_blank" visible="@(!string.IsNullOrWhiteSpace(AppSettings.Value.Company.LinkedInLink))">
+        <i class="fab fa-linkedin fa-1x align-middle"></i>
+    </a>
+    <a class="btn btn-pinterest btn-sm icon-btn rounded-pill mx-1 d-flex justify-content-center align-items-center" href="@(AppSettings.Value.Company.PinterestLink)" target="_blank" visible="@(!string.IsNullOrWhiteSpace(AppSettings.Value.Company.PinterestLink))">
+        <i class="fab fa-pinterest-p fa-1x align-middle"></i>
+    </a>
+</div>

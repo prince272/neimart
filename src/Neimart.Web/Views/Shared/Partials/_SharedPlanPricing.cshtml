@@ -1,0 +1,40 @@
+﻿@{
+    var planTypes = EnumHelper.GetEnumValues<PlanType>().ToList();
+    var planFeaturesByTypes = AppSettings.Value.PlanFeatures;
+    var planRates = AppSettings.Value.PlanRates;
+}
+
+<div class="row justify-content-center align-items-center text-center py-4">
+    <div class="col-sm-9 col-md-8 col-lg-7">
+        <div class="mb-2 text-primary h5">PRICING</div>
+        <h2 class="h1 mb-0">Choose a Plan That Fits Your Needs</h2>
+        <hr class="mt-2 mb-3 bg-primary" style="width: 90px; padding-bottom: 1px;">
+        <p class="mb-0 text-medium">Try Neimart free for @("day".ToQuantity(AppSettings.Value.PlanTrialDays)) with no commitment.</p>
+    </div>
+</div>
+
+<div class="mb-5">
+    <div class="row text-center">
+        @foreach (var planType in planTypes)
+        {
+            <div class="col-md mb-5">
+                <div class="card h-100">
+                    <div class="card-header text-center bg-primary text-white">
+                        <h4 class="mb-0 py-1">@(planType.GetEnumText())</h4>
+                    </div>
+                    <ul class="list-group list-group-flush h-100">
+                        <li class="list-group-item"><div><span>@(AppSettings.Value.CurrencySymbol)</span><span class="display-3 text-primary">@(planRates.ElementAt(planTypes.IndexOf(planType)))</span>/ month</div></li>
+
+                        @foreach (var planFeature in planFeaturesByTypes[(int)planType])
+                        {
+                            <li class="list-group-item">@(planFeature)</li>
+                        }
+                    </ul>
+                    <div class="card-footer pb-3 border-top-0">
+                        <button type="button" class="btn btn-outline-primary btn-lg btn-block" data-submit="click" data-action="@(Url.Action("SelectPlan", "Account", new { area = string.Empty, planType = planType, returnUrl = Context.Request.RelativeUrl() }))" data-method="get" data-dialog="modal">Select Plan</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

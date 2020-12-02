@@ -1,0 +1,147 @@
+﻿@model (User User, string Link)
+@{
+    Layout = "Templates/Email/_CompanyLayout";
+
+    ViewData["Title"] = "Change Your Email Address";
+}
+
+<!-- hero-icon-lines -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-primary o_px-md o_py-xl o_xs-py-md o_sans o_text-md o_text-white" align="center">
+                                <table cellspacing="0" cellpadding="0" border="0" role="presentation">
+                                    <tbody>
+                                        <tr>
+                                            <td class="o_sans o_text o_text-white o_b-white o_px o_py o_br-max" align="center">
+                                                <img src="@(Url.ContentLink("~/img/email/email-48-white.png"))" width="48" height="48" alt="" style="max-width: 48px;">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size: 24px; line-height: 24px; height: 24px;">&nbsp; </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <h2 class="o_heading o_text-white o_mb-xxs">Change Your Email Address?</h2>
+                                <p class="o_text-white">We got a request to change the email address</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!-- spacer -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-white" style="font-size: 24px; line-height: 24px; height: 24px;">&nbsp; </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!-- content -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-white o_px-md o_py o_sans o_text o_text-secondary" align="center">
+                                <h3 class="o_heading">Hi @(Model.User.FirstName),</h3>
+                                <p>You requested to change the email address for the Neimart account associated with <b>@(Model.User.Email)</b>. No changes have been made to your account yet.</p>
+                                <br>
+                                <p>You can change the email address by clicking the link below:</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!-- button-primary -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-white o_px-md o_py-xs" align="center">
+                                <table align="center" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                                    <tbody>
+                                        <tr>
+                                            <td width="300" class="o_btn o_bg-primary o_br o_heading o_text" align="center">
+                                                <a class="o_text-white" href="@(Model.Link)">Change Email Address</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!-- content -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-white o_px-md o_py o_sans o_text o_text-secondary" align="center">
+                                <p>You can use the new email address to sign in to your Neimart account after you've change your email address.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>
+<!-- spacer-lg -->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+    <tbody>
+        <tr>
+            <td class="o_bg-light o_px-xs" align="center">
+                <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+                <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td class="o_bg-white" style="font-size: 48px; line-height: 48px; height: 48px;">&nbsp; </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+        </tr>
+    </tbody>
+</table>

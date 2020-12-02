@@ -1,0 +1,28 @@
+﻿<link rel="stylesheet" href="~/vendor/libs/swiper/swiper.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/vendor/libs/photoswipe/photoswipe.css" asp-append-version="true" />
+<style>
+    .swiper-button {
+        height: 100%;
+        margin-top: auto;
+        margin-bottom: auto;
+        display: flex;
+        position: absolute;
+        top: 0;
+    }
+
+    .swiper-button-next {
+        justify-content: flex-end;
+    }
+
+    .swiper-button-prev {
+        justify-content: flex-start;
+    }
+
+    .swiper-button-hover > * {
+        display: none;
+    }
+
+    .swiper-button-hover:hover > * {
+        display: block;
+    }
+</style>

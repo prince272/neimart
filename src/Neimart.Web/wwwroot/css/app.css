@@ -1,0 +1,492 @@
+﻿@media (max-width: 978px) {
+    .container {
+        padding-left: 0.8rem;
+        padding-right: 0.8rem;
+    }
+}
+
+.layout-1 .layout-navbar .layout-sidenav-toggle,
+.layout-reversed .layout-2 .layout-navbar .layout-sidenav-toggle,
+.layout-offcanvas .layout-navbar .layout-sidenav-toggle,
+.layout-fixed-offcanvas .layout-navbar .layout-sidenav-toggle {
+    display: block !important;
+}
+
+@media (min-width: 992px) {
+    .layout-offcanvas .layout-sidenav .layout-sidenav-toggle,
+    .layout-fixed-offcanvas .layout-sidenav .layout-sidenav-toggle {
+        display: none;
+    }
+}
+
+/* Chrome, Safari, Edge, Opera */
+/* source: https://www.w3schools.com/howto/howto_css_hide_arrow_number.asp */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* Custom styling for validation errors. */
+.field-validation-error:not(.hidden-validation) {
+    color: #d9534f;
+    font-size: .83125rem;
+}
+
+.field-validation-valid:not(.hidden-validation) {
+    display: none;
+}
+
+input:not(.hidden-validation).input-validation-error,
+input:not(.hidden-validation).input-validation-error:focus {
+    border: 1px solid #d9534f;
+    background-color: #d9534f26;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+.validation-summary-errors ul {
+    margin-bottom: 0;
+    padding-left: 25px;
+}
+
+/* Aspect Ratio Boxes */
+/* source: https://css-tricks.com/aspect-ratio-boxes/ */
+[style*="--aspect-ratio"] > :first-child {
+    width: 100%;
+}
+
+[style*="--aspect-ratio"] > img {
+    height: auto;
+}
+
+@supports (--custom:property) {
+    [style*="--aspect-ratio"] {
+        position: relative;
+    }
+
+    [style*="--aspect-ratio"]::before {
+        content: "";
+        display: block;
+        padding-bottom: calc(100% / (var(--aspect-ratio)));
+    }
+
+    [style*="--aspect-ratio"] > :first-child {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+    }
+}
+
+.text-truncate-1,
+.text-truncate-2 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+
+.text-truncate-1 {
+    -webkit-line-clamp: 1;
+}
+
+.text-truncate-2 {
+    -webkit-line-clamp: 2;
+}
+
+img {
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.w-20px {
+    width: 20px;
+}
+
+.h-20px {
+    height: 20px;
+}
+
+.w-30px {
+    width: 30px;
+}
+
+.h-30px {
+    height: 30px;
+}
+
+.w-40px {
+    width: 40px;
+}
+
+.h-40px {
+    height: 40px;
+}
+
+.w-50px {
+    width: 50px;
+}
+
+.h-50px {
+    height: 50px;
+}
+
+.w-60px {
+    width: 60px;
+}
+
+.h-60px {
+    height: 60px;
+}
+
+.w-80px {
+    width: 80px;
+}
+
+.h-80px {
+    height: 80px;
+}
+
+.w-100px {
+    width: 100px;
+}
+
+.h-100px {
+    height: 100px;
+}
+
+.w-160px {
+    width: 160px;
+}
+
+.h-160px {
+    height: 160px;
+}
+
+.w-130px {
+    width: 130px;
+}
+
+.h-130px {
+    height: 130px;
+}
+
+.w-310px {
+    width: 310px;
+}
+
+.h-310px {
+    height: 310px;
+}
+
+.fal {
+    font-size: 1rem;
+}
+
+.far {
+    font-size: 1rem;
+}
+
+.fad {
+    font-size: 1rem;
+}
+
+.fab {
+    font-size: 1rem;
+}
+
+.fas {
+    font-size: 1rem;
+}
+
+.fa-1x {
+    font-size: 1rem;
+}
+
+.fa-1-3x {
+    font-size: 1.3rem;
+}
+
+.fa-2x {
+    font-size: 2rem;
+}
+
+.fa-3x {
+    font-size: 3rem;
+}
+
+.fa-4x {
+    font-size: 4rem;
+}
+
+.fa-5x {
+    font-size: 5rem;
+}
+
+/* source: https://wrapbootstrap.com/theme/appwork-bootstrap-4-template-ui-kit-WB0C668T3/comments?page=24 */
+.breadcrumb-dark .breadcrumb-item {
+    color: #fff;
+}
+
+.breadcrumb-dark .breadcrumb-item a {
+    color: rgba(255, 255, 255, .5);
+}
+
+.breadcrumb-dark .breadcrumb-item a:hover,
+.breadcrumb-dark .breadcrumb-item a:focus {
+    color: #fff;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    color: rgba(255, 255, 255, .3);
+}
+
+/* Fix bug: toast prevents interference between the elements behind it.  */
+#toast-container {
+    background: none !important;
+    pointer-events: none;
+    padding-top: 25px;
+}
+
+#toast-container > .toast {
+    pointer-events: auto;
+    width: auto !important;
+    max-height: 425px;
+}
+
+#scroll-to-top {
+    display: none;
+}
+
+/* a.footer-link, */ /* Uncomment to remove an underline from the footer links */
+a.list-group-item,
+.app-brand a,
+a.sidenav-link,
+a.navbar-search-cancel {
+    text-decoration: none !important;
+}
+
+.text-small {
+    font-size: 85%;
+}
+
+.text-medium {
+    font-size: 112%;
+}
+
+.cursor-auto {
+    cursor: auto;
+}
+.cursor-default {
+    cursor: default;
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+.cursor-wait {
+    cursor: wait;
+}
+.cursor-text {
+    cursor: text;
+}
+.cursor-move {
+    cursor: move;
+}
+.cursor-not-allowed {
+    cursor: not-allowed;
+}
+
+
+.icon-btn.btn-sm {
+    height: calc(1.501rem + 2px);
+}
+
+.img-fluid {
+    width: 100%;
+}
+
+.img-thumbnail-shadow:hover,
+.img-thumbnail-shadow:focus {
+    z-index: 1;
+}
+
+/* Typeahead.js interferes with Bootstrap input groups */
+/* source: https://stackoverflow.com/questions/22276536/typeahead-js-interferes-with-bootstrap-input-groups*/
+.input-group > .twitter-typeahead {
+    flex: 1 1 auto;
+    width: auto;
+}
+
+/* This fixes the problem when the left-hand side of the text box is square (not rounded): */
+.input-group .twitter-typeahead .form-control:not(:first-child):not(:last-child) {
+    border-radius: 4px 0px 0px 4px;
+}
+
+.swiper-caption {
+    position: absolute;
+    right: 15%;
+    bottom: 20px;
+    left: 15%;
+    z-index: 10;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    color: #fff;
+    text-align: center;
+}
+
+.swiper-gradient {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(0deg, #000000 0, transparent 100%);
+}
+
+
+.dropdown-scrollable .dropdown-menu {
+    min-width: 200px;
+}
+
+/* Medium devices (tablets, less than 992px) */
+@media (max-width: 767.98px) {
+    .dropdown.dropdown-scrollable > .dropdown-menu {
+        height: auto;
+        max-height: 400px;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+}
+
+/* CodePen Home: Bootstrap 4 Modal Fullscreen  */
+/* soruce: https://codepen.io/andreivictor/pen/MWYNPBV */
+@media (max-width: 575.98px) {
+    .modal-fullscreen {
+        padding: 0 !important;
+    }
+
+    .modal-fullscreen .modal-dialog {
+        width: 100%;
+        max-width: none;
+        height: 100%;
+        max-height: 100% !important;
+        margin: 0;
+    }
+
+    .modal-fullscreen .modal-content {
+        height: 100%;
+        max-height: 100% !important;
+        border: 0;
+        border-radius: 0;
+    }
+
+    .modal-fullscreen .modal-body {
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .modal-fullscreen-sm {
+        padding: 0 !important;
+    }
+
+    .modal-fullscreen-sm .modal-dialog {
+        width: 100%;
+        max-width: none;
+        height: 100%;
+        max-height: 100% !important;
+        margin: 0;
+    }
+
+    .modal-fullscreen-sm .modal-content {
+        height: 100%;
+        max-height: 100% !important;
+        border: 0;
+        border-radius: 0;
+    }
+
+    .modal-fullscreen-sm .modal-body {
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .modal-fullscreen-md {
+        padding: 0 !important;
+    }
+
+    .modal-fullscreen-md .modal-dialog {
+        width: 100%;
+        max-width: none;
+        height: 100%;
+        max-height: 100% !important;
+        margin: 0;
+    }
+
+    .modal-fullscreen-md .modal-content {
+        height: 100%;
+        border: 0;
+        border-radius: 0;
+    }
+
+    .modal-fullscreen-md .modal-body {
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 1199.98px) {
+    .modal-fullscreen-lg {
+        padding: 0 !important;
+    }
+
+    .modal-fullscreen-lg .modal-dialog {
+        width: 100%;
+        max-width: none;
+        height: 100%;
+        max-height: 100% !important;
+        margin: 0;
+    }
+
+    .modal-fullscreen-lg .modal-content {
+        height: 100%;
+        border: 0;
+        border-radius: 0;
+    }
+
+    .modal-fullscreen-lg .modal-body {
+        overflow-y: auto;
+    }
+}
+
+.modal-fullscreen-xl {
+    padding: 0 !important;
+}
+
+.modal-fullscreen-xl .modal-dialog {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: 100% !important;
+    margin: 0;
+}
+
+.modal-fullscreen-xl .modal-content {
+    height: 100%;
+    max-height: 100% !important;
+    border: 0;
+    border-radius: 0;
+}
+
+.modal-fullscreen-xl .modal-body {
+    overflow-y: auto;
+}

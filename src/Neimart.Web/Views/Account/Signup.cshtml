@@ -1,0 +1,78 @@
+﻿@model SignUpModel
+@{
+    Html.AddTitle("Create an account");
+}
+
+<div>
+    <div class="card card-condenced mb-4 mx-md-5">
+        <div class="card-header p-0 border-bottom-0">
+            <ul class="nav nav-tabs tabs-alt">
+                <li class="nav-item flex-fill text-center">
+                    <a class="nav-link pt-3" asp-action="Signin" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Context.Request.Query["returnUrl"])">Sign in</a>
+                </li>
+                <li class="nav-item flex-fill text-center">
+                    <a class="nav-link pt-3 text-primary active" asp-action="Signup" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Context.Request.Query["returnUrl"])">Register</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body pb-2">
+            <div class="card-title d-flex align-items-center justify-content-between mb-4">
+                <h1 class="h4 mb-0">Sign up</h1>
+            </div>
+            <form asp-action="Signup" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Context.Request.Query["returnUrl"])">
+                <div asp-validation-summary="ModelOnly" class="alert callout-danger mb-3" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-12 col-sm-6">
+                        <label asp-for="FirstName" class="form-label"></label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName"></span>
+                    </div>
+                    <div class="form-group col-12 col-sm-6">
+                        <label asp-for="LastName" class="form-label"></label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PhoneNumber" class="form-label"></label>
+                    <input asp-for="PhoneNumber" type="tel" class="form-control" data-toggle="intltel" data-country-code="@(AppSettings.Value.CountryCode)" />
+                    <span asp-validation-for="PhoneNumber"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" type="password" class="form-control" />
+                    <span asp-validation-for="Password"></span>
+                </div>
+                <div class="form-group">
+                    <label class="custom-control custom-checkbox">
+                        <input asp-for="IsAgreed" type="checkbox" class="custom-control-input">
+                        <span class="custom-control-label">
+                            <span>I agree to the <a asp-action="Terms" asp-controller="Company" asp-area="" target="_blank">terms of service</a> and <a asp-action="Privacy" asp-controller="Company" asp-area="" target="_blank">privacy policy</a>.</span>
+                        </span>
+                    </label>
+                    <span asp-validation-for="IsAgreed"></span>
+                </div>
+                <div class="form-group">
+                    <div>@(Html.Recaptcha<RecaptchaV2Checkbox>(RecaptchaSettings.Value))</div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block">Create an account</button>
+                </div>
+            </form>
+            @(await Html.PartialAsync("Partials/_ExternalSignin", ("Sign up", Model.ExternalLogins)))
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center text-center">
+    <span>Already have an account? <a asp-action="Signin" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Context.Request.Query["returnUrl"])">Sign in <i class="fal fa-angle-right fa-1-3x align-middle"></i></a></span>
+</div>

@@ -1,0 +1,15 @@
+﻿@{
+    Html.AddTitle("Access Denied");
+}
+
+<div class="card mb-4 mx-md-5">
+    <div class="card-body pb-2">
+        <div class="card-title d-flex align-items-center justify-content-between mb-4">
+            <h1 class="h4 mb-0">Access Denied</h1>
+        </div>
+        <div class="mb-3 text-center">
+            <div class="mb-3"><i class="fad fa-user-slash fa-5x text-primary"></i></div>
+            <div>You do not have access to this resource. The most common reason for this error is a mistyped URL. Please <a href="mailto:@(AppSettings.Value.Company.SupportEmail)">contact support</a> to address this problem.</div>
+        </div>
+    </div>
+</div>

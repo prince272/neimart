@@ -1,0 +1,20 @@
+﻿@{
+    var theme = await Context.GetThemeAsync();
+    Layout = theme.Layout;
+}
+@section Styles {
+    @(await RenderSectionAsync("Styles", required: false))
+}
+@section Scripts {
+    @(await RenderSectionAsync("Scripts", required: false))
+}
+
+<div class="container">
+    <div class="row no-gutters justify-content-center pb-5">
+        <div class="col-sm-10 col-md-9 col-lg-6">
+            <div class="my-5 pt-3 pb-5 px-md-3">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+</div>

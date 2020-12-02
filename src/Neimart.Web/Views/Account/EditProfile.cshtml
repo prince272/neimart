@@ -1,0 +1,105 @@
+﻿@model ProfileEditModel
+@{
+    Html.AddTitle("Profile");
+
+    var theme = await Context.GetThemeAsync();
+    var member = await Context.GetMemberAsync();
+
+    Layout = theme.Layout;
+}
+@section Styles {
+    @(await Html.PartialAsync("Libraries/_UploaderStyles"))
+
+    <style>
+        #user-image-container,
+        #user-image-container .filepond--root {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            text-align: center;
+            border-radius: 50%;
+        }
+    </style>
+}
+
+@section Scripts {
+    @(await Html.PartialAsync("Libraries/_UploaderScripts"))
+}
+
+<div class="row">
+    <div class="col-lg-10">
+        <form asp-action="EditProfile" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Context.Request.Query["returnUrl"])">
+            <div class="card card-condenced mb-4">
+                <div class="card-body pb-2">
+                    <div class="form-group">
+                        <label class="form-label">Profile image</label>
+                        <div id="user-image-container" class="border">
+                            <input id="user-image-input" type="file" style="opacity: 0;"
+                                   data-toggle="filepond"
+                                   data-input-name="@(Html.NameFor(x => x.UserImage))"
+                                   data-allow-multiple="false"
+                                   data-allow-reorder="false"
+                                   data-directory-name="@(member.Id)"
+                                   data-files="@(Model.UserImage != null ? new[] { Model.UserImage }.ToJsonString() : "[]")"
+                                   data-max-files="1"
+                                   data-file-type="image"
+                                   data-file-extensions="@(AppSettings.Value.ImageFileExtensions.ToJsonString())"
+                                   data-file-max-size="@(AppSettings.Value.ImageFileMaxSize)"
+                                   data-layout="avatar"
+                                   data-image-resize="@(Model.UserImageResize.ToJsonString())"
+                                   data-image-preview-height="200" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-12 col-sm-6">
+                            <label class="form-label" asp-for="FirstName"></label>
+                            <input class="form-control" asp-for="FirstName" />
+                            <span asp-validation-for="FirstName"></span>
+                        </div>
+                        <div class="form-group col-12 col-sm-6">
+                            <label class="form-label" asp-for="LastName"></label>
+                            <input class="form-control" asp-for="LastName" />
+                            <span asp-validation-for="LastName"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" asp-for="Bio"></label>
+                        <textarea class="form-control" rows="8" asp-for="Bio"></textarea>
+                        <span asp-validation-for="Bio"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <label asp-for="Email" class="form-label"></label>
+                            <a href="javascript:void(0)" data-submit="click" data-action="@(Url.Action("ChangeEmail", "Account", new { area = "", returnUrl = Context.Request.RelativeUrl() }))" data-method="get" data-dialog="modal" class="form-label">Change email</a>
+                        </div>
+                        <input class="form-control" asp-for="Email" readonly />
+                        <span asp-validation-for="Email"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <label class="form-label">Password</label>
+                            <a href="javascript:void(0)" data-submit="click" data-action="@(Url.Action("ChangePassword", "Account", new { area = "" }))" data-method="get" data-dialog="modal" class="form-label">Change password</a>
+                        </div>
+                        <input class="form-control" type="password" value="************" readonly />
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <label asp-for="PhoneNumber" class="form-label"></label>
+                            <a href="javascript:void(0)" data-submit="click" data-action="@(Url.Action("ChangePhoneNumber", "Account", new { area = "" }))" data-method="get" data-dialog="modal" class="form-label">@(!string.IsNullOrWhiteSpace(Model.PhoneNumber) ? "Change phone number" : "Set phone number")</a>
+                        </div>
+                        <input class="form-control" asp-for="PhoneNumber" type="tel" readonly data-toggle="intltel" data-allow-dropdown="false" data-country-code="@(AppSettings.Value.CountryCode)" />
+                        <span asp-validation-for="PhoneNumber"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap justify-content-end py-2 position-sticky bg-body" style="bottom: 0px; z-index: 20;">
+                <div class="py-2">
+                    <div class="d-flex flex-wrap">
+                        <a class="btn btn-default mr-2" asp-action="EditProfile" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Context.Request.Query["returnUrl"])">Cancel</a>
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

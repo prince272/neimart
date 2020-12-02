@@ -1,0 +1,144 @@
+﻿@model CartListModel
+@{
+    Html.AddTitle(Model.CartType.GetEnumText());
+
+    var seller = await Context.GetSellerAsync();
+
+    Layout = (Model.CartType == CartType.Wishlist) ? "_AccountLayout" : Layout;
+}
+@section Styles {
+    @(await Html.PartialAsync("Libraries/_SliderStyles"))
+}
+@section Scripts {
+    @(await Html.PartialAsync("Libraries/_SliderScripts"))
+}
+
+<div class="mb-4" style="min-height: 470px;">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex align-items-center">
+                <div class="mb-3"><h1 class="h4 mb-0">@(Model.CartType.GetEnumText()) (@("Item".ToQuantity(Model.TotalItems)))</h1></div>
+            </div>
+        </div>
+
+        @if (Model.Items.Any())
+        {
+            <div class="col-12">
+                <div class="d-none d-md-block px-3 mb-2">
+                    <div class="row">
+                        <div class="col-4 col-md-5"><div class="text-muted text-uppercase font-weight-semibold">Item</div></div>
+                        <div class="col-4 col-md-2"><div class="text-muted text-uppercase font-weight-semibold">Quantity</div></div>
+                        <div class="col-2 col-md-3"><div class="text-muted text-uppercase font-weight-semibold">Unit Price</div></div>
+                        <div class="col-2 col-md-2"><div class="text-muted text-uppercase font-weight-semibold">Subtotal</div></div>
+                    </div>
+                </div>
+
+                @foreach (var cartModel in Model.Items)
+                {
+                    <div class="card card-condenced mb-4">
+                        <div class="px-3 pt-3">
+                            <div class="row">
+                                <div class="col-12 col-md-5">
+                                    <div class="media pb-3">
+                                        <a class="d-block text-decoration-none" asp-action="Products" asp-controller="Store" asp-area="" asp-route-slug="@(cartModel.ProductModel.Product.Slug)">
+                                            <div class="d-flex justify-content-center align-items-center w-80px h-80px p-1 border theme-bg-white rounded">
+                                                <div visible="@(cartModel.ProductModel.Product.Image != null)"><img class="img-fluid rounded" alt="@(cartModel.ProductModel.Product.Name)" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-toggle="lozad" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(cartModel.ProductModel.Product.Image.DirectoryName, cartModel.ProductModel.Product.Image.FileName), width: 70, height: 70))" /></div>
+                                                <i visible="@(cartModel.ProductModel.Product.Image == null)" class="fad fa-image fa-2x text-light"></i>
+                                            </div>
+                                        </a>
+                                        <div class="media-body ml-3">
+                                            <div class="mb-2"><a class="h5 mb-0 text-body text-truncate-1" asp-action="Products" asp-controller="Store" asp-area="" asp-route-slug="@(cartModel.ProductModel.Product.Slug)">@(cartModel.ProductModel.Product.Name)</a></div>
+                                            <div class="d-flex flex-wrap align-items-start">
+                                                <a href="javascript:void(0)" class="btn btn-default btn-sm py-2 mr-2 mb-2"
+                                                   data-submit="click"
+                                                   data-action="@(Url.Action("ProcessCart", "Store", new { area = "", storeSlug = seller.StoreSlug, productId = cartModel.ProductModel.Product.Id, cartType = Model.OtherCartType, returnUrl = Context.Request.RelativeUrl() }))"
+                                                   data-method="post"><i class="fal fa-shopping-cart mr-1 text-center w-20px" visible="@(Model.OtherCartType == CartType.Cart)"></i><i class="fal fa-magic mr-1" visible="@(Model.OtherCartType == CartType.Wishlist)"></i><span>Move to @(Model.OtherCartType.GetEnumText().ToLowerInvariant())</span></a>
+                                                <a href="javascript:void(0)" class="btn btn-default btn-sm py-2"
+                                                   data-submit="click"
+                                                   data-action="@(Url.Action("ProcessCart", "Store", new { area = "", storeSlug = seller.StoreSlug, productId = cartModel.ProductModel.Product.Id, cartType = Model.CartType, quantity = 0, returnUrl = Context.Request.RelativeUrl() }))"
+                                                   data-method="post"><i class="fal fa-trash mr-1 text-center w-20px"></i><span>Remove from @(Model.CartType.GetEnumText().ToLowerInvariant())</span></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col col-md-2">
+                                    <div class="d-flex align-items-center w-100 h-100 pb-3">
+                                        @if (cartModel.ProductModel.Product.Stock != ProductStock.OutOfStock)
+                                        {
+                                            <div class="input-group">
+                                                <select style="display: none;"
+                                                        data-toggle="select2"
+                                                        data-submit="change"
+                                                        data-action="@Url.Action("ProcessCart", "Store", new { area = string.Empty, storeSlug = seller.StoreSlug, returnUrl = Context.Request.RelativeUrl() })"
+                                                        data-method="post"
+                                                        data-name="quantity"
+                                                        data-object="@(new { productId = cartModel.ProductModel.Product.Id }.ToJsonString())"
+                                                        asp-items="@(cartModel.QuantityOptions)"></select>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="btn btn-outline-danger" style="pointer-events: none;">@(cartModel.ProductModel.Product.Stock.GetEnumText())</div>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-auto col-md-3">
+                                    <div class="d-flex align-items-center w-100 h-100 pb-3">
+                                        <div class="h4 mb-0 text-muted" visible="@(cartModel.ProductModel.Product.Stock == ProductStock.InStock)">
+                                            <div>@(cartModel.ProductModel.Product.Price > 0 ? AppSettings.Value.FormatCurrency(cartModel.ProductModel.Product.Price) : "Free")</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-auto col-md-2">
+                                    <div class="d-flex align-items-center w-100 h-100 pb-3">
+                                        <div class="h3 mb-0 text-primary" visible="@(cartModel.ProductModel.Product.Stock == ProductStock.InStock)">@(AppSettings.Value.FormatCurrency(cartModel.Evaluation.TotalAmount))</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-12">
+                <div class="pb-3 text-small"><span class="badge badge-primary">Info</span> <span class="text-muted">Do not delay the purchase, adding products to your @(Model.CartType.GetEnumText().ToLowerInvariant()) does not mean saving them.</span></div>
+            </div>
+            <div class="col-auto ml-auto">
+                <div class="card card-condenced mb-4">
+                    <div class="row py-2 px-3">
+                        <div class="col-auto">
+                            <div>
+                                <div class="d-flex mb-1 h4">
+                                    <div style="width: 100px;">Total:</div>
+                                    <div class="text-primary">@(AppSettings.Value.FormatCurrency(Model.CartListEvaluation.TotalAmount))</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 py-3 position-sticky bg-body" style="bottom: 0px; z-index: 20;" visible="@(Model.CartType == CartType.Cart)">
+                <div class="card card-condenced">
+                    <div class="card-body pb-0">
+                        <div class="d-flex flex-wrap justify-content-end">
+                            <a class="btn btn-primary btn-lg flex-grow-1 flex-md-grow-0 px-5 order-lg-2 ml-md-3 mb-3" asp-action="Checkout" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Proceed to checkout</a>
+                            <a class="btn btn-default btn-lg flex-grow-1 flex-md-grow-0 px-5 order-lg-1 mb-3" asp-action="Index" asp-controller="Store" asp-area="" asp-route-storeSlug="@seller.StoreSlug">Continue shopping</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="d-flex align-items-center justify-content-center">
+                    <div class="py-5 my-3 text-center">
+                        <div class="d-inline-block mb-4"><i class="fad @(Model.CartType == CartType.Cart ? "fa-shopping-cart" : "fa-magic") fa-5x text-primary"></i></div>
+                        <h4 class="h3">Your @(Model.CartType.GetEnumText()) is Empty</h4>
+                        <p class="text-muted">Use the "Add to @(Model.CartType.GetEnumText().ToLowerInvariant())" button to add a product to your @(Model.CartType.GetEnumText().ToLowerInvariant()). You'll see them here once it's added.</p>
+                        <div class="d-inline-block"><a class="btn btn-primary" asp-action="Products" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)">Start Shopping</a></div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

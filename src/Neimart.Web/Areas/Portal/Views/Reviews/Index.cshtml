@@ -1,0 +1,204 @@
+﻿@model ReviewListModel
+@{
+    Html.AddTitle("Reviews");
+
+    var seller = await Context.GetMemberAsync();
+}
+
+@section Styles {
+    <partial name="Libraries/_TableStyles" />
+}
+
+@section Scripts {
+    <partial name="Libraries/_TableScripts" />
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex flex-wrap align-items-center justify-content-between">
+            <div class="pb-3">
+                <h1 class="h3 mb-0 pr-3">Reviews (@(Model.TotalItems))</h1>
+            </div>
+        </div>
+    </div>
+    @if (Model.TotalItems > 0 || Model.HasRequestValues())
+    {
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header p-0">
+                    <div class="d-flex flex-wrap align-items-center pt-3 pl-3">
+                        <div class="ml-auto"></div>
+                        <div class="pb-3 pr-3" visible="@(Model.HasRequestValues())">
+                            <button class="btn btn-default"
+                                    type="button"
+                                    data-submit="click"
+                                    data-action="@Url.Action("Index", "Reviews", new { area = "Portal" })"
+                                    data-method="get">
+                                <span>Clear Filters</span>
+                            </button>
+                        </div>
+                        <div class="pb-3 pr-3">
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                    <span>Filter</span>
+                                </button>
+                                <div class="dropdown-menu dropdown-static dropdown-menu-right">
+                                    <div class="dropdown-item-text">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="mr-3">Rating</div>
+                                            <div class="input-group w-auto">
+                                                <select style="opacity: 0;"
+                                                        data-toggle="select2"
+                                                        data-submit="change"
+                                                        data-action="@Url.Action("Index", "Reviews", new { area = "Portal" })"
+                                                        data-method="get"
+                                                        data-name="rating"
+                                                        data-object="@(Model.GetRequestValues().ToJsonString())"
+                                                        asp-items="@(Model.RatingOptions)"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-item-text">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="mr-3">Approval</div>
+                                            <div class="input-group w-auto">
+                                                <select style="opacity: 0;"
+                                                        data-toggle="select2"
+                                                        data-submit="change"
+                                                        data-action="@Url.Action("Index", "Reviews", new { area = "Portal" })"
+                                                        data-method="get"
+                                                        data-name="approved"
+                                                        data-object="@(Model.GetRequestValues().ToJsonString())"
+                                                        asp-items="@(Model.ApprovedOptions)"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pb-3 pr-3 w-100 w-md-auto">
+                            <form asp-action="Index" asp-controller="Reviews" asp-area="Portal" method="get">
+                                <div class="input-group">
+                                    <input name="title" type="text" asp-for="Filter.Title" class="form-control ignore-focus" />
+                                    <span class="input-group-append">
+                                        <button class="icon-btn btn btn-default" type="submit" data-toggle="tooltip" title="Search">
+                                            <i class="fal fa-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <table class="card-table table table-hover" style="margin: 0 !important;" data-toggle="datatable" data-checkbox-target=".review-checkbox-target">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="border-bottom: none;">Image</th>
+                            <th style="border-bottom: none;">Review</th>
+                            <th style="border-bottom: none;">Rating</th>
+                            <th style="border-bottom: none;">Customer</th>
+                            <th style="border-bottom: none;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var reviewModel in Model.Items)
+                        {
+
+                            <tr id="review-id-@(reviewModel.Review.Id)"
+                                data-submit="click"
+                                data-action="@(Url.Action("Edit", "Reviews", new { area = "Portal", id = reviewModel.Review.Id }))"
+                                data-method="get"
+                                data-value="@(reviewModel.Review.Id)"
+                                data-ignore-closest="td"
+                                data-ignore-target=":input">
+                                <td>
+                                    <div class="d-flex justify-content-center align-items-center w-50px h-50px p-1 border theme-bg-white rounded">
+                                        <div visible="@(reviewModel.Review.Customer.UserImage != null)"><img class="img-fluid rounded" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-toggle="lozad" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(reviewModel.Review.Customer.UserImage.DirectoryName, reviewModel.Review.Customer.UserImage.FileName), width: 40, height: 40))" /></div>
+                                        <i visible="@(reviewModel.Review.Customer.UserImage == null)" class="fad fa-image fa-2x text-light"></i>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="h-50px d-flex flex-column justify-content-center">
+                                        <div>@(reviewModel.Review.Title)</div>
+                                        <div>
+                                            @if (reviewModel.Review.Approved)
+                                            {
+                                                <span class="badge badge-primary">Approved</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-dark">Rejected</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div><div data-toggle="rateyo" data-rating="@(reviewModel.Review.Rating)" data-readonly="true"></div></div>
+                                    </div>
+                                </td>
+                                <td>@(reviewModel.Review.Customer.FullName)</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-default rounded-pill icon-btn borderless" data-toggle="dropdown"><i class="far fa-ellipsis-h"></i></button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <button type="button" class="dropdown-item"
+                                                    data-submit="click"
+                                                    data-action="@(Url.Action("Edit", "Reviews", new { area = "Portal", id = reviewModel.Review.Id }))"
+                                                    data-method="get">Edit</button>
+                                            <button type="button" class="dropdown-item"
+                                                    data-submit="click"
+                                                    data-action="@(Url.Action("Delete", "Reviews", new { area = "Portal", id = reviewModel.Review.Id }))"
+                                                    data-method="post"
+                                                    data-title="Delete Review?"
+                                                    data-message="Are you sure you want to delete @(reviewModel.Review.Title) review?"
+                                                    data-dialog="confirm"
+                                                    data-confirm-label="Delete"
+                                                    data-confirm-class-name="btn-danger">Delete</button>
+                                            <button type="button" class="dropdown-item"
+                                                    data-submit="click"
+                                                    data-action="@(Url.Action("Approve", "Reviews", new { area = "Portal",  id = reviewModel.Review.Id, toggle = !reviewModel.Review.Approved }))"
+                                                    data-method="post">@(reviewModel.Review.Approved ? "Reject" : "Approve")</button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="card-footer pt-3 pb-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
+                        <div class="pb-3 pr-3 d-none d-md-block">Showing @(Model.PageFrom)-@(Model.PageTo) out of @("review".ToQuantity(Model.TotalItems))</div>
+
+                        <div class="pb-3">
+                            <ul style="margin-bottom: 0px"
+                                data-toggle="paginator"
+                                data-page="@Model.Page"
+                                data-total-pages="@Model.TotalPages"
+                                data-submit="pageClick"
+                                data-action="@Url.Action("Index", "Reviews", new { area = "Portal" })"
+                                data-method="get"
+                                data-name="page"
+                                data-object="@(Model.GetRequestValues().ToJsonString())">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-center">
+                <div class="py-5 my-3 text-center">
+                    <div class="d-inline-block mb-4"><i class="fad fa-star fa-5x text-primary"></i></div>
+                    <h4 class="h4">No Reviews Yet</h4>
+                    <p class="text-muted">Once your customers start adding reviews, you'll see them here.</p>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+

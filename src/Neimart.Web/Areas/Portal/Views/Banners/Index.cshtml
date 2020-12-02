@@ -1,0 +1,202 @@
+﻿@model BannerListModel
+@{
+    Html.AddTitle("Banners");
+
+    var seller = await Context.GetMemberAsync();
+}
+
+@section Styles {
+    @(await Html.PartialAsync("Libraries/_TableStyles"))
+}
+
+@section Scripts {
+    @(await Html.PartialAsync("Libraries/_TableScripts"))
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex flex-wrap align-items-center justify-content-between">
+            <div class="pb-3">
+                <h1 class="h3 mb-0 pr-3">Banners (@(Model.TotalItems))</h1>
+            </div>
+            <div class="pb-3">
+                <div class="d-flex flex-wrap">
+                    <div class="dropdown">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Add Banner</button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            @foreach (var imageSize in Enum.GetValues(typeof(BannerSize)).Cast<BannerSize>())
+                            {
+                                <a class="dropdown-item" asp-action="Add" asp-controller="Banners" asp-area="Portal" asp-route-size="@(imageSize)">@(imageSize.GetEnumText())</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (Model.TotalItems > 0 || Model.HasRequestValues())
+    {
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header p-0">
+                    <div class="d-flex flex-wrap align-items-center pt-3 pl-3">
+                        <div class="ml-auto"></div>
+                        <div class="pb-3 pr-3" visible="@(Model.HasRequestValues())">
+                            <button class="btn btn-default"
+                                    type="button"
+                                    data-submit="click"
+                                    data-action="@Url.Action("Index", "Banners", new { area = "Portal" })"
+                                    data-method="get">
+                                <span>Clear Filters</span>
+                            </button>
+                        </div>
+                        <div class="pb-3 pr-3">
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                    <span>Filter</span>
+                                </button>
+                                <div class="dropdown-menu dropdown-static dropdown-menu-right">
+                                    <div class="dropdown-item-text">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="mr-3">Size</div>
+                                            <div class="input-group w-auto">
+                                                <select style="opacity: 0;"
+                                                        data-toggle="select2"
+                                                        data-submit="change"
+                                                        data-action="@Url.Action("Index", "Banners", new { area = "Portal" })"
+                                                        data-method="get"
+                                                        data-name="size"
+                                                        data-object="@(Model.GetRequestValues().ToJsonString())"
+                                                        asp-items="@(Model.SizeOptions)"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pb-3 pr-3 w-100 w-md-auto">
+                            <form asp-action="Index" asp-controller="Banners" asp-area="Portal" method="get">
+                                <div class="input-group">
+                                    <input name="search" type="text" asp-for="Filter.Search" autocomplete="off" class="form-control ignore-focus" />
+                                    <span class="input-group-append">
+                                        <button class="icon-btn btn btn-default" type="submit" data-toggle="tooltip" title="Search">
+                                            <i class="fal fa-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <table class="card-table table table-hover" style="margin: 0 !important;" data-toggle="datatable" data-checkbox-target=".banner-checkbox-target">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="border-bottom: none;">Image</th>
+                            <th style="border-bottom: none;">Banner</th>
+                            <th style="border-bottom: none;">Size</th>
+                            <th style="border-bottom: none;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var bannerModel in Model.Items)
+                        {
+                            <tr id="banner-id-@(bannerModel.Banner.Id)"
+                                data-submit="click"
+                                data-action="@(Url.Action("Edit", "Banners", new { area = "Portal", id = bannerModel.Banner.Id }))"
+                                data-method="get"
+                                data-value="@(bannerModel.Banner.Id)"
+                                data-ignore-closest="td"
+                                data-ignore-target=":input">
+                                <td>
+                                    <div class="d-flex justify-content-center align-items-center w-50px h-50px p-1 border theme-bg-white rounded">
+                                        <div visible="@(bannerModel.Banner.Image != null)"><img class="img-fluid rounded" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-toggle="lozad" data-src="@(Url.ProcessImage(FileClient.GetSourceUrl(bannerModel.Banner.Image.DirectoryName, bannerModel.Banner.Image.FileName), width: 40, height: 40))" /></div>
+                                        <i visible="@(bannerModel.Banner.Image == null)" class="fad fa-image fa-2x text-light"></i>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="h-50px d-flex flex-column justify-content-center">
+                                        <div>@(bannerModel.Banner.Title)</div>
+                                        <div>
+                                            <span class="badge badge-primary" visible="@(bannerModel.Banner.Published)">Published</span>
+                                            <span class="badge badge-dark" visible="@(!bannerModel.Banner.Published)">Unpublished</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@(bannerModel.Banner.Size.GetEnumText())</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-default rounded-pill icon-btn borderless" data-toggle="dropdown"><i class="far fa-ellipsis-h"></i></button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <button type="button" class="dropdown-item"
+                                                    data-submit="click"
+                                                    data-action="@(Url.Action("Edit", "Banners", new { area = "Portal", id = bannerModel.Banner.Id }))"
+                                                    data-method="get">Edit</button>
+                                            <button type="button" class="dropdown-item"
+                                                    data-submit="click"
+                                                    data-action="@(Url.Action("Delete", "Banners", new { area = "Portal", id = bannerModel.Banner.Id }))"
+                                                    data-method="post"
+                                                    data-title="Delete Banner"
+                                                    data-message="Are you sure you want to delete @(bannerModel.Banner.Title) banner?"
+                                                    data-dialog="confirm"
+                                                    data-confirm-label="Delete"
+                                                    data-confirm-class-name="btn-danger">Delete</button>
+                                            <button type="button" class="dropdown-item"
+                                                    data-submit="click"
+                                                    data-action="@(Url.Action("Publish", "Banners", new { area = "Portal",  id = bannerModel.Banner.Id, toggle = !bannerModel.Banner.Published }))"
+                                                    data-method="post">@(bannerModel.Banner.Published ? "Unpublish" : "Publish")</button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="card-footer pt-3 pb-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
+                        <div class="pb-3 pr-3 d-none d-md-block">
+                            Showing @(Model.PageFrom)-@(Model.PageTo) out of @("banner".ToQuantity(Model.TotalItems))
+                        </div>
+
+                        <div class="pb-3">
+                            <ul style="margin-bottom: 0px"
+                                data-toggle="paginator"
+                                data-page="@Model.Page"
+                                data-total-pages="@Model.TotalPages"
+                                data-submit="pageClick"
+                                data-action="@Url.Action("Index", "Banners", new { area = "Portal" })"
+                                data-method="get"
+                                data-name="page"
+                                data-object="@(Model.GetRequestValues().ToJsonString())">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-center">
+                <div class="py-5 my-3 text-center">
+                    <div class="d-inline-block mb-4"><i class="fad fa-sign fa-5x text-primary"></i></div>
+                    <h4 class="h3">Add Your First Banner</h4>
+                    <p class="text-muted">Once you start adding your banners, you'll see them here.</p>
+                    <div class="d-inline-block">
+                        <div class="dropdown">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Add Banner</button>
+                            <div class="dropdown-menu">
+                                @foreach (var imageSize in Enum.GetValues(typeof(BannerSize)).Cast<BannerSize>())
+                                {
+                                    <a class="dropdown-item" asp-action="Add" asp-controller="Banners" asp-area="Portal" asp-route-size="@(imageSize)">@(imageSize.GetEnumText())</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+

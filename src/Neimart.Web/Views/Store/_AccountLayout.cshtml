@@ -1,0 +1,44 @@
+﻿@{
+    var seller = await Context.GetSellerAsync();
+
+    Layout = "~/Views/Store/_Layout.cshtml";
+}
+@section Styles {
+    @(await RenderSectionAsync("Styles", required: false))
+}
+@section Scripts {
+    @(await RenderSectionAsync("Scripts", required: false))
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-3 pt-0 d-none d-lg-block">
+        <div class="card card-condenced sticky-top mb-3" style="top: 90px !important; z-index: auto !important;">
+            <div class="list-group list-group-flush text-nowrap overflow-auto flex-row flex-lg-column account-list-group">
+                <a class="list-group-item list-group-item-action" asp-action="EditProfile" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Url.Action("Index", "Store", new { storeSlug = seller.StoreSlug }))" asp-append-active="true">
+                    <i class="fad fa-user-edit fa-1-3x align-middle w-20px mr-3"></i><span>Profile</span>
+                </a>
+                <a class="list-group-item list-group-item-action" asp-action="ManageWallet" asp-controller="Account" asp-area="" asp-route-returnUrl="@(Url.Action("Index", "Store", new { storeSlug = seller.StoreSlug }))" asp-append-active="true">
+                    <i class="fad fa-wallet fa-1-3x align-middle w-20px mr-3"></i><span>Wallet</span>
+                </a>
+                <a class="list-group-item list-group-item-action" asp-action="Addresses" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)" asp-append-active="true">
+                    <i class="fad fa-address-book fa-1-3x align-middle w-20px mr-3"></i><span>Addresses</span>
+                </a>
+                <a class="list-group-item list-group-item-action" asp-action="Orders" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)" asp-append-active="true">
+                    <i class="fad fa-clipboard-list-check fa-1-3x align-middle w-20px mr-3"></i><span>Orders</span>
+                </a>
+                <a class="list-group-item list-group-item-action" asp-action="Downloads" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)" asp-append-active="true">
+                    <i class="fad fa-download fa-1-3x align-middle w-20px mr-3"></i><span>Downloads</span>
+                </a>
+                <a class="list-group-item list-group-item-action" asp-action="Wishlist" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)" asp-append-active="true">
+                    <i class="fad fa-magic fa-1-3x align-middle w-20px mr-3"></i><span>Wishlist</span>
+                </a>
+                <a class="list-group-item list-group-item-action" asp-action="Reviews" asp-controller="Store" asp-area="" asp-route-storeSlug="@(seller.StoreSlug)" asp-append-active="true">
+                    <i class="fad fa-star fa-1-3x align-middle w-20px mr-3"></i><span>Reviews</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-9">
+        @RenderBody()
+    </div>
+</div>
