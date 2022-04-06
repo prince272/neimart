@@ -202,17 +202,13 @@ namespace Neimart.Core.Settings
 
         public string AdminPassword { get; set; }
 
-        public string SupportEmail { get; set; }
+        public string NotificationEmail { get; set; }
 
-        public string SupportPassword { get; set; }
+        public string NotificationPassword { get; set; }
 
         public string InfoEmail { get; set; }
 
         public string InfoPassword { get; set; }
-
-        public string NotificationEmail { get; set; }
-
-        public string NotificationPassword { get; set; }
 
         public string PhoneNumber { get; set; }
 

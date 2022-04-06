@@ -60,9 +60,8 @@ namespace Neimart.Web.Services
             return role switch
             {
                 MessageRole.Admin => (_appSettings.Value.Company.AdminEmail, _appSettings.Value.Company.AdminPassword),
-                MessageRole.Support => (_appSettings.Value.Company.SupportEmail, _appSettings.Value.Company.SupportPassword),
+                MessageRole.Notification => (_appSettings.Value.Company.NotificationEmail, _appSettings.Value.Company.NotificationEmail),
                 MessageRole.Info => (_appSettings.Value.Company.InfoEmail, _appSettings.Value.Company.InfoPassword),
-                MessageRole.Notification => (_appSettings.Value.Company.NotificationEmail, _appSettings.Value.Company.NotificationPassword),
                 _ => throw new InvalidOperationException(),
             };
         }
@@ -122,7 +121,6 @@ namespace Neimart.Web.Services
     {
         Admin,
         Info,
-        Support,
         Notification
     }
 }

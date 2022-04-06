@@ -87,10 +87,10 @@ namespace Neimart.Web.Controllers
             if (ModelState.IsValid)
             {
                 await _messageService.SendEmailAsync(
-                    messageRole: MessageRole.Support,
+                    messageRole: MessageRole.Info,
                     messageType: MessageType.CompanyContact,
                     messageDisplay: "Neimart Support",
-                    email: _appSettings.Company.SupportEmail, model);
+                    email: _appSettings.Company.InfoEmail, model);
 
                 TempData.AddAlert(AlertMode.Alert, AlertType.Success, "Your message has been sent. We'll contact you shortly.");
             }

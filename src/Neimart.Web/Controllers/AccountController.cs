@@ -107,7 +107,7 @@ namespace Neimart.Web.Controllers
                         var link = Url.Action(nameof(VerifyEmail), "Account", new { userId = member.Id, token, returnUrl }, protocol: Request.Scheme);
 
                         await _messageService.SendEmailAsync(
-                                  messageRole: MessageRole.Support,
+                                  messageRole: MessageRole.Notification,
                                   messageType: MessageType.VerifyEmail,
                                   messageDisplay: "Neimart Support",
                                   email: member.Email,
@@ -184,7 +184,7 @@ namespace Neimart.Web.Controllers
                             var link = Url.Action(nameof(VerifyEmail), "Account", new { userId = member.Id, token, returnUrl }, protocol: Request.Scheme);
 
                             await _messageService.SendEmailAsync(
-                                      messageRole: MessageRole.Support,
+                                      messageRole: MessageRole.Notification,
                                       messageType: MessageType.VerifyEmail,
                                       messageDisplay: "Neimart Support",
                                       email: member.Email,
@@ -345,7 +345,7 @@ namespace Neimart.Web.Controllers
                     var link = Url.Action(nameof(ResetPassword), "Account", new { token, email }, protocol: Request.Scheme);
 
                     await _messageService.SendEmailAsync(
-                        messageRole: MessageRole.Support,
+                        messageRole: MessageRole.Notification,
                         messageType: MessageType.ResetPassword,
                         messageDisplay: "Neimart Support",
                         email: email,
@@ -460,7 +460,7 @@ namespace Neimart.Web.Controllers
 
                     var link = Url.Action(nameof(ChangeEmailCallback), "Account", new { token, userId, email, returnUrl }, protocol: Request.Scheme);
                     await _messageService.SendEmailAsync(
-                        messageRole: MessageRole.Support,
+                        messageRole: MessageRole.Notification,
                         messageType: MessageType.ChangeEmail,
                         messageDisplay: "Neimart Support",
                         email: email,

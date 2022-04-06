@@ -76,9 +76,6 @@ namespace Neimart.Web
                     AdminEmail = Configuration.GetValue<string>("Sending:Smtp:Credentials:Admin:Email"),
                     AdminPassword = Configuration.GetValue<string>("Sending:Smtp:Credentials:Admin:Password"),
 
-                    SupportEmail = Configuration.GetValue<string>("Sending:Smtp:Credentials:Support:Email"),
-                    SupportPassword = Configuration.GetValue<string>("Sending:Smtp:Credentials:Support:Password"),
-
                     InfoEmail = Configuration.GetValue<string>("Sending:Smtp:Credentials:Info:Email"),
                     InfoPassword = Configuration.GetValue<string>("Sending:Smtp:Credentials:Info:Password"),
 
@@ -339,7 +336,7 @@ namespace Neimart.Web
             {
                 options.Server = Configuration.GetValue<string>("Sending:Smtp:Server");
                 options.Port = Configuration.GetValue<int>("Sending:Smtp:Port");
-                options.EnableSsl = false;
+                options.EnableSsl = true;
             });
             services.AddSmsSender();
 
