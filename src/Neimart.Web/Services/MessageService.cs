@@ -60,7 +60,7 @@ namespace Neimart.Web.Services
             return role switch
             {
                 MessageRole.Admin => (_appSettings.Value.Company.AdminEmail, _appSettings.Value.Company.AdminPassword),
-                MessageRole.Notification => (_appSettings.Value.Company.NotificationEmail, _appSettings.Value.Company.NotificationEmail),
+                MessageRole.Notification => (_appSettings.Value.Company.NotificationEmail, _appSettings.Value.Company.NotificationPassword),
                 MessageRole.Info => (_appSettings.Value.Company.InfoEmail, _appSettings.Value.Company.InfoPassword),
                 _ => throw new InvalidOperationException(),
             };

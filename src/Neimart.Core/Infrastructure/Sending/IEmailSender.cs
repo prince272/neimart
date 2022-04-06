@@ -9,7 +9,5 @@ namespace Neimart.Core.Infrastructure.Sending
     public interface IEmailSender
     {
         Task SendAsync(string userName, string password, string displayName, string email, string subject, string body);
-
-        Task SendAsync(string userName, string password, string displayName, string[] emails, string subject, string body);
     }
 }

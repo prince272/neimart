@@ -1,7 +1,10 @@
-﻿using System.Net;
-using System.Net.Mail;
-using System.Threading.Tasks;
+﻿using MailKit.Net.Smtp;
+using MailKit.Security;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using MimeKit;
+using System;
+using System.Threading.Tasks;
 
 namespace Neimart.Core.Infrastructure.Sending
 {
@@ -14,31 +17,27 @@ namespace Neimart.Core.Infrastructure.Sending
             _emailSenderOptions = emailSenderOptions.Value;
         }
 
-        public async Task SendAsync(string userName, string password, string displayName, string[] emails, string subject, string body)
+        public async Task SendAsync(string userName, string password, string displayName, string email, string subject, string body)
         {
+            var message = new MimeMessage();
+
+            message.Subject = subject;
+            message.From.Add(new MailboxAddress(displayName, userName));
+            message.To.Add(new MailboxAddress(string.Empty, email));
+
+            var builder = new BodyBuilder();
+            builder.HtmlBody = body;
+
+            message.Body = builder.ToMessageBody();
+
             using (var smtpClient = new SmtpClient())
             {
-                var message = new MailMessage
-                {
-                    Subject = subject,
-                    Body = body,
-                    IsBodyHtml = true,
-                    From = new MailAddress(userName, displayName)
-                };
-                foreach (var email in emails) message.To.Add(email);
-
-                smtpClient.Host = _emailSenderOptions.Server;
-                smtpClient.Port = _emailSenderOptions.Port;
-                smtpClient.Credentials = new NetworkCredential(userName, password, null);
-                smtpClient.EnableSsl = _emailSenderOptions.EnableSsl;
-
-                await smtpClient.SendMailAsync(message);
+                smtpClient.ServerCertificateValidationCallback = (s, c, h, e) => true;
+                await smtpClient.ConnectAsync(_emailSenderOptions.Server, _emailSenderOptions.Port, (SecureSocketOptions)2);
+                await smtpClient.AuthenticateAsync(userName, password);
+                await smtpClient.SendAsync(message);
+                await smtpClient.DisconnectAsync(true);
             }
-        }
-
-        public Task SendAsync(string userName, string password, string displayName, string email, string subject, string body)
-        {
-            return SendAsync(userName, password, displayName, new[] { email }, subject, body);
         }
     }
 }
