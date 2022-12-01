@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29911.84
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{83893631-3F69-4897-B96A-2105BC739A49}"
 EndProject
@@ -14,6 +14,15 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neimart.Tests", "tests\Neimart.Tests\Neimart.Tests.csproj", "{9DEB7920-D176-4887-93E0-77DBF21E2DD2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neimart.Data", "src\Neimart.Data\Neimart.Data.csproj", "{12A8C65A-C19C-460E-AB96-B6C7FA9323A2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gallery", "gallery", "{0DAE28B8-E82D-4B10-BEE1-F9B60052C22A}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\Desktop\Gallery\image1.png = ..\..\..\Desktop\Gallery\image1.png
+		..\..\..\Desktop\Gallery\image2.png = ..\..\..\Desktop\Gallery\image2.png
+		..\..\..\Desktop\Gallery\image3.png = ..\..\..\Desktop\Gallery\image3.png
+		..\..\..\Desktop\Gallery\image4.png = ..\..\..\Desktop\Gallery\image4.png
+		..\..\..\Desktop\Gallery\image5.png = ..\..\..\Desktop\Gallery\image5.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
