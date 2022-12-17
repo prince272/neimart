@@ -17,11 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neimart.Data", "src\Neimart
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gallery", "gallery", "{0DAE28B8-E82D-4B10-BEE1-F9B60052C22A}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\..\Desktop\Gallery\image1.png = ..\..\..\Desktop\Gallery\image1.png
-		..\..\..\Desktop\Gallery\image2.png = ..\..\..\Desktop\Gallery\image2.png
-		..\..\..\Desktop\Gallery\image3.png = ..\..\..\Desktop\Gallery\image3.png
-		..\..\..\Desktop\Gallery\image4.png = ..\..\..\Desktop\Gallery\image4.png
-		..\..\..\Desktop\Gallery\image5.png = ..\..\..\Desktop\Gallery\image5.png
+		gallery\image1.png = gallery\image1.png
+		gallery\image2.png = gallery\image2.png
+		gallery\image3.png = gallery\image3.png
+		gallery\image4.png = gallery\image4.png
+		gallery\image5.png = gallery\image5.png
 	EndProjectSection
 EndProject
 Global
