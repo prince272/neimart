@@ -1,4 +1,6 @@
 # Welcome to Neimart - [Online Website](https://neimart.com)
+![enter image description here](https://github.com/prince272/neimart/raw/master/gallery/image6.png)
+
 Neimart is an ecommerce platform that provides an end-to-end business solution allowing you to start, grow, and manage your retail business.
 
 ![Welcome to Neimart](https://github.com/prince272/neimart/raw/master/gallery/image1.png)
@@ -18,5 +20,5 @@ Neimart is an ecommerce platform that provides an end-to-end business solution a
  ![Why start selling on Neimart](https://github.com/prince272/neimart/raw/master/gallery/image4.png)
 # Where did 'Neimart' come from?
 
-When the COVID pandemic broke out, the traditional learning system had various challenges, with a significant change in individuals choosing e-learning over traditional learning paths, making online learning more of a requirement than an option. So, I decided to also work on an educational platform to allow students to study a variety of courses and topics using interactive checkpoints, lectures, and videos, with certificates automatically generated at the completion of each course. Since the word **Academy** means a place of study or training in a special field while **Ours** may simply refer to something that is belongs to us. (Academy of Ours)
+The meaning of Neimart is **Nei**ghbourhood **Mar**ket **T**rading. This makes you aware that best deals come from your neighbourhood (environment). We wanted to build a platform similar to **Shopify** to use to build an online store for neighboring environment and small shops.
 
