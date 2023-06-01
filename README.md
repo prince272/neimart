@@ -1,4 +1,4 @@
-# Welcome to Neimart - [Online Website](https://neimart.com)
+# Welcome to Neimart
 ![enter image description here](https://github.com/prince272/neimart/raw/master/gallery/image6.png)
 
 Neimart is an ecommerce platform that provides an end-to-end business solution allowing you to start, grow, and manage your retail business.
