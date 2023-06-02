@@ -18,7 +18,3 @@ Neimart is an ecommerce platform that provides an end-to-end business solution a
    ![Cart](https://github.com/prince272/neimart/raw/master/gallery/image2.png)
 ![Automated Certification](https://github.com/prince272/neimart/raw/master/gallery/image3.png)
  ![Why start selling on Neimart](https://github.com/prince272/neimart/raw/master/gallery/image4.png)
-# Where did 'Neimart' come from?
-
-The meaning of Neimart is **Nei**ghbourhood **Mar**ket **T**rading which makes you aware that best deals come from your neighbourhood. We wanted to build a platform similar to **Shopify** to use to build an online store for neighboring environment and small shops.
-
